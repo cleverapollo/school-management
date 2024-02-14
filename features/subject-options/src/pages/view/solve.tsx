@@ -1,5 +1,5 @@
 import { LoadingButton } from '@mui/lab';
-import { Button, Chip, Stack, Tooltip } from '@mui/material';
+import { Button, Chip, Stack } from '@mui/material';
 import {
   getNumber,
   GridOptions,
@@ -14,22 +14,22 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { GearIcon } from '@tyro/icons';
 import { StudentTableAvatar } from '@tyro/people';
-import { getPersonProfileLink } from '@tyro/api';
+import { getPersonProfileLink, OptionsSol_SolverOperation } from '@tyro/api';
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import {
   ReturnTypeFromUseOptionsSetup,
   useOptionsSetup,
 } from '../../api/options';
-import {
-  ReturnTypeFromUseOptionsSolveStudentAssignment,
-  useOptionsSolveStudentAssignment,
-} from '../../api/solve/student-assignment';
 import { SolveSettingsModal } from '../../components/view/solve/settings-modal';
+import {
+  ReturnTypeFromUseOptionsSolutions,
+  useOptionsSolutions,
+} from '../../api/options-solutions';
+import { useSolveOptions } from '../../api/solve';
 
-type OptionsAssignedValue = NonNullable<
-  ReturnTypeFromUseOptionsSolveStudentAssignment['students']['subjectGroupsAssigned'][number]['teachingGroup']
->;
+type OptionsAssignedValue =
+  ReturnTypeFromUseOptionsSolutions['pools'][number]['subjectSets'][number]['studentChoices'][number]['subjectSetChoices'][number]['mainChoices'][number];
 
 type StudentRow = {
   student: NonNullable<ReturnTypeFromUseOptionsSetup['students']>[number];
@@ -39,33 +39,34 @@ type StudentRow = {
 
 const getStudentRows = (
   optionsSetup: ReturnTypeFromUseOptionsSetup | undefined,
-  studentAssignments:
-    | ReturnTypeFromUseOptionsSolveStudentAssignment[]
-    | undefined
+  optionsSolutions: ReturnTypeFromUseOptionsSolutions | undefined
 ): StudentRow[] => {
   const studentsOptionsAssigned = new Map<
     number,
     Map<string, OptionsAssignedValue>
   >();
+  // TODO - implement missing preferences
   const studentMissingPreferences = new Map<number, number>();
 
-  studentAssignments?.forEach(({ students }) => {
-    const { student, subjectGroupsAssigned, missedPreferences } = students;
-    if (student) {
-      const currentStudentsOptionsAssigned = subjectGroupsAssigned.reduce<
-        Map<string, OptionsAssignedValue>
-      >((acc, { subjectSetIdx, preferenceNumber, teachingGroup }) => {
-        if (subjectSetIdx && preferenceNumber && teachingGroup) {
-          acc.set(`${subjectSetIdx}-${preferenceNumber}`, teachingGroup);
-        }
-        return acc;
-      }, new Map());
-      studentMissingPreferences.set(student.partyId, missedPreferences);
-      studentsOptionsAssigned.set(
-        student.partyId,
-        currentStudentsOptionsAssigned
-      );
-    }
+  optionsSolutions?.pools?.forEach(({ subjectSets }) => {
+    subjectSets.forEach(({ studentChoices }) => {
+      studentChoices.forEach(({ studentPartyId, subjectSetChoices }) => {
+        const currentStudentsOptionsAssigned = subjectSetChoices.reduce<
+          Map<string, OptionsAssignedValue>
+        >((acc, { subjectSetIdx, mainChoices }) => {
+          mainChoices.forEach((choice) => {
+            if (subjectSetIdx) {
+              acc.set(`${subjectSetIdx}-${choice.choiceIdx}`, choice);
+            }
+          });
+          return acc;
+        }, new Map());
+        studentsOptionsAssigned.set(
+          studentPartyId,
+          currentStudentsOptionsAssigned
+        );
+      });
+    });
   });
 
   return (optionsSetup?.students ?? []).map((student) => ({
@@ -112,45 +113,53 @@ const getStudentAssignmentColumns = (
     colId: JSON.stringify(subjectSet.id),
     headerName: subjectSet.name,
     headerClass: subjectSet.id.idx !== 1 ? 'border-left' : undefined,
-    children: Array.from(Array(subjectSet.mustGet)).map((_, index) => {
-      const preferenceIdx = index + 1;
-      const colId = `${subjectSet.id.idx}-${preferenceIdx}`;
-      const showLeftBorder = preferenceIdx === 1 && subjectSet.id.idx !== 1;
+    children: Array.from(Array(subjectSet.canChoose)).map(
+      (_, preferenceIdx) => {
+        const colId = `${subjectSet.id.idx}-${preferenceIdx}`;
+        const isOutsideWhatTheyGet = preferenceIdx > subjectSet.mustGet - 1;
+        const showLeftBorder = preferenceIdx === 0 && subjectSet.id.idx !== 1;
 
-      return {
-        field: `choices.${colId}`,
-        headerName: t('subjectOptions:prefX', { x: preferenceIdx }),
-        cellClass: [showLeftBorder && 'border-left'].filter(Boolean),
-        headerClass: [showLeftBorder && 'border-left'].filter(Boolean),
-        valueGetter: ({ data }: ValueGetterParams<StudentRow, any>) =>
-          data?.optionsAssigned.get(colId),
-        cellRenderer: ({
-          value,
-        }: ICellRendererParams<
-          StudentRow,
-          ReturnType<StudentRow['optionsAssigned']['get']>
-        >) => {
-          if (!value) return '-';
+        return {
+          field: `choices.${colId}`,
+          headerName: t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
+          cellClass: [
+            isOutsideWhatTheyGet && 'outside-get',
+            showLeftBorder && 'border-left',
+          ].filter(Boolean),
+          headerClass: [
+            isOutsideWhatTheyGet && 'outside-get',
+            showLeftBorder && 'border-left',
+          ].filter(Boolean),
+          valueGetter: ({ data }: ValueGetterParams<StudentRow, any>) =>
+            data?.optionsAssigned.get(colId),
+          cellRenderer: ({
+            value,
+          }: ICellRendererParams<
+            StudentRow,
+            ReturnType<StudentRow['optionsAssigned']['get']>
+          >) => {
+            if (!value) return '-';
 
-          const { name, subject } = value;
+            const { subjectGroupName, subject } = value;
 
-          return (
-            <Chip
-              size="small"
-              variant="soft"
-              color={subject.colour ?? 'slate'}
-              label={name}
-            />
-          );
-        },
-        valueFormatter: ({
-          value,
-        }: ValueFormatterParams<
-          StudentRow,
-          ReturnType<StudentRow['optionsAssigned']['get']>
-        >) => value?.subject?.name ?? '-',
-      };
-    }),
+            return (
+              <Chip
+                size="small"
+                variant="soft"
+                color={subject.colour ?? 'slate'}
+                label={subjectGroupName}
+              />
+            );
+          },
+          valueFormatter: ({
+            value,
+          }: ValueFormatterParams<
+            StudentRow,
+            ReturnType<StudentRow['optionsAssigned']['get']>
+          >) => value?.subject?.name ?? '-',
+        };
+      }
+    ),
   })) ?? []),
 ];
 
@@ -162,13 +171,12 @@ export default function StudentOptionsSolvePage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { data: optionsSetup } = useOptionsSetup(optionId);
-  const { data: studentAssignments } = useOptionsSolveStudentAssignment({
-    ids: [optionId],
-  });
+  const { data: optionsSolutions } = useOptionsSolutions({ optionId });
+  const { mutateAsync: solveOptions } = useSolveOptions();
 
   const studentRows = useMemo(
-    () => getStudentRows(optionsSetup, studentAssignments),
-    [optionsSetup, studentAssignments]
+    () => getStudentRows(optionsSetup, optionsSolutions),
+    [optionsSetup, optionsSolutions]
   );
 
   const studentAssignmentColumns = useMemo(
@@ -176,7 +184,17 @@ export default function StudentOptionsSolvePage() {
     [t, displayName, optionsSetup]
   );
 
-  console.log({ studentAssignments });
+  const toggleSolver = () => {
+    solveOptions({
+      // operation: optionsSolutions?.solverRunning
+      //   ? OptionsSol_SolverOperation.Stop
+      //   : OptionsSol_SolverOperation.Start,
+      operation: OptionsSol_SolverOperation.Start,
+      optionId,
+    });
+  };
+
+  console.log({ optionsSolutions });
 
   return (
     <>
@@ -185,15 +203,12 @@ export default function StudentOptionsSolvePage() {
           <Button onClick={onOpen} variant="outlined" endIcon={<GearIcon />}>
             {t('subjectOptions:solverSettings')}
           </Button>
-          <LoadingButton
-            variant="contained"
-            color="primary"
-            onClick={() => {
-              console.log('Solve');
-            }}
-          >
+          <Button variant="contained" color="primary" onClick={toggleSolver}>
+            {/* {optionsSolutions?.solverRunning
+              ? t('common:solve')
+              : t('subjectOptions:stopSolver')} */}
             {t('common:solve')}
-          </LoadingButton>
+          </Button>
         </Stack>
         <Table
           sx={{

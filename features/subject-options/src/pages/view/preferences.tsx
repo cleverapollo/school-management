@@ -117,101 +117,102 @@ const getStudentPreferenceColumns = (
     colId: JSON.stringify(subjectSet.id),
     headerName: subjectSet.name,
     headerClass: subjectSet.id.idx !== 1 ? 'border-left' : undefined,
-    children: Array.from(Array(subjectSet.canChoose)).map((_, index) => {
-      const preferenceIdx = index + 1;
-      const colId = `${subjectSet.id.idx}-${preferenceIdx}`;
-      const isOutsideWhatTheyGet = preferenceIdx > subjectSet.mustGet;
-      const showLeftBorder = preferenceIdx === 1 && subjectSet.id.idx !== 1;
-      const options = subjectSet.subjects.sort((a, b) =>
-        a.name.localeCompare(b.name)
-      );
+    children: Array.from(Array(subjectSet.canChoose)).map(
+      (_, preferenceIdx) => {
+        const colId = `${subjectSet.id.idx}-${preferenceIdx}`;
+        const isOutsideWhatTheyGet = preferenceIdx > subjectSet.mustGet - 1;
+        const showLeftBorder = preferenceIdx === 0 && subjectSet.id.idx !== 1;
+        const options = subjectSet.subjects.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
 
-      return {
-        field: `choices.${colId}`,
-        headerName: t('subjectOptions:prefX', { x: preferenceIdx }),
-        cellClass: [
-          'ag-editable-cell',
-          isOutsideWhatTheyGet && 'outside-get',
-          showLeftBorder && 'border-left',
-        ].filter(Boolean),
-        headerClass: [
-          isOutsideWhatTheyGet && 'outside-get',
-          showLeftBorder && 'border-left',
-        ].filter(Boolean),
-        valueGetter: ({ data }: ValueGetterParams<StudentRow, any>) =>
-          data?.choices[colId],
-        valueSetter: ({
-          newValue,
-          data,
-          node,
-          isEditCheckCall,
-          isApplyUpdatesCall,
-        }: ValueSetterParams<StudentRow, number>) => {
-          set(data?.choices, colId, newValue);
+        return {
+          field: `choices.${colId}`,
+          headerName: t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
+          cellClass: [
+            'ag-editable-cell',
+            isOutsideWhatTheyGet && 'outside-get',
+            showLeftBorder && 'border-left',
+          ].filter(Boolean),
+          headerClass: [
+            isOutsideWhatTheyGet && 'outside-get',
+            showLeftBorder && 'border-left',
+          ].filter(Boolean),
+          valueGetter: ({ data }: ValueGetterParams<StudentRow, any>) =>
+            data?.choices[colId],
+          valueSetter: ({
+            newValue,
+            data,
+            node,
+            isEditCheckCall,
+            isApplyUpdatesCall,
+          }: ValueSetterParams<StudentRow, number>) => {
+            set(data?.choices, colId, newValue);
 
-          if (!isEditCheckCall && !isApplyUpdatesCall) {
-            Object.entries(data?.choices).forEach(([key, value]) => {
-              const { subjectSetIdx } = getChoiceIds(key);
+            if (!isEditCheckCall && !isApplyUpdatesCall) {
+              Object.entries(data?.choices).forEach(([key, value]) => {
+                const { subjectSetIdx } = getChoiceIds(key);
 
-              if (
-                subjectSetIdx === subjectSet.id.idx &&
-                key !== colId &&
-                value &&
-                value === newValue
-              ) {
-                node?.setDataValue(`choices.${key}`, null);
-              }
-            });
-          }
+                if (
+                  subjectSetIdx === subjectSet.id.idx &&
+                  key !== colId &&
+                  value &&
+                  value === newValue
+                ) {
+                  node?.setDataValue(`choices.${key}`, null);
+                }
+              });
+            }
 
-          return true;
-        },
-        cellRenderer: ({
-          data,
-          value,
-        }: ICellRendererParams<StudentRow, number>) => {
-          if (!data) return null;
-          const subject = subjectSet.subjects.find(({ id }) => id === value);
+            return true;
+          },
+          cellRenderer: ({
+            data,
+            value,
+          }: ICellRendererParams<StudentRow, number>) => {
+            if (!data) return null;
+            const subject = subjectSet.subjects.find(({ id }) => id === value);
 
-          if (!subject) return '-';
+            if (!subject) return '-';
 
-          return (
-            <Chip
-              size="small"
-              variant="soft"
-              color={subject.colour ?? 'slate'}
-              label={subject.name}
-            />
-          );
-        },
-        valueFormatter: ({
-          value,
-        }: ValueFormatterParams<StudentRow, number>) => {
-          if (typeof value !== 'number') return '-';
-          return subjectSet.subjects.find((subject) => subject.id === value)
-            ?.name;
-        },
-        editable: () =>
-          permissions.isStaffUserWithPermission(
-            'ps:1:options:write_preferences'
-          ),
-        cellEditorSelector: ({ data }: ICellEditorParams<StudentRow>) => {
-          if (data) {
-            return {
-              component: TableSelect<(typeof options)[number]>,
-              popup: true,
-              popupPosition: 'under',
-              params: {
-                options,
-                optionIdKey: 'id',
-                getOptionLabel: (option: (typeof options)[number]) =>
-                  option?.name,
-              },
-            };
-          }
-        },
-      };
-    }),
+            return (
+              <Chip
+                size="small"
+                variant="soft"
+                color={subject.colour ?? 'slate'}
+                label={subject.name}
+              />
+            );
+          },
+          valueFormatter: ({
+            value,
+          }: ValueFormatterParams<StudentRow, number>) => {
+            if (typeof value !== 'number') return '-';
+            return subjectSet.subjects.find((subject) => subject.id === value)
+              ?.name;
+          },
+          editable: () =>
+            permissions.isStaffUserWithPermission(
+              'ps:1:options:write_preferences'
+            ),
+          cellEditorSelector: ({ data }: ICellEditorParams<StudentRow>) => {
+            if (data) {
+              return {
+                component: TableSelect<(typeof options)[number]>,
+                popup: true,
+                popupPosition: 'under',
+                params: {
+                  options,
+                  optionIdKey: 'id',
+                  getOptionLabel: (option: (typeof options)[number]) =>
+                    option?.name,
+                },
+              };
+            }
+          },
+        };
+      }
+    ),
   })) ?? []),
 ];
 
