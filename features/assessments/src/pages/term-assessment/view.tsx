@@ -2,7 +2,6 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   GridOptions,
   ICellRendererParams,
-  PageHeading,
   Table,
   TableLinearProgress,
   useNumber,
@@ -12,10 +11,13 @@ import {
   useResponsive,
   useDisclosure,
   ActionMenu,
+  ProfileListNavigation,
+  ProfilePageNavigation,
+  useProfileListNavigation,
 } from '@tyro/core';
 import { Search, SearchType, SmsRecipientType } from '@tyro/api';
 import { Link, useParams } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Box, Button, Fade, Typography } from '@mui/material';
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
@@ -33,6 +35,7 @@ const getColumnDefs = (
     undefined,
     ('common' | 'assessments')[]
   >,
+  onBeforeNavigate: () => void,
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseAssessmentSubjectGroups>['columnDefs'] => [
   {
@@ -144,6 +147,7 @@ const getColumnDefs = (
           className="ag-show-on-row-interaction"
           component={Link}
           to={`./subject-group/${data.subjectGroup.partyId}`}
+          onClick={onBeforeNavigate}
         >
           {t('assessments:actions.editResults')}
         </Button>
@@ -228,9 +232,26 @@ export default function ViewTermAssessment() {
     });
   };
 
+  const visibleDataRef =
+    useRef<() => ReturnTypeFromUseAssessmentSubjectGroups[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.SubjectGroup,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      assessmentData?.name,
+      visibleDataRef.current?.().map(({ subjectGroup }) => ({
+        partyId: subjectGroup.partyId,
+        name: subjectGroup.name,
+      }))
+    );
+  }, []);
+
   const columnDefs = useMemo(
-    () => getColumnDefs(!!isDesktop, t, displayNames),
-    [t, displayNames]
+    () => getColumnDefs(!!isDesktop, t, onBeforeNavigateProfile, displayNames),
+    [t, onBeforeNavigateProfile, displayNames]
   );
 
   return (
@@ -238,25 +259,33 @@ export default function ViewTermAssessment() {
       <PageContainer
         title={t('assessments:pageTitle.termAssessmentSubjectGroups')}
       >
-        <PageHeading
-          title={t('assessments:pageHeading.termAssessmentSubjectGroups', {
-            name: assessmentData?.name,
-          })}
-          breadcrumbs={{
-            links: [
-              {
-                name: t('assessments:pageHeading.assessments'),
-                href: '/assessments',
-              },
-              {
-                name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
-                  name: assessmentData?.name,
-                }),
-              },
-            ],
+        <ProfileListNavigation
+          profile={ProfilePageNavigation.Assessment}
+          profileId={assessmentIdAsNumber}
+          pageHeadingProps={{
+            title: t('assessments:pageHeading.termAssessmentSubjectGroups', {
+              name: assessmentData?.name,
+            }),
+            breadcrumbs: {
+              links: [
+                {
+                  name: t('assessments:pageHeading.assessments'),
+                  href: '/assessments',
+                },
+                {
+                  name: t(
+                    'assessments:pageHeading.termAssessmentSubjectGroups',
+                    {
+                      name: assessmentData?.name,
+                    }
+                  ),
+                },
+              ],
+            },
           }}
         />
         <Table
+          visibleDataRef={visibleDataRef}
           rowData={assessmentSubjectGroupsData || []}
           columnDefs={columnDefs}
           getRowId={({ data }) => String(data?.subjectGroup.partyId)}

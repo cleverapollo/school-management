@@ -2,7 +2,6 @@ import {
   BulkEditedRows,
   GridOptions,
   ICellRendererParams,
-  PageHeading,
   ReturnTypeDisplayName,
   Table,
   TableSelect,
@@ -18,10 +17,13 @@ import {
   ReturnOfUseToast,
   TableSwitch,
   TableBooleanValue,
+  useProfileListNavigation,
+  ProfilePageNavigation,
+  ProfileListNavigation,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import {
   UseQueryReturnType,
   CommentType,
@@ -238,6 +240,7 @@ const getColumnDefs = (
     undefined,
     ('common' | 'assessments')[]
   >,
+  onBeforeNavigateProfile: () => void,
   displayName: ReturnTypeDisplayName,
   toast: ReturnOfUseToast['toast'],
   assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
@@ -257,6 +260,7 @@ const getColumnDefs = (
           isPriorityStudent={!!data?.student?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.student?.person)}
+          onBeforeNavigate={onBeforeNavigateProfile}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -436,10 +440,31 @@ export default function EditTermAssessmentResults() {
 
   const subjectGroupName = subjectGroup?.name ?? '';
 
+  const visibleDataRef =
+    useRef<() => ReturnTypeFromUseAssessmentResults[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.Student,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      assessmentData?.name,
+      visibleDataRef
+        .current?.()
+        .map(({ student, studentPartyId, studentClassGroup }) => ({
+          partyId: studentPartyId,
+          person: student.person,
+          caption: studentClassGroup,
+        }))
+    );
+  }, []);
+
   const columnDefs = useMemo(
     () =>
       getColumnDefs(
         t,
+        onBeforeNavigateProfile,
         displayName,
         toast,
         assessmentData,
@@ -448,6 +473,7 @@ export default function EditTermAssessmentResults() {
       ),
     [
       t,
+      onBeforeNavigateProfile,
       displayName,
       toast,
       assessmentData,
@@ -566,29 +592,34 @@ export default function EditTermAssessmentResults() {
         name: subjectGroupName,
       })}
     >
-      <PageHeading
-        title={t('assessments:pageHeading.editResultsFor', {
-          name: subjectGroupName,
-        })}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('assessments:pageHeading.assessments'),
-              href: '/assessments',
-            },
-            {
-              name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
-                name: assessmentData?.name,
-              }),
-              href: './../..',
-            },
-            {
-              name: t('assessments:actions.editResults'),
-            },
-          ],
+      <ProfileListNavigation
+        profile={ProfilePageNavigation.SubjectGroup}
+        profileId={subjectGroupIdAsNumber}
+        pageHeadingProps={{
+          title: t('assessments:pageHeading.editResultsFor', {
+            name: subjectGroupName,
+          }),
+          breadcrumbs: {
+            links: [
+              {
+                name: t('assessments:pageHeading.assessments'),
+                href: '/assessments',
+              },
+              {
+                name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
+                  name: assessmentData?.name,
+                }),
+                href: './../..',
+              },
+              {
+                name: t('assessments:actions.editResults'),
+              },
+            ],
+          },
         }}
       />
       <Table
+        visibleDataRef={visibleDataRef}
         rowData={studentResults ?? []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.studentPartyId)}

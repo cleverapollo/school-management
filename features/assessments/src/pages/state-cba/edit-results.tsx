@@ -3,8 +3,6 @@ import {
   GridOptions,
   ICellRendererParams,
   PageContainer,
-  PageHeading,
-  ReturnOfUseToast,
   ReturnTypeDisplayName,
   StudyLevelSelectCellEditor,
   Table,
@@ -14,9 +12,11 @@ import {
   TableBooleanValue,
   useNumber,
   usePreferredNameLayout,
-  useToast,
   ValueSetterParams,
   ValueFormatterParams,
+  useProfileListNavigation,
+  ProfilePageNavigation,
+  ProfileListNavigation,
 } from '@tyro/core';
 import {
   CommenterUserType,
@@ -29,7 +29,7 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
 import { Chip } from '@mui/material';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import set from 'lodash/set';
 import { StudentTableAvatar } from '@tyro/people';
 import { useAssessmentById } from '../../api/assessments';
@@ -57,7 +57,7 @@ const getColumnDefs = (
     ('common' | 'assessments')[]
   >,
   displayName: ReturnTypeDisplayName,
-  toast: ReturnOfUseToast['toast'],
+  onBeforeNavigate: () => void,
   gradeSets: ReturnTypeFromUseCbaGradeSets[],
   assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined
@@ -75,6 +75,7 @@ const getColumnDefs = (
           isPriorityStudent={!!data?.student?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.student?.person)}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -210,7 +211,6 @@ const getColumnDefs = (
 export default function EditStateCbaResults() {
   const { academicNamespaceId, subjectGroupId, assessmentId } = useParams();
   const { activeProfile } = useUser();
-  const { toast } = useToast();
   const academicNamespaceIdAsNumber = useNumber(academicNamespaceId);
   const assessmentIdAsNumber = useNumber(assessmentId);
   const subjectGroupIdAsNumber = useNumber(subjectGroupId);
@@ -269,17 +269,44 @@ export default function EditStateCbaResults() {
     }
   );
 
+  const visibleDataRef =
+    useRef<() => ReturnTypeFromUseAssessmentResults[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.Student,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      assessmentData?.name,
+      visibleDataRef
+        .current?.()
+        .map(({ student, studentPartyId, studentClassGroup }) => ({
+          partyId: studentPartyId,
+          person: student.person,
+          caption: studentClassGroup,
+        }))
+    );
+  }, []);
+
   const columnDefs = useMemo(
     () =>
       getColumnDefs(
         t,
         displayName,
-        toast,
+        onBeforeNavigateProfile,
         gradeSets,
         assessmentData,
         commentBanks
       ),
-    [t, displayName, toast, gradeSets, assessmentData, commentBanks]
+    [
+      t,
+      displayName,
+      onBeforeNavigateProfile,
+      gradeSets,
+      assessmentData,
+      commentBanks,
+    ]
   );
 
   const subjectGroup =
@@ -391,29 +418,34 @@ export default function EditStateCbaResults() {
         name: 'subjectGroupName',
       })}
     >
-      <PageHeading
-        title={t('assessments:pageHeading.editResultsFor', {
-          name: subjectGroupName,
-        })}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('assessments:pageHeading.assessments'),
-              href: '/assessments',
-            },
-            {
-              name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
-                name: assessmentData?.name,
-              }),
-              href: './../..',
-            },
-            {
-              name: t('assessments:actions.editResults'),
-            },
-          ],
+      <ProfileListNavigation
+        profile={ProfilePageNavigation.SubjectGroup}
+        profileId={subjectGroupIdAsNumber}
+        pageHeadingProps={{
+          title: t('assessments:pageHeading.editResultsFor', {
+            name: subjectGroupName,
+          }),
+          breadcrumbs: {
+            links: [
+              {
+                name: t('assessments:pageHeading.assessments'),
+                href: '/assessments',
+              },
+              {
+                name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
+                  name: assessmentData?.name,
+                }),
+                href: './../..',
+              },
+              {
+                name: t('assessments:actions.editResults'),
+              },
+            ],
+          },
         }}
       />
       <Table
+        visibleDataRef={visibleDataRef}
         rowData={studentResults ?? []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.studentPartyId)}
