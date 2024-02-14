@@ -13,3 +13,4 @@ export * from './use-preferred-name-layout';
 export * from './use-responsive';
 export * from './use-toast';
 export * from './use-context-menu';
+export * from './use-profile-list-navigation';

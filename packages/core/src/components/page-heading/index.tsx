@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import { Breadcrumbs, BreadcrumbsProps } from '../breadcrumbs';
 
-interface PageHeadingProps extends BoxProps {
+export interface PageHeadingProps extends BoxProps {
   title: string;
   titleProps?: TypographyProps<'h1'>;
   breadcrumbs?: BreadcrumbsProps;
