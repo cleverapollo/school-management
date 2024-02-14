@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Button, Box, Fade } from '@mui/material';
 import {
   GridOptions,
@@ -12,6 +12,8 @@ import {
   ReturnTypeDisplayNames,
   useDisclosure,
   ActionMenu,
+  useProfileListNavigation,
+  ProfilePageNavigation,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
@@ -30,6 +32,7 @@ import { DeleteContactsDialog } from '../../components/staff/delete-contact-dial
 
 const getContactColumns = (
   translate: TFunction<'common'[], undefined, 'common'[]>,
+  onBeforeNavigate: () => void,
   displayName: ReturnTypeDisplayName,
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseContacts>['columnDefs'] => [
@@ -43,6 +46,7 @@ const getContactColumns = (
       <TablePersonAvatar
         person={data?.person}
         to={`./${data?.partyId ?? ''}`}
+        onBeforeNavigate={onBeforeNavigate}
       />
     ),
     headerCheckboxSelection: true,
@@ -100,9 +104,26 @@ export default function ContactsListPage() {
     onClose: onCloseDeleteContacts,
   } = useDisclosure();
 
+  const visibleDataRef = useRef<() => ReturnTypeFromUseContacts[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.Contact,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      t('people:pageHeading.contacts'),
+      visibleDataRef.current?.().map(({ partyId, person }) => ({
+        partyId,
+        person,
+      }))
+    );
+  }, []);
+
   const contactColumns = useMemo(
-    () => getContactColumns(t, displayName, displayNames),
-    [t, displayName]
+    () =>
+      getContactColumns(t, onBeforeNavigateProfile, displayName, displayNames),
+    [t, onBeforeNavigateProfile, displayName, displayNames]
   );
 
   const recipientsForSms = useMemo(
@@ -222,6 +243,7 @@ export default function ContactsListPage() {
           }
         />
         <Table
+          visibleDataRef={visibleDataRef}
           rowData={contactsData || []}
           rowSelection="multiple"
           columnDefs={contactColumns}

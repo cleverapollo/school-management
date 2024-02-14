@@ -2,10 +2,11 @@ import { useParams } from 'react-router-dom';
 import {
   useNumber,
   usePreferredNameLayout,
-  PageHeading,
   TabPageContainer,
   PageContainer,
   PreferredNameFormat,
+  ProfileListNavigation,
+  ProfilePageNavigation,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useStudent } from '../../api/student/students';
@@ -28,18 +29,22 @@ export default function StudentProfileContainer() {
 
   return (
     <PageContainer title={userProfileName}>
-      <PageHeading
-        title={userProfileName}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('common:students'),
-              href: './..',
-            },
-            {
-              name: userProfileName,
-            },
-          ],
+      <ProfileListNavigation
+        profile={ProfilePageNavigation.Student}
+        profileId={idNumber}
+        pageHeadingProps={{
+          title: userProfileName,
+          breadcrumbs: {
+            links: [
+              {
+                name: t('common:students'),
+                href: './..',
+              },
+              {
+                name: userProfileName,
+              },
+            ],
+          },
         }}
       />
       <StudentOverviewBar studentId={idNumber} />

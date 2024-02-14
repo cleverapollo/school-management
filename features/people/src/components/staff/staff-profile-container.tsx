@@ -2,13 +2,13 @@ import { useParams } from 'react-router-dom';
 import {
   useNumber,
   usePreferredNameLayout,
-  PageHeading,
-  Page,
   TabPageContainer,
   PreferredNameFormat,
+  PageContainer,
+  ProfileListNavigation,
+  ProfilePageNavigation,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { Container } from '@mui/material';
 import { useStaff } from '../../api/staff';
 import { StaffOverviewBar } from './staff-overview-bar';
 
@@ -30,18 +30,13 @@ export default function StaffProfileContainer() {
   });
 
   return (
-    <Page title={userProfileName}>
-      <Container
-        maxWidth="xl"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-        }}
-      >
-        <PageHeading
-          title={userProfileName}
-          breadcrumbs={{
+    <PageContainer title={userProfileName}>
+      <ProfileListNavigation
+        profile={ProfilePageNavigation.Staff}
+        profileId={idNumber}
+        pageHeadingProps={{
+          title: userProfileName,
+          breadcrumbs: {
             links: [
               {
                 name: t('common:staff'),
@@ -51,34 +46,34 @@ export default function StaffProfileContainer() {
                 name: userProfileName,
               },
             ],
-          }}
-        />
-        <StaffOverviewBar staffId={idNumber} />
-        <TabPageContainer
-          links={[
-            {
-              label: t('people:personal.title'),
-              value: 'personal',
-              hasAccess: ({ isStaffUserWithPermission }) =>
-                isStaffUserWithPermission(
-                  'ps:1:people:view_staff_personal_information'
-                ),
-            },
-            {
-              label: 'Timetable',
-              value: 'timetable',
-            },
-            {
-              label: 'Classes',
-              value: 'classes',
-            },
-            {
-              label: t('people:personal.nonClassContact'),
-              value: 'non-class-contact',
-            },
-          ]}
-        />
-      </Container>
-    </Page>
+          },
+        }}
+      />
+      <StaffOverviewBar staffId={idNumber} />
+      <TabPageContainer
+        links={[
+          {
+            label: t('people:personal.title'),
+            value: 'personal',
+            hasAccess: ({ isStaffUserWithPermission }) =>
+              isStaffUserWithPermission(
+                'ps:1:people:view_staff_personal_information'
+              ),
+          },
+          {
+            label: 'Timetable',
+            value: 'timetable',
+          },
+          {
+            label: 'Classes',
+            value: 'classes',
+          },
+          {
+            label: t('people:personal.nonClassContact'),
+            value: 'non-class-contact',
+          },
+        ]}
+      />
+    </PageContainer>
   );
 }

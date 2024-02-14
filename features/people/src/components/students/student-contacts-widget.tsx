@@ -17,19 +17,23 @@ import {
   PhoneIcon,
 } from '@tyro/icons';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@tyro/i18n';
 import {
   Avatar,
   usePreferredNameLayout,
   formatPhoneNumber,
   ActionMenu,
+  useProfileListNavigation,
+  ProfilePageNavigation,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { SearchType, SmsRecipientType } from '@tyro/api';
 import { useMailSettings } from '@tyro/mail';
+
 import { useStudentsContacts } from '../../api/student/overview';
 import { joinAddress } from '../../utils/join-address';
+import { useStudent } from '../../api/student/students';
 
 interface StudentContactsWidgetProps {
   studentId: number | undefined;
@@ -112,6 +116,24 @@ export function StudentContactsWidget({
     },
   ] as const;
 
+  const navigate = useNavigate();
+  const { data: studentData } = useStudent(studentId);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.Contact,
+  });
+
+  const goToContactProfile = () => {
+    storeList(
+      displayName(studentData?.person),
+      (contactsAllowedToContact || []).map(({ person }) => ({
+        partyId: person.partyId,
+        person,
+      }))
+    );
+    navigate(`/people/contacts/${selectedContact?.partyId ?? 0}`);
+  };
+
   return (
     <>
       <Card variant="soft" sx={{ flex: 1 }}>
@@ -125,10 +147,7 @@ export function StudentContactsWidget({
           <Typography variant="h6" component="span">
             {t('people:contactInformation')}
           </Typography>
-          <IconButton
-            component={Link}
-            to={`/people/contacts/${selectedContact?.partyId ?? 0}`}
-          >
+          <IconButton onClick={goToContactProfile}>
             <FullScreenIcon
               sx={{ width: 20, height: 20, color: 'primary.main' }}
             />
