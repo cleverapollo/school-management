@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { Box, Tooltip } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
@@ -16,6 +16,8 @@ import {
   GenderSelectCellEditor,
   BulkEditedRows,
   ValueSetterParams,
+  useProfileListNavigation,
+  ProfilePageNavigation,
 } from '@tyro/core';
 import { DownloadArrowCircleIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
@@ -67,6 +69,7 @@ const getColumnFormBDefs = (
     undefined,
     ('settings' | 'common' | 'people')[]
   >,
+  onBeforeNavigate: () => void,
   postsData: StaffPostsOption[],
   capacitiesData: EmploymentCapacityOption[],
   displayName: ReturnTypeDisplayName
@@ -94,7 +97,10 @@ const getColumnFormBDefs = (
     valueGetter: ({ data }) => displayName(data?.person),
     cellRenderer: ({ data }: ICellRendererParams<ReturnTypeFromUseFormB>) =>
       data && (
-        <RouterLink to={`/people/staff/${data.partyId}`}>
+        <RouterLink
+          to={`/people/staff/${data.partyId}`}
+          onClick={onBeforeNavigate}
+        >
           {displayName(data.person)}
         </RouterLink>
       ),
@@ -349,9 +355,32 @@ export default function DTRReturnsFileB() {
   const { mutateAsync: downloadFile, isLoading: isDownloadLoading } =
     useDownloadFile();
 
+  const visibleDataRef = useRef<() => ReturnTypeFromUseFormB[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.Staff,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      t('settings:dtrReturns.fileB'),
+      visibleDataRef.current?.().map(({ partyId, person }) => ({
+        partyId,
+        person,
+      }))
+    );
+  }, []);
+
   const columnDefs = useMemo(
-    () => getColumnFormBDefs(t, postsData, capacitiesData, displayName),
-    [t, displayName, capacitiesData, postsData]
+    () =>
+      getColumnFormBDefs(
+        t,
+        onBeforeNavigateProfile,
+        postsData,
+        capacitiesData,
+        displayName
+      ),
+    [t, onBeforeNavigateProfile, postsData, capacitiesData, displayName]
   );
 
   const getIsDownloadDisabled = () => {
@@ -456,6 +485,7 @@ export default function DTRReturnsFileB() {
         }
       />
       <Table
+        visibleDataRef={visibleDataRef}
         rowData={staffFormB || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.partyId)}
