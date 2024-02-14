@@ -10,16 +10,24 @@ import {
   TableRow,
   TableBody,
   IconButton,
+  ListItemButton,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
+import { useNavigate } from 'react-router-dom';
 
 import { AttendanceToggle } from '@tyro/attendance';
 
 import { ChevronLeftIcon, ChevronRightIcon, EditIcon } from '@tyro/icons';
-import { usePreferredNameLayout, EditState, useToast } from '@tyro/core';
+import {
+  usePreferredNameLayout,
+  EditState,
+  useToast,
+  useProfileListNavigation,
+  ProfilePageNavigation,
+} from '@tyro/core';
 import { useEffect, useState } from 'react';
 import { StudentAvatar } from '@tyro/people';
-import { AttendanceCodeType } from '@tyro/api';
+import { AttendanceCodeType, getPersonProfileLink } from '@tyro/api';
 import { useHandleLessonAttendance, GroupStudent } from '../../../hooks';
 import { AdditionalLessonsModal } from './additional-lessons-modal';
 import { SaveBar } from './save-bar';
@@ -28,6 +36,7 @@ type AttendanceProps = {
   partyId: number;
   eventStartTime?: string | null;
   students: GroupStudent[];
+  groupName?: string;
 };
 
 const previousAttendanceCodeColor = {
@@ -42,9 +51,11 @@ export const GroupAttendance = ({
   partyId,
   eventStartTime,
   students,
+  groupName = '',
 }: AttendanceProps) => {
   const { toast } = useToast();
 
+  const navigate = useNavigate();
   const { t } = useTranslation(['common', 'groups', 'attendance']);
   const { displayName } = usePreferredNameLayout();
 
@@ -113,6 +124,39 @@ export const GroupAttendance = ({
         toast(t('common:snackbarMessages.updateSuccess'));
       },
     });
+  };
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.Student,
+  });
+
+  const goToStudentProfile = (student: GroupStudent) => {
+    storeList(
+      groupName,
+      students.map(({ person }) => {
+        const previousLessonCode =
+          previousAttendanceTypeByPersonPartyId.get(person.partyId) ??
+          AttendanceCodeType.NotTaken;
+
+        return {
+          partyId: person.partyId,
+          person,
+          caption:
+            previousLessonCode === AttendanceCodeType.NotTaken
+              ? '-'
+              : t(`attendance:previousAttendanceCode.${previousLessonCode}`),
+          captionProps: {
+            color: previousAttendanceCodeColor[previousLessonCode],
+          },
+        };
+      })
+    );
+
+    const studentUrl = getPersonProfileLink(student.person);
+
+    if (studentUrl) {
+      navigate(studentUrl);
+    }
   };
 
   const isLoading = isLessonLoading || isSaveAttendanceLoading;
@@ -216,32 +260,40 @@ export const GroupAttendance = ({
                 return (
                   <TableRow key={student?.partyId}>
                     <TableCell>
-                      <Stack direction="row" spacing={2} alignItems="center">
-                        <StudentAvatar
-                          partyId={student?.partyId}
-                          name={displayName(student?.person)}
-                          isPriorityStudent={!!student?.extensions?.priority}
-                          hasSupportPlan={false}
-                          src={student?.person?.avatarUrl}
-                        />
-                        <Stack direction="column">
-                          <Typography variant="body2" fontWeight={600}>
-                            {displayName(student?.person)}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            color={
-                              previousAttendanceCodeColor[previousLessonCode]
-                            }
-                          >
-                            {previousLessonCode === AttendanceCodeType.NotTaken
-                              ? '-'
-                              : t(
-                                  `attendance:previousAttendanceCode.${previousLessonCode}`
-                                )}
-                          </Typography>
+                      <ListItemButton
+                        sx={{ borderRadius: 1.5 }}
+                        onClick={() => {
+                          goToStudentProfile(student);
+                        }}
+                      >
+                        <Stack direction="row" spacing={2} alignItems="center">
+                          <StudentAvatar
+                            partyId={student?.partyId}
+                            name={displayName(student?.person)}
+                            isPriorityStudent={!!student?.extensions?.priority}
+                            hasSupportPlan={false}
+                            src={student?.person?.avatarUrl}
+                          />
+                          <Stack direction="column">
+                            <Typography variant="body2" fontWeight={600}>
+                              {displayName(student?.person)}
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              color={
+                                previousAttendanceCodeColor[previousLessonCode]
+                              }
+                            >
+                              {previousLessonCode ===
+                              AttendanceCodeType.NotTaken
+                                ? '-'
+                                : t(
+                                    `attendance:previousAttendanceCode.${previousLessonCode}`
+                                  )}
+                            </Typography>
+                          </Stack>
                         </Stack>
-                      </Stack>
+                      </ListItemButton>
                     </TableCell>
                     <TableCell>
                       {eventDetails?.isEditMode ? (

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
@@ -10,6 +10,8 @@ import {
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
+  useProfileListNavigation,
+  ProfilePageNavigation,
 } from '@tyro/core';
 import {
   useCustomGroupDefinition,
@@ -20,6 +22,7 @@ type CustomGroupStaff = ReturnTypeFromUseCustomGroupDefinition['staff'][number];
 
 const getColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
+  onBeforeNavigate: () => void,
   displayName: ReturnTypeDisplayName
 ): GridOptions<CustomGroupStaff>['columnDefs'] => [
   {
@@ -32,6 +35,7 @@ const getColumns = (
         <TablePersonAvatar
           person={data}
           to={`/people/staff/${data?.partyId ?? ''}`}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ),
   },
@@ -46,10 +50,30 @@ export default function CustomGroupStaffPage() {
 
   const { data: customGroupData } = useCustomGroupDefinition({ partyId });
 
-  const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
+  const visibleDataRef = useRef<() => CustomGroupStaff[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.Staff,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      customGroupData?.name,
+      visibleDataRef.current?.().map((person) => ({
+        partyId: person.partyId,
+        person,
+      }))
+    );
+  }, []);
+
+  const columns = useMemo(
+    () => getColumns(t, onBeforeNavigateProfile, displayName),
+    [t, onBeforeNavigateProfile, displayName]
+  );
 
   return (
     <Table
+      visibleDataRef={visibleDataRef}
       rowData={customGroupData?.staff ?? []}
       columnDefs={columns}
       getRowId={({ data }) => String(data?.partyId)}

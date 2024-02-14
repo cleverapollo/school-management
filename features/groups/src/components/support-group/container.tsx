@@ -1,7 +1,12 @@
 import { useParams } from 'react-router-dom';
-import { useNumber, Page, PageHeading, TabPageContainer } from '@tyro/core';
+import {
+  useNumber,
+  TabPageContainer,
+  ProfileListNavigation,
+  ProfilePageNavigation,
+  PageContainer,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { Container } from '@mui/material';
 import { SubjectGroupStatusBar } from './status-bar';
 import { useSubjectGroupById } from '../../api/subject-groups';
 
@@ -18,19 +23,13 @@ export default function SupportGroupContainer() {
   });
 
   return (
-    <Page title={subjectGroupName}>
-      <Container
-        maxWidth="xl"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          pb: 3,
-        }}
-      >
-        <PageHeading
-          title={subjectGroupName}
-          breadcrumbs={{
+    <PageContainer title={subjectGroupName}>
+      <ProfileListNavigation
+        profile={ProfilePageNavigation.SupportGroup}
+        profileId={groupIdNumber}
+        pageHeadingProps={{
+          title: subjectGroupName,
+          breadcrumbs: {
             links: [
               {
                 name: t('groups:supportGroups'),
@@ -40,26 +39,26 @@ export default function SupportGroupContainer() {
                 name: subjectGroupName,
               },
             ],
-          }}
-        />
-        <SubjectGroupStatusBar groupId={groupIdNumber} />
-        <TabPageContainer
-          links={[
-            {
-              value: 'students',
-              label: t('common:students'),
-            },
-            {
-              value: 'attendance',
-              label: t('common:attendance'),
-            },
-            {
-              value: 'timetable',
-              label: t('common:timetable'),
-            },
-          ]}
-        />
-      </Container>
-    </Page>
+          },
+        }}
+      />
+      <SubjectGroupStatusBar groupId={groupIdNumber} />
+      <TabPageContainer
+        links={[
+          {
+            value: 'students',
+            label: t('common:students'),
+          },
+          {
+            value: 'attendance',
+            label: t('common:attendance'),
+          },
+          {
+            value: 'timetable',
+            label: t('common:timetable'),
+          },
+        ]}
+      />
+    </PageContainer>
   );
 }

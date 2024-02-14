@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Box, Fade } from '@mui/material';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -15,8 +15,9 @@ import {
   GridOptions,
   ActionMenu,
   ICellRendererParams,
-  usePreferredNameLayout,
-  ReturnTypeDisplayName,
+  useProfileListNavigation,
+  ProfilePageNavigation,
+  preferredNameLayoutUtils,
 } from '@tyro/core';
 import { StudentTableAvatar } from '@tyro/people';
 import { useMailSettings } from '@tyro/mail';
@@ -28,12 +29,13 @@ type ReturnTypeFromUseSubjectGroupById = UseQueryReturnType<
 
 const getClassGroupColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
-  displayName: ReturnTypeDisplayName
+  onBeforeNavigate: () => void
 ): GridOptions<ReturnTypeFromUseSubjectGroupById>['columnDefs'] => [
   {
     field: 'person',
     headerName: t('common:name'),
-    valueGetter: ({ data }) => displayName(data?.person),
+    valueGetter: ({ data }) =>
+      preferredNameLayoutUtils().displayName(data?.person),
     cellRenderer: ({
       data,
     }: ICellRendererParams<ReturnTypeFromUseSubjectGroupById, any>) =>
@@ -43,6 +45,7 @@ const getClassGroupColumns = (
           isPriorityStudent={!!data?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.person)}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -60,8 +63,6 @@ export default function ClassGroupStudentsPage() {
   const { groupId } = useParams();
   const groupIdAsNumber = useNumber(groupId);
   const { sendMailToParties } = useMailSettings();
-
-  const { displayName } = usePreferredNameLayout();
 
   const [selectedMembers, setSelectedMembers] = useState<
     ReturnTypeFromUseSubjectGroupById[]
@@ -115,15 +116,35 @@ export default function ClassGroupStudentsPage() {
 
   const { data: groupData } = useClassGroupById(groupIdAsNumber);
 
+  const groupName = groupData?.name || '';
+
+  const visibleDataRef =
+    useRef<() => ReturnTypeFromUseSubjectGroupById[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.Student,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      groupName,
+      visibleDataRef.current?.().map(({ person }) => ({
+        partyId: person.partyId,
+        person,
+      }))
+    );
+  }, []);
+
   const classGroupColumns = useMemo(
-    () => getClassGroupColumns(t, displayName),
-    [t, displayName]
+    () => getClassGroupColumns(t, onBeforeNavigateProfile),
+    [t, onBeforeNavigateProfile]
   );
 
   const showActionMenu = selectedMembers.length > 0;
 
   return (
     <Table
+      visibleDataRef={visibleDataRef}
       rowData={groupData?.students ?? []}
       columnDefs={classGroupColumns}
       rowSelection="multiple"

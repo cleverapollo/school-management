@@ -1,15 +1,17 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
   GridOptions,
   ICellRendererParams,
+  ProfilePageNavigation,
   ReturnTypeDisplayName,
   Table,
   useDisclosure,
   useNumber,
   usePreferredNameLayout,
+  useProfileListNavigation,
 } from '@tyro/core';
 
 import { AddUserIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
@@ -25,6 +27,7 @@ type ReturnTypeFromUseSubjectGroupById = NonNullable<
 
 const getSubjectGroupsColumns = (
   translate: TFunction<'common'[], undefined, 'common'[]>,
+  onBeforeNavigate: () => void,
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseSubjectGroupById>['columnDefs'] => [
   {
@@ -40,6 +43,7 @@ const getSubjectGroupsColumns = (
           isPriorityStudent={!!data?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.person)}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -80,14 +84,33 @@ export default function SubjectGroupProfileStudentsPage() {
   const isTeacherUserType = userType === UserType.Teacher;
   const showActionMenu = isAdminUserType || isTeacherUserType;
 
+  const visibleDataRef =
+    useRef<() => ReturnTypeFromUseSubjectGroupById[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.Student,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      subjectGroupData?.name,
+      visibleDataRef.current?.().map(({ person, classGroup }) => ({
+        partyId: person.partyId,
+        person,
+        caption: classGroup?.name,
+      }))
+    );
+  }, []);
+
   const studentColumns = useMemo(
-    () => getSubjectGroupsColumns(t, displayName),
-    [t]
+    () => getSubjectGroupsColumns(t, onBeforeNavigateProfile, displayName),
+    [t, onBeforeNavigateProfile, displayName]
   );
 
   return (
     <>
       <Table
+        visibleDataRef={visibleDataRef}
         rowData={subjectGroupData?.students ?? []}
         columnDefs={studentColumns}
         rowSelection="multiple"

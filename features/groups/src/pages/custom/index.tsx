@@ -5,7 +5,7 @@ import {
   usePermissions,
   RecipientSearchType,
 } from '@tyro/api';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
@@ -14,10 +14,12 @@ import {
   ICellRendererParams,
   PageContainer,
   PageHeading,
+  ProfilePageNavigation,
   Table,
   TableAvatar,
   useDebouncedValue,
   useDisclosure,
+  useProfileListNavigation,
 } from '@tyro/core';
 import {
   AddIcon,
@@ -37,6 +39,7 @@ import { printGroupMembers } from '../../utils/print-group-members';
 
 const getColumns = (
   t: TFunction<('common' | 'groups')[], undefined>,
+  onBeforeNavigate: () => void,
   isStaffUser: boolean,
   showEditAction: boolean
 ): GridOptions<ReturnTypeFromUseCustomGroups>['columnDefs'] => [
@@ -61,6 +64,7 @@ const getColumns = (
               borderRadius: 1,
             },
           }}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
   },
@@ -125,9 +129,26 @@ export default function CustomGroups() {
     'ps:1:groups:view_create_custom_group_definitions'
   );
 
+  const visibleDataRef = useRef<() => ReturnTypeFromUseCustomGroups[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.CustomGroup,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      t('groups:customGroups'),
+      visibleDataRef.current?.().map(({ partyId, name, avatarUrl }) => ({
+        partyId,
+        name,
+        avatarUrl,
+      }))
+    );
+  }, []);
+
   const columns = useMemo(
-    () => getColumns(t, isStaffUser, showEditAction),
-    [t, isStaffUser, showEditAction]
+    () => getColumns(t, onBeforeNavigateProfile, isStaffUser, showEditAction),
+    [t, onBeforeNavigateProfile, isStaffUser, showEditAction]
   );
 
   const showActionMenu = isStaffUser && selectedGroups.length > 0;
@@ -214,6 +235,7 @@ export default function CustomGroups() {
           }
         />
         <Table
+          visibleDataRef={visibleDataRef}
           rowData={customGroupData ?? []}
           columnDefs={columns}
           rowSelection="multiple"

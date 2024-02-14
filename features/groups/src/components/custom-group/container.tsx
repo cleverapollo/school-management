@@ -1,7 +1,12 @@
 import { useParams } from 'react-router-dom';
-import { useNumber, Page, PageHeading, TabPageContainer } from '@tyro/core';
+import {
+  useNumber,
+  TabPageContainer,
+  PageContainer,
+  ProfileListNavigation,
+  ProfilePageNavigation,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { Container } from '@mui/material';
 import { CustomGroupStatusBar } from './status-bar';
 import { useCustomGroupDefinition } from '../../api';
 
@@ -18,19 +23,13 @@ export default function SupportGroupContainer() {
   });
 
   return (
-    <Page title={customGroupName}>
-      <Container
-        maxWidth="xl"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          pb: 3,
-        }}
-      >
-        <PageHeading
-          title={customGroupName}
-          breadcrumbs={{
+    <PageContainer title={customGroupName}>
+      <ProfileListNavigation
+        profile={ProfilePageNavigation.CustomGroup}
+        profileId={partyId}
+        pageHeadingProps={{
+          title: customGroupName,
+          breadcrumbs: {
             links: [
               {
                 name: t('groups:customGroups'),
@@ -40,30 +39,30 @@ export default function SupportGroupContainer() {
                 name: customGroupName,
               },
             ],
-          }}
-        />
-        <CustomGroupStatusBar partyId={partyId} />
-        <TabPageContainer
-          links={[
-            {
-              value: 'students',
-              label: t('common:students'),
-            },
-            {
-              value: 'staff',
-              label: t('common:staff'),
-            },
-            {
-              value: 'attendance',
-              label: t('common:attendance'),
-            },
-            {
-              value: 'timetable',
-              label: t('common:timetable'),
-            },
-          ]}
-        />
-      </Container>
-    </Page>
+          },
+        }}
+      />
+      <CustomGroupStatusBar partyId={partyId} />
+      <TabPageContainer
+        links={[
+          {
+            value: 'students',
+            label: t('common:students'),
+          },
+          {
+            value: 'staff',
+            label: t('common:staff'),
+          },
+          {
+            value: 'attendance',
+            label: t('common:attendance'),
+          },
+          {
+            value: 'timetable',
+            label: t('common:timetable'),
+          },
+        ]}
+      />
+    </PageContainer>
   );
 }

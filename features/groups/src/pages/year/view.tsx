@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Box, Fade } from '@mui/material';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -9,11 +9,13 @@ import {
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
-  PageHeading,
   ReturnTypeDisplayNames,
   useDisclosure,
   ActionMenu,
   PageContainer,
+  useProfileListNavigation,
+  ProfilePageNavigation,
+  ProfileListNavigation,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import {
@@ -31,6 +33,7 @@ type MembersReturnTypeFromUseYearGroupsById = NonNullable<
 
 const getYearGroupColumns = (
   t: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
+  onBeforeNavigate: () => void,
   displayName: ReturnTypeDisplayName,
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<MembersReturnTypeFromUseYearGroupsById>['columnDefs'] => [
@@ -50,6 +53,7 @@ const getYearGroupColumns = (
           isPriorityStudent={!!data?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.person)}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -103,32 +107,62 @@ export default function ViewYearGroupPage() {
     // },
   ];
 
-  const yearGroupColumns = useMemo(
-    () => getYearGroupColumns(t, displayName, displayNames),
-    [t, displayName, displayNames]
-  );
-  const title = t('groups:namedMemberList', {
-    groupName: groupData?.name ?? '',
+  const visibleDataRef =
+    useRef<() => MembersReturnTypeFromUseYearGroupsById[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.Student,
   });
+
+  const groupName = groupData?.name || '';
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      groupName,
+      visibleDataRef.current?.().map(({ person, classGroup }) => ({
+        partyId: person.partyId,
+        person,
+        caption: classGroup?.name,
+      }))
+    );
+  }, []);
+
+  const yearGroupColumns = useMemo(
+    () =>
+      getYearGroupColumns(
+        t,
+        onBeforeNavigateProfile,
+        displayName,
+        displayNames
+      ),
+    [t, onBeforeNavigateProfile, displayName, displayNames]
+  );
+
+  const title = t('groups:namedMemberList', { groupName });
 
   return (
     <>
       <PageContainer title={title}>
-        <PageHeading
-          title={title}
-          breadcrumbs={{
-            links: [
-              {
-                name: t('groups:yearGroups'),
-                href: './..',
-              },
-              {
-                name: groupData?.name ?? '',
-              },
-            ],
+        <ProfileListNavigation
+          profile={ProfilePageNavigation.YearGroup}
+          profileId={groupIdAsNumber}
+          pageHeadingProps={{
+            title,
+            breadcrumbs: {
+              links: [
+                {
+                  name: t('groups:yearGroups'),
+                  href: './..',
+                },
+                {
+                  name: groupData?.name ?? '',
+                },
+              ],
+            },
           }}
         />
         <Table
+          visibleDataRef={visibleDataRef}
           rowData={groupData?.students ?? []}
           columnDefs={yearGroupColumns}
           getRowId={({ data }) => String(data?.partyId)}

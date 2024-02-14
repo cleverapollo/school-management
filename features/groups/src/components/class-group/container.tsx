@@ -1,9 +1,10 @@
 import { useParams } from 'react-router-dom';
 import {
   useNumber,
-  PageHeading,
   PageContainer,
   TabPageContainer,
+  ProfileListNavigation,
+  ProfilePageNavigation,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { ClassGroupStatusBar } from './status-bar';
@@ -23,18 +24,22 @@ export default function ClassGroupContainer() {
 
   return (
     <PageContainer title={classGroupName}>
-      <PageHeading
-        title={classGroupName}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('groups:classGroups'),
-              href: './..',
-            },
-            {
-              name: classGroupName,
-            },
-          ],
+      <ProfileListNavigation
+        profile={ProfilePageNavigation.ClassGroup}
+        profileId={groupIdNumber}
+        pageHeadingProps={{
+          title: classGroupName,
+          breadcrumbs: {
+            links: [
+              {
+                name: t('groups:classGroups'),
+                href: './..',
+              },
+              {
+                name: classGroupName,
+              },
+            ],
+          },
         }}
       />
       <ClassGroupStatusBar groupId={groupIdNumber} />

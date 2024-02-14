@@ -12,7 +12,7 @@ import {
   usePermissions,
   UsePermissionsReturn,
 } from '@tyro/api';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   GridOptions,
@@ -36,7 +36,8 @@ import {
   useDebouncedValue,
   ValueFormatterParams,
   ValueSetterParams,
-  useToast,
+  useProfileListNavigation,
+  ProfilePageNavigation,
 } from '@tyro/core';
 
 import {
@@ -69,6 +70,7 @@ type ReturnTypeFromUseSubjectGroups = NonNullable<
 
 const getSubjectGroupsColumns = (
   t: TFunction<('common' | 'groups')[]>,
+  onBeforeNavigate: () => void,
   displayNames: ReturnTypeDisplayNames,
   subjects?: CatalogueSubjectOption[],
   permissions?: UsePermissionsReturn
@@ -102,6 +104,7 @@ const getSubjectGroupsColumns = (
               ...bgColorStyle,
             },
           }}
+          onBeforeNavigate={onBeforeNavigate}
         />
       );
     },
@@ -385,9 +388,46 @@ export default function SubjectGroups() {
     onClose: onCloseSendSms,
   } = useDisclosure();
 
+  const visibleDataRef = useRef<() => ReturnTypeFromUseSubjectGroups[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.SubjectGroup,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      t('groups:subjectGroups'),
+      visibleDataRef.current?.().map((data) => {
+        const subject = data.subjects?.[0];
+        const bgColorStyle = subject?.colour
+          ? { bgcolor: `${subject.colour}.500` }
+          : {};
+
+        return {
+          partyId: data.partyId,
+          name: data.name,
+          avatarUrl: data.avatarUrl,
+          avatarProps: {
+            sx: {
+              borderRadius: 1,
+              ...bgColorStyle,
+            },
+          },
+        };
+      })
+    );
+  }, []);
+
   const studentColumns = useMemo(
-    () => getSubjectGroupsColumns(t, displayNames, subjects, permissions),
-    [t, displayNames, subjects, permissions]
+    () =>
+      getSubjectGroupsColumns(
+        t,
+        onBeforeNavigateProfile,
+        displayNames,
+        subjects,
+        permissions
+      ),
+    [t, onBeforeNavigateProfile, displayNames, subjects, permissions]
   );
 
   const actionMenuItems = useMemo(
@@ -566,6 +606,7 @@ export default function SubjectGroups() {
           titleProps={{ variant: 'h3' }}
         />
         <Table
+          visibleDataRef={visibleDataRef}
           sx={{
             '& .failed-cell': {
               backgroundColor: 'red.100',

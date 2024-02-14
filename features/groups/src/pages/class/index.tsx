@@ -6,7 +6,7 @@ import {
   UpdateClassGroupGroupInput,
   usePermissions,
 } from '@tyro/api';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   ActionMenu,
@@ -21,6 +21,8 @@ import {
   PageContainer,
   PageHeading,
   useDebouncedValue,
+  useProfileListNavigation,
+  ProfilePageNavigation,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { MobileIcon, PrinterIcon, SendMailIcon, TrashIcon } from '@tyro/icons';
@@ -37,6 +39,7 @@ import { printGroupMembers } from '../../utils/print-group-members';
 
 const getClassGroupColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
+  onBeforeNavigate: () => void,
   isStaffUser: boolean,
   displayNames: ReturnType<typeof usePreferredNameLayout>['displayNames']
 ): GridOptions<ReturnTypeFromUseClassGroups>['columnDefs'] => [
@@ -61,6 +64,7 @@ const getClassGroupColumns = (
               borderRadius: 1,
             },
           }}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
     comparator: sortStartNumberFirst,
@@ -139,9 +143,41 @@ export default function ClassGroupsPage() {
     debouncedValue: debouncedDeleteGroupIds,
     setValue: setDeleteGroupIds,
   } = useDebouncedValue<number[] | null>({ defaultValue: null });
+
+  const visibleDataRef = useRef<() => ReturnTypeFromUseClassGroups[]>(null);
+
+  const { storeList } = useProfileListNavigation({
+    profile: ProfilePageNavigation.ClassGroup,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      t('groups:classGroups'),
+      visibleDataRef
+        .current?.()
+        .map(({ partyId, name, avatarUrl, yearGroups }) => ({
+          partyId,
+          avatarUrl,
+          name,
+          caption: yearGroups.map((year) => year.name).join(', '),
+          avatarProps: {
+            sx: {
+              borderRadius: 1,
+            },
+          },
+        }))
+    );
+  }, []);
+
   const classGroupColumns = useMemo(
-    () => getClassGroupColumns(t, isStaffUser, displayNames),
-    [t, isStaffUser]
+    () =>
+      getClassGroupColumns(
+        t,
+        onBeforeNavigateProfile,
+        isStaffUser,
+        displayNames
+      ),
+    [t, onBeforeNavigateProfile, isStaffUser, displayNames]
   );
 
   const actionMenuItems = useMemo(
@@ -254,6 +290,7 @@ export default function ClassGroupsPage() {
           titleProps={{ variant: 'h3' }}
         />
         <Table
+          visibleDataRef={visibleDataRef}
           rowData={classGroupData ?? []}
           columnDefs={classGroupColumns}
           rowSelection="multiple"
