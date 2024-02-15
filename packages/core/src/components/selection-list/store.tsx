@@ -8,7 +8,6 @@ import {
   Dispatch,
   SetStateAction,
   Context,
-  useEffect,
 } from 'react';
 
 export type SelectionListContextValue<T extends object | string> = {
@@ -168,7 +167,7 @@ export function SelectionListProvider<T extends string | object>({
   const moveToSelected = useCallback(() => {
     const valueIds = value.map((option) => getOptionId(option));
     const newValueIds = new Set([...valueIds, ...checkedCardIds]);
-    const newValue = options.filter((option) => {
+    const newValue = [...options, ...value].filter((option) => {
       const optionId = getOptionId(option);
       return newValueIds.has(optionId);
     });

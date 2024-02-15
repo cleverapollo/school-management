@@ -86,7 +86,7 @@ export function SubjectOptionsSetupForm() {
                   formValues,
                   pathToCurrentSubjectSet
                 ) as SubjectOptionsFormState['pools'][number]['subjectSets'][number];
-                if (value > canChoose) {
+                if (value > canChoose!) {
                   return throwError(
                     t('subjectOptions:mustGetCannotBeGreaterThanCanChoose')
                   );
@@ -141,6 +141,8 @@ export function SubjectOptionsSetupForm() {
           pool.subjectSets.forEach((subjectSet) => {
             acc.push({
               ...subjectSet,
+              canChoose: subjectSet.canChoose!,
+              mustGet: subjectSet.mustGet!,
               poolIdx: pool.poolIdx,
               subjectIds: subjectSet.subjects.map(({ id }) => id),
             });

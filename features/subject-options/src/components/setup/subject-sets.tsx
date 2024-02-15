@@ -20,8 +20,8 @@ interface SubjectSetsProps {
 
 export const defaultSubjectSetProps = {
   name: '',
-  canChoose: 0,
-  mustGet: 0,
+  canChoose: null,
+  mustGet: null,
   subjects: [],
 };
 
@@ -101,6 +101,7 @@ export function SubjectSets({ poolIndex, control }: SubjectSetsProps) {
                 }}
                 textFieldProps={{
                   fullWidth: true,
+                  placeholder: '0',
                 }}
               />
             </Grid>
@@ -113,6 +114,7 @@ export function SubjectSets({ poolIndex, control }: SubjectSetsProps) {
                 }}
                 textFieldProps={{
                   fullWidth: true,
+                  placeholder: '0',
                 }}
               />
             </Grid>
