@@ -239,8 +239,11 @@ export default function StudentProfileContactsPage() {
       displayName(studentData?.person),
       visibleDataRef.current?.().map(({ partyId, person }) => ({
         id: partyId,
+        type: 'person',
         name: displayName(person),
-        person,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
       }))
     );
   }, [studentData]);

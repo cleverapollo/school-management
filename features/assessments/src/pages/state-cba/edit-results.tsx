@@ -291,10 +291,13 @@ export default function EditStateCbaResults() {
       subjectGroupName,
       visibleDataRef
         .current?.()
-        .map(({ student, studentPartyId, studentClassGroup }) => ({
+        .map(({ student: { person }, studentPartyId, studentClassGroup }) => ({
           id: studentPartyId,
-          name: displayName(student.person),
-          person: student.person,
+          type: 'person',
+          name: displayName(person),
+          firstName: person.firstName,
+          lastName: person.lastName,
+          avatarUrl: person.avatarUrl,
           caption: studentClassGroup,
         }))
     );

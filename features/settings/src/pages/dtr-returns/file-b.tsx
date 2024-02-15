@@ -358,19 +358,20 @@ export default function DTRReturnsFileB() {
 
   const visibleDataRef = useRef<() => ReturnTypeFromUseFormB[]>(null);
 
-  const { storeList } = useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
-    type: ListNavigatorType.Staff,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Staff,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       t('settings:dtrReturns.fileB'),
       visibleDataRef.current?.().map(({ partyId, person }) => ({
         id: partyId,
-        name: displayName(
-          person
-        ),
-        person,
+        type: 'person',
+        name: displayName(person),
+        firstName: person.firstName,
+        lastName: person.lastName,
       }))
     );
   }, []);

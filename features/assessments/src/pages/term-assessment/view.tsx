@@ -255,6 +255,7 @@ export default function ViewTermAssessment() {
       visibleDataRef.current?.().map(({ subjectGroup }) => ({
         id: subjectGroup.partyId,
         name: subjectGroup.name,
+        type: 'group',
       }))
     );
   }, [assessmentData]);

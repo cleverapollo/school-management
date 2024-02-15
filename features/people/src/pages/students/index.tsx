@@ -259,9 +259,12 @@ export default function StudentsListPage() {
 
         return {
           id: person.partyId,
+          type: 'person',
           name: displayName(person),
+          firstName: person.firstName,
+          lastName: person.lastName,
+          avatarUrl: person.avatarUrl,
           caption,
-          ...person,
         };
       }) ?? []
     );

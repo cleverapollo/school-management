@@ -8,8 +8,12 @@ export type PartyListNavigatorMenuItemParams = {
   name: string;
   avatarProps?: AvatarProps;
 } & (
-  | Pick<Person, 'firstName' | 'lastName' | 'avatarUrl' | 'type'>
-  | { type: 'group' }
+  | ({
+      type: 'person';
+    } & Pick<Person, 'firstName' | 'lastName' | 'avatarUrl'>)
+  | {
+      type: 'group';
+    }
 );
 
 export function PartyListNavigatorMenuItem({
@@ -18,17 +22,17 @@ export function PartyListNavigatorMenuItem({
   item: PartyListNavigatorMenuItemParams;
 }) {
   const { avatarUrl, person } =
-    item.type === 'group'
+    item.type === 'person'
       ? {
-          avatarUrl: undefined,
-          person: undefined,
-        }
-      : {
           avatarUrl: item.avatarUrl,
           person: {
             firstName: item.firstName,
             lastName: item.lastName,
           },
+        }
+      : {
+          avatarUrl: undefined,
+          person: undefined,
         };
 
   return (

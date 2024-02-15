@@ -117,8 +117,11 @@ export default function ContactsListPage() {
       t('people:pageHeading.contacts'),
       visibleDataRef.current?.().map(({ partyId, person }) => ({
         id: partyId,
+        type: 'person',
         name: displayName(person),
-        person,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
       }))
     );
   }, []);

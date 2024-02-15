@@ -258,6 +258,7 @@ export default function ViewStateCba() {
       visibleDataRef.current?.().map(({ subjectGroup }) => ({
         id: subjectGroup.partyId,
         name: subjectGroup.name,
+        type: 'group',
       }))
     );
   }, [assessmentData]);

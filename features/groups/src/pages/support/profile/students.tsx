@@ -98,8 +98,11 @@ export default function SubjectGroupProfileStudentsPage() {
       subjectGroupData?.name,
       visibleDataRef.current?.().map(({ person, classGroup }) => ({
         id: person.partyId,
+        type: 'person',
         name: displayName(person),
-        person,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
         caption: classGroup?.name,
       }))
     );

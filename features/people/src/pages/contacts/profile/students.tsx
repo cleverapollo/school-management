@@ -210,8 +210,11 @@ export default function ContactProfileStudentsPage() {
           ? [
               {
                 id: data?.studentPartyId,
+                type: 'person',
                 name: displayName(data?.student.person),
-                person: data?.student.person,
+                firstName: data?.student.person.firstName,
+                lastName: data?.student.person.lastName,
+                avatarUrl: data?.student.person.avatarUrl,
                 caption: data?.student.classGroup?.name,
               },
             ]

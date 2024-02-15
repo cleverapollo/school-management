@@ -63,8 +63,11 @@ export default function CustomGroupStaffPage() {
       customGroupData?.name,
       visibleDataRef.current?.().map((person) => ({
         id: person.partyId,
+        type: 'person',
         name: displayName(person),
-        person,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
       }))
     );
   }, [customGroupData]);

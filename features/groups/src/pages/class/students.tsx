@@ -133,8 +133,11 @@ export default function ClassGroupStudentsPage() {
       groupName,
       visibleDataRef.current?.().map(({ person }) => ({
         id: person.partyId,
+        type: 'person',
         name: displayName(person),
-        person,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
         caption: groupName,
       }))
     );

@@ -130,8 +130,11 @@ export function StudentContactsWidget({
       displayName(studentData?.person),
       (contactsAllowedToContact || []).map(({ person }) => ({
         id: person.partyId,
+        type: 'person',
         name: displayName(person),
-        person,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
       }))
     );
     navigate(`/people/contacts/${selectedContact?.partyId ?? 0}`);
