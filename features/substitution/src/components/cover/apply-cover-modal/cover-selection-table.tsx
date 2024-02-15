@@ -34,10 +34,12 @@ interface CoverSelectionTableProps<TField extends FieldValues> {
 }
 
 const toHoursMin = (minutes: number | undefined | null): string => {
+  console.log(minutes)
   if (minutes == null) {
     return '';
   }
   const duration = dayjs.duration(minutes, 'minutes').format('HH:mm');
+  console.log(duration)
   return `(${duration})`;
 };
 export const CoverSelectionTable = <TField extends FieldValues>({
@@ -165,7 +167,7 @@ export const CoverSelectionTable = <TField extends FieldValues>({
                     <TableCell>
                       {substitutionStats.sandsYearCount > 0 &&
                         `${substitutionStats.sandsYearCount} ${toHoursMin(
-                          substitutionStats.sandsWeekMinutes
+                          substitutionStats.sandsYearMinutes
                         )}`}
                     </TableCell>
                     <TableCell>
