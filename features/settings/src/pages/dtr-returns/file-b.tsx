@@ -16,8 +16,9 @@ import {
   GenderSelectCellEditor,
   BulkEditedRows,
   ValueSetterParams,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { DownloadArrowCircleIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
@@ -357,15 +358,18 @@ export default function DTRReturnsFileB() {
 
   const visibleDataRef = useRef<() => ReturnTypeFromUseFormB[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Staff,
+  const { storeList } = useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+    type: ListNavigatorType.Staff,
   });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       t('settings:dtrReturns.fileB'),
       visibleDataRef.current?.().map(({ partyId, person }) => ({
-        partyId,
+        id: partyId,
+        name: displayName(
+          person
+        ),
         person,
       }))
     );

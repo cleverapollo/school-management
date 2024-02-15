@@ -21,8 +21,9 @@ import {
   PageContainer,
   PageHeading,
   useDebouncedValue,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  ListNavigatorType,
+  useListNavigatorSettings,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { MobileIcon, PrinterIcon, SendMailIcon, TrashIcon } from '@tyro/icons';
@@ -146,26 +147,20 @@ export default function ClassGroupsPage() {
 
   const visibleDataRef = useRef<() => ReturnTypeFromUseClassGroups[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.ClassGroup,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.ClassGroup,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       t('groups:classGroups'),
-      visibleDataRef
-        .current?.()
-        .map(({ partyId, name, avatarUrl, yearGroups }) => ({
-          partyId,
-          avatarUrl,
-          name,
-          caption: yearGroups.map((year) => year.name).join(', '),
-          avatarProps: {
-            sx: {
-              borderRadius: 1,
-            },
-          },
-        }))
+      visibleDataRef.current?.().map(({ partyId, name, yearGroups }) => ({
+        id: partyId,
+        name,
+        caption: yearGroups.map((year) => year.name).join(', '),
+        type: 'group',
+      }))
     );
   }, []);
 

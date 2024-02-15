@@ -13,8 +13,9 @@ import {
   ActionMenu,
   PageContainer,
   PageHeading,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
@@ -172,15 +173,17 @@ export default function StaffListPage() {
 
   const visibleDataRef = useRef<() => ReturnTypeFromUseStudents[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Staff,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Staff,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       t('people:pageHeading.staff'),
       visibleDataRef.current?.().map(({ partyId, person }) => ({
-        partyId,
+        id: partyId,
+        name: displayName(person),
         person,
       }))
     );

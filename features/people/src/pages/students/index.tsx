@@ -10,8 +10,9 @@ import {
   useDisclosure,
   ActionMenu,
   useDebouncedValue,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
@@ -240,9 +241,10 @@ export default function StudentsListPage() {
 
   const visibleDataRef = useRef<() => ReturnTypeFromUseStudents[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Student,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
@@ -256,13 +258,14 @@ export default function StudentsListPage() {
           .join(', ');
 
         return {
-          partyId: person.partyId,
-          person,
+          id: person.partyId,
+          name: displayName(person),
           caption,
+          ...person,
         };
-      })
+      }) ?? []
     );
-  }, []);
+  }, [displayName]);
 
   const studentColumns = useMemo(
     () => getStudentColumns(t, onBeforeNavigateProfile, isStaffUser),

@@ -14,9 +14,11 @@ import {
   usePreferredNameLayout,
   ValueSetterParams,
   ValueFormatterParams,
-  useProfileListNavigation,
-  ProfilePageNavigation,
-  ProfileListNavigation,
+  ListNavigatorType,
+  ListNavigator,
+  useListNavigatorSettings,
+  PartyListNavigatorMenuItemParams,
+  PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import {
   CommenterUserType,
@@ -279,9 +281,10 @@ export default function EditStateCbaResults() {
   const visibleDataRef =
     useRef<() => ReturnTypeFromUseAssessmentResults[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Student,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
@@ -289,7 +292,8 @@ export default function EditStateCbaResults() {
       visibleDataRef
         .current?.()
         .map(({ student, studentPartyId, studentClassGroup }) => ({
-          partyId: studentPartyId,
+          id: studentPartyId,
+          name: displayName(student.person),
           person: student.person,
           caption: studentClassGroup,
         }))
@@ -418,9 +422,12 @@ export default function EditStateCbaResults() {
         name: subjectGroupName,
       })}
     >
-      <ProfileListNavigation
-        profile={ProfilePageNavigation.SubjectGroup}
-        profileId={subjectGroupIdAsNumber}
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.SubjectGroup}
+        itemId={subjectGroupIdAsNumber}
+        optionTextKey="name"
+        estimateElementSize={52}
+        getRenderOption={PartyListNavigatorMenuItem}
         pageHeadingProps={{
           title: t('assessments:pageHeading.editResultsFor', {
             name: subjectGroupName,

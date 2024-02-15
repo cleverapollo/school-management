@@ -10,8 +10,9 @@ import {
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import {
   useCustomGroupDefinition,
@@ -52,15 +53,17 @@ export default function CustomGroupStaffPage() {
 
   const visibleDataRef = useRef<() => CustomGroupStaff[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Staff,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Staff,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       customGroupData?.name,
       visibleDataRef.current?.().map((person) => ({
-        partyId: person.partyId,
+        id: person.partyId,
+        name: displayName(person),
         person,
       }))
     );

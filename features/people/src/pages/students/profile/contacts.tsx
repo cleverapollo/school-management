@@ -14,8 +14,9 @@ import {
   TableSwitch,
   BulkEditedRows,
   useToast,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  ListNavigatorType,
+  useListNavigatorSettings,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -228,15 +229,17 @@ export default function StudentProfileContactsPage() {
 
   const visibleDataRef = useRef<() => ReturnTypeFromUseContacts[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Contact,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Contact,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       displayName(studentData?.person),
       visibleDataRef.current?.().map(({ partyId, person }) => ({
-        partyId,
+        id: partyId,
+        name: displayName(person),
         person,
       }))
     );

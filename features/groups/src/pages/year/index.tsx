@@ -14,12 +14,13 @@ import {
   ICellRendererParams,
   PageContainer,
   PageHeading,
-  ProfilePageNavigation,
+  ListNavigatorType,
   Table,
   TableAvatar,
   useDisclosure,
   usePreferredNameLayout,
-  useProfileListNavigation,
+  useListNavigatorSettings,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { MobileIcon, PrinterIcon, SendMailIcon } from '@tyro/icons';
@@ -104,9 +105,10 @@ export default function YearGroups() {
 
   const visibleDataRef = useRef<() => ReturnTypeFromUseYearGroups[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.YearGroup,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.YearGroup,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
@@ -114,13 +116,9 @@ export default function YearGroups() {
       visibleDataRef
         .current?.()
         .map(({ yearGroupEnrollmentPartyId, name }) => ({
-          partyId: yearGroupEnrollmentPartyId,
+          id: yearGroupEnrollmentPartyId,
           name,
-          avatarProps: {
-            sx: {
-              borderRadius: 1,
-            },
-          },
+          type: 'group',
         }))
     );
   }, []);

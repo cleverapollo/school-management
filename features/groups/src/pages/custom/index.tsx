@@ -12,14 +12,15 @@ import {
   commonActionMenuProps,
   GridOptions,
   ICellRendererParams,
+  ListNavigatorType,
+  useListNavigatorSettings,
   PageContainer,
   PageHeading,
-  ProfilePageNavigation,
   Table,
   TableAvatar,
   useDebouncedValue,
   useDisclosure,
-  useProfileListNavigation,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import {
   AddIcon,
@@ -131,22 +132,18 @@ export default function CustomGroups() {
 
   const visibleDataRef = useRef<() => ReturnTypeFromUseCustomGroups[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.CustomGroup,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.CustomGroup,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       t('groups:customGroups'),
-      visibleDataRef.current?.().map(({ partyId, name, avatarUrl }) => ({
-        partyId,
+      visibleDataRef.current?.().map(({ partyId, name }) => ({
+        id: partyId,
         name,
-        avatarUrl,
-        avatarProps: {
-          sx: {
-            borderRadius: 1,
-          },
-        },
+        type: 'group',
       }))
     );
   }, []);

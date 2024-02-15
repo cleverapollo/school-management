@@ -14,11 +14,15 @@ import {
   useDisclosure,
   ActionMenu,
   ActionMenuProps,
-  ProfileListNavigation,
-  ProfilePageNavigation,
-  useProfileListNavigation,
+  ListNavigatorType,
+  ListNavigator,
+  useListNavigatorSettings,
+  BasicListNavigatorMenuItemParams,
+  BasicListNavigatorMenuItem,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import {
+  AssessmentType,
   Search,
   SearchType,
   SmsRecipientType,
@@ -37,6 +41,7 @@ import {
   ReturnTypeFromUseAssessmentSubjectGroups,
 } from '../../api/assessment-subject-groups';
 import { SyncWithPpodModal } from '../../components/state-cba/sync-with-ppod-modal';
+import { assessmentUrlPathBasedOnType } from '../../utils/get-assessment-subject-groups-link';
 
 const getColumnDefs = (
   isDesktop: boolean,
@@ -242,15 +247,16 @@ export default function ViewStateCba() {
   const visibleDataRef =
     useRef<() => ReturnTypeFromUseAssessmentSubjectGroups[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.SubjectGroup,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.SubjectGroup,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       assessmentData?.name,
       visibleDataRef.current?.().map(({ subjectGroup }) => ({
-        partyId: subjectGroup.partyId,
+        id: subjectGroup.partyId,
         name: subjectGroup.name,
       }))
     );
@@ -299,9 +305,22 @@ export default function ViewStateCba() {
       <PageContainer
         title={t('assessments:pageTitle.termAssessmentSubjectGroups')}
       >
-        <ProfileListNavigation
-          profile={ProfilePageNavigation.Assessment}
-          profileId={assessmentIdAsNumber}
+        <ListNavigator<
+          BasicListNavigatorMenuItemParams & { type: AssessmentType }
+        >
+          type={ListNavigatorType.Assessment}
+          itemId={assessmentIdAsNumber}
+          optionTextKey="name"
+          getRenderOption={BasicListNavigatorMenuItem}
+          estimateElementSize={52}
+          getNavigationUrl={({ currentLocation, currentItem, newItem }) => {
+            const currentTypePath =
+              assessmentUrlPathBasedOnType[currentItem.type];
+            const newTypePath = assessmentUrlPathBasedOnType[newItem.type];
+            return currentLocation.pathname
+              .replace(currentTypePath, newTypePath)
+              .replace(`${currentItem.id}`, `${newItem.id}`);
+          }}
           pageHeadingProps={{
             title: t('assessments:pageHeading.termAssessmentSubjectGroups', {
               name: assessmentData?.name,

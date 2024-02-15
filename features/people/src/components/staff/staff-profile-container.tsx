@@ -5,8 +5,10 @@ import {
   TabPageContainer,
   PreferredNameFormat,
   PageContainer,
-  ProfileListNavigation,
-  ProfilePageNavigation,
+  ListNavigator,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
+  PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useStaff } from '../../api/staff';
@@ -31,9 +33,12 @@ export default function StaffProfileContainer() {
 
   return (
     <PageContainer title={userProfileName}>
-      <ProfileListNavigation
-        profile={ProfilePageNavigation.Staff}
-        profileId={idNumber}
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.Staff}
+        itemId={idNumber}
+        optionTextKey="name"
+        estimateElementSize={52}
+        getRenderOption={PartyListNavigatorMenuItem}
         pageHeadingProps={{
           title: userProfileName,
           breadcrumbs: {

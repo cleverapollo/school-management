@@ -24,8 +24,9 @@ import {
   usePreferredNameLayout,
   formatPhoneNumber,
   ActionMenu,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { SearchType, SmsRecipientType } from '@tyro/api';
@@ -119,15 +120,17 @@ export function StudentContactsWidget({
   const navigate = useNavigate();
   const { data: studentData } = useStudent(studentId);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Contact,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Contact,
+    });
 
   const goToContactProfile = () => {
     storeList(
       displayName(studentData?.person),
       (contactsAllowedToContact || []).map(({ person }) => ({
-        partyId: person.partyId,
+        id: person.partyId,
+        name: displayName(person),
         person,
       }))
     );

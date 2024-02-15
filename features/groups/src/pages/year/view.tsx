@@ -13,9 +13,11 @@ import {
   useDisclosure,
   ActionMenu,
   PageContainer,
-  useProfileListNavigation,
-  ProfilePageNavigation,
-  ProfileListNavigation,
+  useListNavigatorSettings,
+  ListNavigator,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
+  PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import {
@@ -110,9 +112,10 @@ export default function ViewYearGroupPage() {
   const visibleDataRef =
     useRef<() => MembersReturnTypeFromUseYearGroupsById[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Student,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
 
   const groupName = groupData?.name || '';
 
@@ -120,7 +123,8 @@ export default function ViewYearGroupPage() {
     storeList(
       groupName,
       visibleDataRef.current?.().map(({ person, classGroup }) => ({
-        partyId: person.partyId,
+        id: person.partyId,
+        name: displayName(person),
         person,
         caption: classGroup?.name,
       }))
@@ -143,9 +147,12 @@ export default function ViewYearGroupPage() {
   return (
     <>
       <PageContainer title={title}>
-        <ProfileListNavigation
-          profile={ProfilePageNavigation.YearGroup}
-          profileId={groupIdAsNumber}
+        <ListNavigator<PartyListNavigatorMenuItemParams>
+          type={ListNavigatorType.YearGroup}
+          itemId={groupIdAsNumber}
+          optionTextKey="name"
+          estimateElementSize={44}
+          getRenderOption={PartyListNavigatorMenuItem}
           pageHeadingProps={{
             title,
             breadcrumbs: {

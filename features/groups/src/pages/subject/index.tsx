@@ -36,8 +36,9 @@ import {
   useDebouncedValue,
   ValueFormatterParams,
   ValueSetterParams,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 
 import {
@@ -390,9 +391,10 @@ export default function SubjectGroups() {
 
   const visibleDataRef = useRef<() => ReturnTypeFromUseSubjectGroups[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.SubjectGroup,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.SubjectGroup,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
@@ -404,12 +406,11 @@ export default function SubjectGroups() {
           : {};
 
         return {
-          partyId: data.partyId,
+          id: data.partyId,
           name: data.name,
-          avatarUrl: data.avatarUrl,
+          type: 'group',
           avatarProps: {
             sx: {
-              borderRadius: 1,
               ...bgColorStyle,
             },
           },

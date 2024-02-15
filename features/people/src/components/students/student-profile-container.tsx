@@ -5,8 +5,10 @@ import {
   TabPageContainer,
   PageContainer,
   PreferredNameFormat,
-  ProfileListNavigation,
-  ProfilePageNavigation,
+  ListNavigator,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
+  PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useStudent } from '../../api/student/students';
@@ -29,9 +31,11 @@ export default function StudentProfileContainer() {
 
   return (
     <PageContainer title={userProfileName}>
-      <ProfileListNavigation
-        profile={ProfilePageNavigation.Student}
-        profileId={idNumber}
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.Student}
+        itemId={idNumber}
+        optionTextKey="name"
+        getRenderOption={PartyListNavigatorMenuItem}
         pageHeadingProps={{
           title: userProfileName,
           breadcrumbs: {

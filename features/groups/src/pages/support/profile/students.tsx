@@ -5,13 +5,14 @@ import {
   ActionMenu,
   GridOptions,
   ICellRendererParams,
-  ProfilePageNavigation,
+  ListNavigatorType,
   ReturnTypeDisplayName,
   Table,
   useDisclosure,
   useNumber,
   usePreferredNameLayout,
-  useProfileListNavigation,
+  useListNavigatorSettings,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 
 import { AddUserIcon, MobileIcon, SendMailIcon } from '@tyro/icons';
@@ -87,15 +88,17 @@ export default function SubjectGroupProfileStudentsPage() {
   const visibleDataRef =
     useRef<() => ReturnTypeFromUseSubjectGroupById[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Student,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       subjectGroupData?.name,
       visibleDataRef.current?.().map(({ person, classGroup }) => ({
-        partyId: person.partyId,
+        id: person.partyId,
+        name: displayName(person),
         person,
         caption: classGroup?.name,
       }))

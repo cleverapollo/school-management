@@ -11,7 +11,7 @@
     "@mui/system": "^5.14.16",
     "@mui/x-date-pickers": "^6.17.0",
     "@tanstack/react-query": "^4.29.7",
-    "@tanstack/react-virtual": "beta",
+    "@tanstack/react-virtual": "3.0.4",
     "@tyro/api": "*",
     "@tyro/assessments": "*",
     "@tyro/attendance": "*",

@@ -22,8 +22,9 @@ import {
   usePreferredNameLayout,
   EditState,
   useToast,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { useEffect, useState } from 'react';
 import { StudentAvatar } from '@tyro/people';
@@ -126,30 +127,20 @@ export const GroupAttendance = ({
     });
   };
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Student,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
 
   const goToStudentProfile = (student: GroupStudent) => {
     storeList(
       groupName,
-      students.map(({ person }) => {
-        const previousLessonCode =
-          previousAttendanceTypeByPersonPartyId.get(person.partyId) ??
-          AttendanceCodeType.NotTaken;
-
-        return {
-          partyId: person.partyId,
-          person,
-          caption:
-            previousLessonCode === AttendanceCodeType.NotTaken
-              ? '-'
-              : t(`attendance:previousAttendanceCode.${previousLessonCode}`),
-          captionProps: {
-            color: previousAttendanceCodeColor[previousLessonCode],
-          },
-        };
-      })
+      students.map(({ person, classGroup }) => ({
+        id: person.partyId,
+        name: displayName(person),
+        person,
+        caption: classGroup?.name,
+      }))
     );
 
     const studentUrl = getPersonProfileLink(student.person);

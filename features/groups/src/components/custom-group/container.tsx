@@ -3,8 +3,10 @@ import {
   useNumber,
   TabPageContainer,
   PageContainer,
-  ProfileListNavigation,
-  ProfilePageNavigation,
+  ListNavigator,
+  ListNavigatorType,
+  PartyListNavigatorMenuItem,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { CustomGroupStatusBar } from './status-bar';
@@ -24,9 +26,12 @@ export default function SupportGroupContainer() {
 
   return (
     <PageContainer title={customGroupName}>
-      <ProfileListNavigation
-        profile={ProfilePageNavigation.CustomGroup}
-        profileId={partyId}
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.CustomGroup}
+        itemId={partyId}
+        optionTextKey="name"
+        estimateElementSize={44}
+        getRenderOption={PartyListNavigatorMenuItem}
         pageHeadingProps={{
           title: customGroupName,
           breadcrumbs: {

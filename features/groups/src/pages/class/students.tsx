@@ -15,9 +15,11 @@ import {
   GridOptions,
   ActionMenu,
   ICellRendererParams,
-  useProfileListNavigation,
-  ProfilePageNavigation,
   preferredNameLayoutUtils,
+  ListNavigatorType,
+  useListNavigatorSettings,
+  PartyListNavigatorMenuItemParams,
+  displayName,
 } from '@tyro/core';
 import { StudentTableAvatar } from '@tyro/people';
 import { useMailSettings } from '@tyro/mail';
@@ -121,16 +123,19 @@ export default function ClassGroupStudentsPage() {
   const visibleDataRef =
     useRef<() => ReturnTypeFromUseSubjectGroupById[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Student,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       groupName,
       visibleDataRef.current?.().map(({ person }) => ({
-        partyId: person.partyId,
+        id: person.partyId,
+        name: displayName(person),
         person,
+        caption: groupName,
       }))
     );
   }, [groupName]);

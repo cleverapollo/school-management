@@ -12,8 +12,9 @@ import {
   ReturnTypeDisplayNames,
   useDisclosure,
   ActionMenu,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
@@ -106,15 +107,17 @@ export default function ContactsListPage() {
 
   const visibleDataRef = useRef<() => ReturnTypeFromUseContacts[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Contact,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Contact,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       t('people:pageHeading.contacts'),
       visibleDataRef.current?.().map(({ partyId, person }) => ({
-        partyId,
+        id: partyId,
+        name: displayName(person),
         person,
       }))
     );

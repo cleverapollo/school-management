@@ -12,8 +12,9 @@ import {
   usePreferredNameLayout,
   PageContainer,
   commonActionMenuProps,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  BasicListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {
@@ -212,27 +213,23 @@ export default function AssessmentsPage() {
 
   const visibleDataRef = useRef<() => ReturnTypeFromUseAssessments[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Assessment,
+  const { storeList } = useListNavigatorSettings<
+    BasicListNavigatorMenuItemParams & { type: AssessmentType }
+  >({
+    type: ListNavigatorType.Assessment,
   });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       t('assessments:pageHeading.assessments'),
-      visibleDataRef
-        .current?.()
-        .map(({ id, name, academicNamespaceId, assessmentType }) => ({
-          partyId: id,
-          name,
-          url: getAssessmentSubjectGroupsLink(
-            id,
-            assessmentType,
-            academicNamespaceId
-          ),
-          caption: assessmentType
-            ? t(`assessments:assessmentTypes.${assessmentType}`)
-            : null,
-        }))
+      visibleDataRef.current?.().map(({ id, name, assessmentType }) => ({
+        id,
+        name,
+        type: assessmentType,
+        caption: assessmentType
+          ? t(`assessments:assessmentTypes.${assessmentType}`)
+          : undefined,
+      }))
     );
   }, []);
 

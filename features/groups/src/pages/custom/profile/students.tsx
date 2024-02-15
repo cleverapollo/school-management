@@ -9,8 +9,9 @@ import {
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
-  useProfileListNavigation,
-  ProfilePageNavigation,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { StudentTableAvatar } from '@tyro/people';
 import { getPersonProfileLink } from '@tyro/api';
@@ -63,15 +64,17 @@ export default function CustomGroupStudentsPage() {
 
   const visibleDataRef = useRef<() => CustomGroupStudent[]>(null);
 
-  const { storeList } = useProfileListNavigation({
-    profile: ProfilePageNavigation.Student,
-  });
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
 
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       customGroupData?.name,
       visibleDataRef.current?.().map(({ person, classGroup }) => ({
-        partyId: person.partyId,
+        id: person.partyId,
+        name: displayName(person),
         person,
         caption: classGroup?.name,
       }))

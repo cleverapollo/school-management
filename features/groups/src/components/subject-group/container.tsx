@@ -2,9 +2,11 @@ import { useParams } from 'react-router-dom';
 import {
   useNumber,
   TabPageContainer,
-  ProfileListNavigation,
-  ProfilePageNavigation,
+  ListNavigator,
+  ListNavigatorType,
   PageContainer,
+  PartyListNavigatorMenuItem,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { SubjectGroupStatusBar } from './status-bar';
@@ -24,9 +26,12 @@ export default function SubjectGroupContainer() {
 
   return (
     <PageContainer title={subjectGroupName}>
-      <ProfileListNavigation
-        profile={ProfilePageNavigation.SubjectGroup}
-        profileId={groupIdNumber}
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.SubjectGroup}
+        itemId={groupIdNumber}
+        optionTextKey="name"
+        estimateElementSize={52}
+        getRenderOption={PartyListNavigatorMenuItem}
         pageHeadingProps={{
           title: subjectGroupName,
           breadcrumbs: {

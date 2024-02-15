@@ -25,6 +25,7 @@
     "@mui/lab": "^5.0.0-alpha.151",
     "@mui/material": "^5.14.16",
     "@mui/x-date-pickers": "^6.3.0",
+    "@tanstack/react-virtual": "3.0.4",
     "@tyro/api": "*",
     "@tyro/i18n": "*",
     "@tyro/icons": "*",

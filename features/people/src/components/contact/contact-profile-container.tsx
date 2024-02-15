@@ -4,8 +4,10 @@ import {
   usePreferredNameLayout,
   TabPageContainer,
   PageContainer,
-  ProfileListNavigation,
-  ProfilePageNavigation,
+  ListNavigator,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
+  PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { ContactOverviewBar } from './contact-overview-bar';
@@ -27,9 +29,12 @@ export default function ContactProfileContainer() {
 
   return (
     <PageContainer title={userProfileName}>
-      <ProfileListNavigation
-        profile={ProfilePageNavigation.Contact}
-        profileId={idNumber}
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.Contact}
+        itemId={idNumber}
+        optionTextKey="name"
+        estimateElementSize={52}
+        getRenderOption={PartyListNavigatorMenuItem}
         pageHeadingProps={{
           title: userProfileName,
           breadcrumbs: {

@@ -3,8 +3,10 @@ import {
   useNumber,
   PageContainer,
   TabPageContainer,
-  ProfileListNavigation,
-  ProfilePageNavigation,
+  ListNavigatorType,
+  ListNavigator,
+  PartyListNavigatorMenuItemParams,
+  PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { ClassGroupStatusBar } from './status-bar';
@@ -24,9 +26,12 @@ export default function ClassGroupContainer() {
 
   return (
     <PageContainer title={classGroupName}>
-      <ProfileListNavigation
-        profile={ProfilePageNavigation.ClassGroup}
-        profileId={groupIdNumber}
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.ClassGroup}
+        itemId={groupIdNumber}
+        optionTextKey="name"
+        estimateElementSize={52}
+        getRenderOption={PartyListNavigatorMenuItem}
         pageHeadingProps={{
           title: classGroupName,
           breadcrumbs: {
