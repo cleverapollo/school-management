@@ -10,7 +10,6 @@ import {
   TableRow,
   TableBody,
   IconButton,
-  ListItemButton,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +24,7 @@ import {
   useListNavigatorSettings,
   ListNavigatorType,
   PartyListNavigatorMenuItemParams,
+  RouterLink,
 } from '@tyro/core';
 import { useEffect, useState } from 'react';
 import { StudentAvatar } from '@tyro/people';
@@ -132,22 +132,19 @@ export const GroupAttendance = ({
       type: ListNavigatorType.Student,
     });
 
-  const goToStudentProfile = (student: GroupStudent) => {
+  const goToStudentProfile = () => {
     storeList(
       groupName,
       students.map(({ person, classGroup }) => ({
         id: person.partyId,
+        type: 'person',
         name: displayName(person),
-        person,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
         caption: classGroup?.name,
       }))
     );
-
-    const studentUrl = getPersonProfileLink(student.person);
-
-    if (studentUrl) {
-      navigate(studentUrl);
-    }
   };
 
   const isLoading = isLessonLoading || isSaveAttendanceLoading;
@@ -251,41 +248,37 @@ export const GroupAttendance = ({
                 return (
                   <TableRow key={student?.partyId}>
                     <TableCell>
-                      <ListItemButton
-                        sx={{ borderRadius: 1.5 }}
-                        onClick={() => {
-                          goToStudentProfile(student);
-                        }}
-                      >
-                        <Stack direction="row" spacing={2} alignItems="center">
-                          <StudentAvatar
-                            partyId={student?.partyId}
-                            name={displayName(student?.person)}
-                            isPriorityStudent={!!student?.extensions?.priority}
-                            hasSupportPlan={false}
-                            src={student?.person?.avatarUrl}
-                            person={student?.person}
-                          />
-                          <Stack direction="column">
-                            <Typography variant="body2" fontWeight={600}>
-                              {displayName(student?.person)}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              color={
-                                previousAttendanceCodeColor[previousLessonCode]
-                              }
-                            >
-                              {previousLessonCode ===
-                              AttendanceCodeType.NotTaken
-                                ? '-'
-                                : t(
-                                    `attendance:previousAttendanceCode.${previousLessonCode}`
-                                  )}
-                            </Typography>
-                          </Stack>
+                      <Stack direction="row" spacing={2} alignItems="center">
+                        <StudentAvatar
+                          partyId={student?.partyId}
+                          name={displayName(student?.person)}
+                          isPriorityStudent={!!student?.extensions?.priority}
+                          hasSupportPlan={false}
+                          src={student?.person?.avatarUrl}
+                          person={student?.person}
+                        />
+                        <Stack direction="column">
+                          <RouterLink
+                            fontWeight={600}
+                            to={getPersonProfileLink(student.person) || ''}
+                            onClick={goToStudentProfile}
+                          >
+                            {displayName(student?.person)}
+                          </RouterLink>
+                          <Typography
+                            variant="body2"
+                            color={
+                              previousAttendanceCodeColor[previousLessonCode]
+                            }
+                          >
+                            {previousLessonCode === AttendanceCodeType.NotTaken
+                              ? '-'
+                              : t(
+                                  `attendance:previousAttendanceCode.${previousLessonCode}`
+                                )}
+                          </Typography>
                         </Stack>
-                      </ListItemButton>
+                      </Stack>
                     </TableCell>
                     <TableCell>
                       {eventDetails?.isEditMode ? (
