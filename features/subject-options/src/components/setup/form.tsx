@@ -231,6 +231,7 @@ export function SubjectOptionsSetupForm({
         }
 
         acc[subjectSet.poolIdx].subjectSets.push({
+          idx: subjectSet.id.idx,
           name: subjectSet.name,
           canChoose: subjectSet.canChoose,
           mustGet: subjectSet.mustGet,

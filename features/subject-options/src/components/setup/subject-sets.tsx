@@ -129,7 +129,6 @@ export function SubjectSets({ poolIndex, control }: SubjectSetsProps) {
           onClick={() =>
             append({
               ...defaultSubjectSetProps,
-              idx: subjectSets.length,
             })
           }
           startIcon={<AddIcon sx={{ width: 24, height: 24 }} />}
