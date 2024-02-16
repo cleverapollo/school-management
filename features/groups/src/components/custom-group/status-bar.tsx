@@ -35,6 +35,7 @@ export function CustomGroupStatusBar({ partyId }: CustomGroupStatusBarProps) {
               <Avatar
                 src={customGroupData?.name}
                 name={customGroupData?.name}
+                sx={{ borderRadius: 1 }}
               />
             </Box>
             <Typography variant="subtitle1" component="h2">
