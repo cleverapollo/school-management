@@ -44,7 +44,13 @@ function defaultGetNavigationUrl<
   currentItem: StoreOption;
   newItem: StoreOption;
 }) {
-  return currentLocation.pathname.replace(`${currentItem.id}`, `${newItem.id}`);
+  if (currentItem && newItem) {
+    return currentLocation.pathname.replace(
+      `${currentItem.id}`,
+      `${newItem.id}`
+    );
+  }
+  return currentLocation.pathname;
 }
 
 export type StoredList<StoreOption extends ListNavigatorSelectOption> = {
