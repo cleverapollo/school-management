@@ -98,36 +98,37 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
     });
   }, [listData, getOptionText, searchString]);
 
-  const virtualizer = useVirtualizer({
-    count: filteredItems.length ?? 0,
-    getScrollElement: () => listItemContainerRef.current,
-    estimateSize: () => estimateElementSize,
-    overscan: 20,
-    paddingEnd: 8,
-  });
+  // const virtualizer = useVirtualizer({
+  //   count: filteredItems.length ?? 0,
+  //   getScrollElement: () => listItemContainerRef.current,
+  //   estimateSize: () => estimateElementSize,
+  //   overscan: 20,
+  //   paddingEnd: 8,
+  // });
 
-  useEffect(() => {
-    if (isOpen && filteredItems.length > 0) {
-      virtualizer.scrollToIndex(0);
-    }
-  }, [isOpen, filteredItems, searchString, virtualizer]);
+  // useEffect(() => {
+  //   if (isOpen && filteredItems.length > 0) {
+  //     virtualizer.scrollToIndex(0);
+  //   }
+  // }, [isOpen, filteredItems, searchString, virtualizer]);
 
-  useEffect(() => {
-    if (isOpen) {
-      let indexToScrollTo = 0;
-      if (currentItem?.id) {
-        indexToScrollTo =
-          filteredItems.findIndex((item) => item.id === currentItem.id) ?? 0;
-      }
-      setTimeout(() => {
-        virtualizer.scrollToOffset(indexToScrollTo * estimateElementSize);
-      }, 0);
-    } else {
-      setSearchString('');
-    }
-  }, [isOpen]);
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     let indexToScrollTo = 0;
+  //     if (currentItem?.id) {
+  //       indexToScrollTo =
+  //         filteredItems.findIndex((item) => item.id === currentItem.id) ?? 0;
+  //     }
+  //     setTimeout(() => {
+  //       virtualizer.scrollToOffset(indexToScrollTo * estimateElementSize);
+  //     }, 0);
+  //   } else {
+  //     setSearchString('');
+  //   }
+  // }, [isOpen]);
 
-  const virtualItems = virtualizer.getVirtualItems();
+  // const virtualItems = virtualizer.getVirtualItems();
+
   const nextUrl = getNextUrl();
   const prevUrl = getPreviousUrl();
 
@@ -258,7 +259,7 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
                             }}
                           />
                         </ListSubheader>
-                        {virtualItems.length === 0 ? (
+                        {filteredItems.length === 0 ? (
                           <Stack
                             sx={{
                               width: '100%',
@@ -280,39 +281,39 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
                             variant="selectedMenu"
                             id={`${id}-menu`}
                             aria-labelledby={id}
-                            sx={{
-                              pt: 0,
-                              height: `${virtualizer.getTotalSize()}px`,
-                            }}
+                            // sx={{
+                            //   pt: 0,
+                            //   height: `${virtualizer.getTotalSize()}px`,
+                            // }}
                           >
-                            {virtualItems.map((virtualRow) => {
-                              const item = filteredItems[virtualRow.index];
+                            {/**  eslint-disable-next-line arrow-body-style */}
+                            {filteredItems.map((item) => (
+                              // const item = filteredItems[virtualRow.index];
 
-                              return (
-                                <MenuItem
-                                  key={virtualRow.key}
-                                  component={Link}
-                                  data-index={virtualRow.index}
-                                  ref={virtualizer.measureElement}
-                                  selected={item.id === currentItem.id}
-                                  to={getItemUrl(item) ?? ''}
-                                  onClick={() => {
-                                    setCurrentItemId(item.id);
-                                    onClose();
-                                  }}
-                                  sx={{
-                                    position: 'absolute',
-                                    width: 'calc(100% - 16px)',
-                                    top: 0,
-                                    transform: `translateY(${virtualRow.start}px)`,
-                                  }}
-                                >
-                                  {getRenderOption?.({ item }) ??
-                                    getOptionText?.(item) ??
-                                    ''}
-                                </MenuItem>
-                              );
-                            })}
+                              <MenuItem
+                                // key={virtualRow.key}
+                                key={item.id}
+                                component={Link}
+                                // data-index={virtualRow.index}
+                                // ref={virtualizer.measureElement}
+                                selected={item.id === currentItem.id}
+                                to={getItemUrl(item) ?? ''}
+                                onClick={() => {
+                                  setCurrentItemId(item.id);
+                                  onClose();
+                                }}
+                                // sx={{
+                                //   position: 'absolute',
+                                //   width: 'calc(100% - 16px)',
+                                //   top: 0,
+                                //   transform: `translateY(${virtualRow.start}px)`,
+                                // }}
+                              >
+                                {getRenderOption?.({ item }) ??
+                                  getOptionText?.(item) ??
+                                  ''}
+                              </MenuItem>
+                            ))}
                           </MenuList>
                         )}
                       </Stack>
