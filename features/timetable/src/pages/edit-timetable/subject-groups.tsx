@@ -32,7 +32,6 @@ import {
   ReturnTypeFromUseTimetableSubjectGroups,
   useTimetableSubjectGroups,
 } from '../../api/edit-timetable/subject-groups';
-import { useLiveTimetableId } from '../../api/common/timetables';
 import { Lesson } from '../../hooks/use-resource-table';
 import { SwapTeacherRoomModal } from '../../components/edit-timetable/swap-teacher-room-modal';
 import { useTtUpdateTimetableGroup } from '../../api/edit-timetable/update-group';
@@ -41,6 +40,7 @@ import {
   UpsertSubjectGroupModal,
   UpsertSubjectGroupProps,
 } from '../../components/edit-timetable/subject-groups/upsert-subject-group';
+import { useTimetable } from '../../api/common/timetable';
 
 dayjs.extend(LocalizedFormat);
 
@@ -231,7 +231,8 @@ export default function TimetableSubjectGroups() {
     debouncedValue: debouncedOpenedLessonToEdit,
     setValue: setOpenedLessonToEdit,
   } = useDebouncedValue<Lesson[] | null>({ defaultValue: null });
-  const { data: liveTimetableId = 0 } = useLiveTimetableId();
+  const { data: liveTimetable } = useTimetable({ liveTimetable: true });
+  const liveTimetableId = liveTimetable?.timetableId ?? 0;
   const { data: subjectGroupsData } = useTimetableSubjectGroups({
     timetableId: liveTimetableId,
   });

@@ -6,6 +6,7 @@
     "subjects": "Subjects",
     "mail": "Mail",
     "fees": "Fees",
+    "infoRequests": "Info requests",
     "attendance": {
       "title": "Attendance",
       "overview": "Overview",
@@ -87,7 +88,8 @@
       "timetable": "Timetable",
       "assessment": "Assessment"
     },
-    "sms": "SMS"
+    "sms": "SMS",
+    "subjectOptions": "Subject options"
   },
   "errors": {
     "404": {

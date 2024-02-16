@@ -88,11 +88,11 @@ const updateYearGroupLeads = graphql(/* GraphQL */ `
   }
 `);
 
-const yearGroupsQuery = {
-  queryKey: groupsKeys.year.groups(),
+const yearGroupsQuery = (filter: YearGroupEnrollmentFilter = {}) => ({
+  queryKey: groupsKeys.year.groups(filter),
   queryFn: async () => {
     const { core_yearGroupEnrollments: yearGroupEnrollments } =
-      await gqlClient.request(yearGroupsList, { filter: {} });
+      await gqlClient.request(yearGroupsList, { filter });
 
     return {
       core_yearGroupEnrollments: yearGroupEnrollments.sort((prev, next) =>
@@ -100,15 +100,15 @@ const yearGroupsQuery = {
       ),
     };
   },
-};
+});
 
-export function getYearGroups() {
-  return queryClient.fetchQuery(yearGroupsQuery);
+export function getYearGroups(filter?: YearGroupEnrollmentFilter) {
+  return queryClient.fetchQuery(yearGroupsQuery(filter));
 }
 
-export function useYearGroups() {
+export function useYearGroups(filter?: YearGroupEnrollmentFilter) {
   return useQuery({
-    ...yearGroupsQuery,
+    ...yearGroupsQuery(filter),
     select: ({ core_yearGroupEnrollments }) => core_yearGroupEnrollments,
   });
 }
@@ -142,6 +142,17 @@ export function useYearGroupById(
   });
 }
 
+export function useYearGroupListsByFilter(
+  filter: YearGroupEnrollmentFilter,
+  enabled = true
+) {
+  return useQuery({
+    ...yearGroupByIdQuery(filter),
+    enabled,
+    select: ({ core_yearGroupEnrollments }) => core_yearGroupEnrollments,
+  });
+}
+
 export function useUpdateYearGroupLeads() {
   return useMutation({
     mutationFn: (input: UpdateYearGroupEnrollmentInput[]) =>
@@ -158,4 +169,8 @@ export type ReturnTypeFromUseYearGroups = UseQueryReturnType<
 
 export type ReturnTypeFromUseYearGroupById = UseQueryReturnType<
   typeof useYearGroupById
+>;
+
+export type ReturnTypeFromUseYearGroupListsByFilter = UseQueryReturnType<
+  typeof useYearGroupListsByFilter
 >;

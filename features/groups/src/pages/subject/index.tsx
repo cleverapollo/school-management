@@ -493,6 +493,7 @@ export default function SubjectGroups() {
       {
         label: t('groups:deleteGroups', { count: selectedGroups.length }),
         icon: <TrashIcon />,
+        isDelete: true,
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
         hasAccess: () => permissions.isTyroUser,
       },

@@ -16,6 +16,7 @@ import {
 } from '@tyro/core';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useEffect, useId, useMemo } from 'react';
+import get from 'lodash/get';
 import { ReturnTypeFromUseStudentFees } from '../../../api/student-fees';
 import { PaymentMethodSelect } from './fields/payment-method';
 import { PaymentsToPayAndMethod, usePayFeesSettings } from './store';
@@ -51,10 +52,18 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
           rules.required(),
           rules.isNumber(),
           rules.min(0.5),
-          rules.validate((value, throwError, formValues, fieldArrayIndex) => {
-            const fee = formValues.fees[fieldArrayIndex as number];
+          rules.validate<string>((value, throwError, formValues, fieldName) => {
+            const pathToCurrentFee = fieldName.substring(
+              0,
+              fieldName.lastIndexOf('.')
+            );
+            const fee = get(
+              formValues,
+              pathToCurrentFee
+            ) as FormValues['fees'][number];
+            const valueAsNumber = Number(value);
 
-            if ((value ?? 0) > fee.amount - fee.amountPaid) {
+            if ((valueAsNumber ?? 0) > fee.amount - fee.amountPaid) {
               throwError(t('fees:amountToPayExceedsTheAmountThatsDue'));
             }
           }),

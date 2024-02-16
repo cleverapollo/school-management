@@ -99,5 +99,6 @@
     "collapse": "Collapse",
     "expand": "Expand"
   },
-  "youDoNotHavePermissionToComposeNewMail": "You do not have permission to compose a new mail"
+  "youDoNotHavePermissionToComposeNewMail": "You do not have permission to compose a new mail",
+  "mailContacts": "Mail contacts"
 }

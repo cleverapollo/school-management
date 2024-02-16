@@ -32,6 +32,7 @@ import {
   StaffGroupMembershipRoles,
   Swm_UpsertStaffAbsenceDate,
 } from '@tyro/api';
+import get from 'lodash/get';
 import {
   ReturnTypeFromUseStaffWorkAbsences,
   useSaveStaffAbsence,
@@ -155,8 +156,15 @@ export function UpsertAbsenceModal({
         dates: {
           dates: [rules.required(), rules.minLength(1)],
           startTime: rules.validate(
-            (value, _throwError, formValues, fieldArrayIndex) => {
-              const { isFullDay } = formValues.dates[Number(fieldArrayIndex!)];
+            (value, _throwError, formValues, fieldName) => {
+              const pathToCurrentDate = fieldName.substring(
+                0,
+                fieldName.lastIndexOf('.')
+              );
+              const { isFullDay } = get(
+                formValues,
+                pathToCurrentDate
+              ) as UpsertAbsenceFormState['dates'][number];
               if (!isFullDay) {
                 const requiredFunc = rules.required();
                 const dateFunc = rules.date();
@@ -167,9 +175,16 @@ export function UpsertAbsenceModal({
             }
           ),
           endTime: rules.validate(
-            (value, _throwError, formValues, fieldArrayIndex) => {
-              const fieldArrayValues =
-                formValues.dates[Number(fieldArrayIndex!)];
+            (value, _throwError, formValues, fieldName) => {
+              const pathToCurrentDate = fieldName.substring(
+                0,
+                fieldName.lastIndexOf('.')
+              );
+              const fieldArrayValues = get(
+                formValues,
+                pathToCurrentDate
+              ) as UpsertAbsenceFormState['dates'][number];
+
               if (!fieldArrayValues.isFullDay) {
                 const requiredFunc = rules.required();
                 const dateFunc = rules.date();

@@ -1,5 +1,5 @@
 import { Button } from '@mui/material';
-import { useId, useState } from 'react';
+import React, { useId, useState } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { LoadingButton } from '@mui/lab';
 import {
@@ -12,7 +12,8 @@ import {
 
 export interface ConfirmDialogProps {
   title: string;
-  description: string;
+  description?: string;
+  content?: React.ReactNode;
   confirmText?: string;
   cancelText?: string;
   open: boolean;
@@ -24,6 +25,7 @@ export interface ConfirmDialogProps {
 export function ConfirmDialog({
   title,
   description,
+  content,
   confirmText,
   cancelText,
   open,
@@ -37,18 +39,28 @@ export function ConfirmDialog({
   const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation(['common']);
 
+  if (!content && !description) {
+    throw new Error(
+      'You must provide either a description or content to the ConfirmDialog component.'
+    );
+  }
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
       aria-labelledby={titleId}
-      aria-describedby={descriptionId}
+      aria-describedby={description ? descriptionId : undefined}
     >
       <DialogTitle onClose={onClose} id={titleId}>
         {title}
       </DialogTitle>
       <DialogContent>
-        <DialogContentText id={descriptionId}>{description}</DialogContentText>
+        {content ?? (
+          <DialogContentText id={descriptionId}>
+            {description}
+          </DialogContentText>
+        )}
       </DialogContent>
       <DialogActions>
         <Button autoFocus color="inherit" variant="soft" onClick={onClose}>
@@ -60,12 +72,15 @@ export function ConfirmDialog({
           loading={loading}
           onClick={async () => {
             setLoading(true);
-            await (async function () {
-              // eslint-disable-next-line @typescript-eslint/await-thenable
-              await onConfirm();
-            })();
-            setLoading(false);
-            onClose();
+            try {
+              await (async function () {
+                // eslint-disable-next-line @typescript-eslint/await-thenable
+                await onConfirm();
+              })();
+              onClose();
+            } finally {
+              setLoading(false);
+            }
           }}
         >
           {confirmText || t('common:actions.confirm')}

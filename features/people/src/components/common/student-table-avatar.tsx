@@ -12,8 +12,8 @@ type TableAvatarProps = {
   person:
     | Pick<Person, 'avatarUrl' | 'firstName' | 'lastName' | 'partyId'>
     | undefined;
-  isPriorityStudent: boolean;
-  hasSupportPlan: boolean;
+  isPriorityStudent?: boolean;
+  hasSupportPlan?: boolean;
   AvatarProps?: CoreAvatarProps;
   avatarBackgroundColor?: string;
   size?: number;
@@ -23,8 +23,8 @@ type TableAvatarProps = {
 export function StudentTableAvatar({
   to,
   person,
-  isPriorityStudent,
-  hasSupportPlan,
+  isPriorityStudent = false,
+  hasSupportPlan = false,
   AvatarProps,
   avatarBackgroundColor,
   size,

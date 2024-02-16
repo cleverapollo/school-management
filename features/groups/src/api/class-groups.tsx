@@ -37,6 +37,20 @@ const classGroupsList = graphql(/* GraphQL */ `
         lastName
         type
       }
+      students {
+        person {
+          partyId
+          title {
+            id
+            name
+            nameTextId
+          }
+          firstName
+          lastName
+          avatarUrl
+          type
+        }
+      }
       yearGroupLeads {
         partyId
         title {

@@ -71,6 +71,7 @@ export function MailSidebarItem({
     {
       label: t('mail:actions.removeLabel'),
       icon: <TrashIcon />,
+      isDelete: true,
       onClick: (e: React.MouseEvent) => {
         e.preventDefault();
       },

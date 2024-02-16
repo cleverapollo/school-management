@@ -16,7 +16,9 @@ export interface ValueSetterParams<TData = any, CellValue = any>
   extends AGValueSetterParams<TData> {
   newValue: CellValue;
   oldValue: CellValue;
+  /** isEditCheckCall is true when we use the valueSetter during a cell change check */
   isEditCheckCall?: boolean;
+  /** isApplyUpdatesCall is true when we apply updates to cells from localStorage cache on reload or from memory when you cancel the changes */
   isApplyUpdatesCall?: boolean;
 }
 

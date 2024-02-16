@@ -67,6 +67,9 @@ export type {
   ValueFormatterParams,
   NewValueParams,
   ProcessCellForExportParams,
+  ValueGetterFunc,
+  CellClassParams,
+  HeaderClassParams,
 } from '@ag-grid-community/core';
 export type {
   ReturnTypeUseEditableState as ReturnTypeTableUseEditableState,

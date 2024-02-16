@@ -102,6 +102,7 @@ const getColumns = (
             {
               label: t('people:deleteCondition'),
               icon: <TrashIcon />,
+              isDelete: true,
               onClick: () => onClickDelete(data),
               hasAccess: ({ isStaffUserWithPermission }) =>
                 isStaffUserWithPermission(

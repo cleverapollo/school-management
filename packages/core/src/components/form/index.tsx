@@ -1,3 +1,4 @@
+export * from './dynamic-form';
 export * from './autocomplete';
 export * from './checkbox-group';
 export * from './color-picker';

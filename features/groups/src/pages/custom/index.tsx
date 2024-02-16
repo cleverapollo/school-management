@@ -210,6 +210,7 @@ export default function CustomGroups() {
       {
         label: t('groups:deleteCustomGroups', { count: selectedGroups.length }),
         icon: <TrashIcon />,
+        isDelete: true,
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
         hasAccess: () => isTyroUser,
       },
