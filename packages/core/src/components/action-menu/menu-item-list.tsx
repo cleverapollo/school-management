@@ -10,6 +10,7 @@ export interface MenuItemConfig {
   disabled?: boolean;
   disabledTooltip?: string;
   hasAccess?: (permissions: PermissionUtils) => boolean;
+  isDelete?: boolean;
 }
 
 interface MenuItemListProps {
@@ -39,7 +40,15 @@ export function getMenuItemList({
     .filter((menuItem) => menuItem.hasAccess?.(permissions) ?? true)
     .map(
       (
-        { label, icon, navigateTo, onClick, disabled, disabledTooltip },
+        {
+          label,
+          icon,
+          navigateTo,
+          onClick,
+          disabled,
+          disabledTooltip,
+          isDelete,
+        },
         index
       ) => {
         const Item = (
@@ -58,9 +67,23 @@ export function getMenuItemList({
                 })}
             disabled={disabled}
             title={disabledTooltip}
-            sx={{
+            sx={({ palette }) => ({
               fontSize: '0.875rem',
-            }}
+              ...(isDelete
+                ? {
+                    '&.Mui-selected': {
+                      backgroundColor: palette.rose[500_16],
+                    },
+                    '&.Mui-selected:hover, &:hover, &.Mui-focusVisible, &:focus':
+                      {
+                        backgroundColor: palette.rose[500_8],
+                      },
+                    '& .MuiTouchRipple-child': {
+                      backgroundColor: palette.rose[500],
+                    },
+                  }
+                : {}),
+            })}
           >
             {icon && <ActionMenuIconWrapper>{icon}</ActionMenuIconWrapper>}{' '}
             {label}

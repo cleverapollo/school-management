@@ -20,7 +20,9 @@ import {
   CheckmarkCircleIcon,
   CopyIcon,
   EditCalendarIcon,
+  EditIcon,
   StopIcon,
+  TrashIcon,
   VerticalDotsIcon,
 } from '@tyro/icons';
 import dayjs from 'dayjs';
@@ -33,6 +35,7 @@ import {
 import { PublishOptionsModal } from '../components/list/publish-modal';
 import { ConfirmUnpublishModal } from '../components/list/confirm-unpublish-modal';
 import { CloneOptionsModal } from '../components/list/clone-modal';
+import { ConfirmDeleteModal } from '../components/list/confirm-delete-modal';
 
 dayjs.extend(LocalizedFormat);
 
@@ -45,6 +48,7 @@ const getColumnDefs = (
   openPublish: (id: ReturnTypeFromUseOptionsSetupList) => void,
   openUnpublish: (id: ReturnTypeFromUseOptionsSetupList) => void,
   cloneOptions: (id: ReturnTypeFromUseOptionsSetupList) => void,
+  deleteOption: (id: ReturnTypeFromUseOptionsSetupList) => void,
   isStaffUserWithPermission: UsePermissionsReturn['isStaffUserWithPermission']
 ): GridOptions<ReturnTypeFromUseOptionsSetupList>['columnDefs'] => [
   {
@@ -136,9 +140,20 @@ const getColumnDefs = (
                   },
                 ]),
             {
+              label: t('common:actions.edit'),
+              icon: <EditIcon />,
+              navigateTo: `edit/${data.id}`,
+            },
+            {
               label: t('common:actions.clone'),
               icon: <CopyIcon />,
               onClick: () => cloneOptions(data),
+            },
+            {
+              label: t('common:actions.delete'),
+              icon: <TrashIcon />,
+              isDelete: true,
+              onClick: () => deleteOption(data),
             },
           ]}
         />
@@ -172,6 +187,13 @@ export default function SubjectOptionsPage() {
   } = useDebouncedValue<ReturnTypeFromUseOptionsSetupList | null>({
     defaultValue: null,
   });
+  const {
+    value: optionsToDelete,
+    debouncedValue: debouncedOptionsToDelete,
+    setValue: setOptionsToDelete,
+  } = useDebouncedValue<ReturnTypeFromUseOptionsSetupList | null>({
+    defaultValue: null,
+  });
 
   const columnDefs = useMemo(
     () =>
@@ -180,6 +202,7 @@ export default function SubjectOptionsPage() {
         setOptionsToPublish,
         setOptionsToUnpublish,
         setOptionsToClone,
+        setOptionsToDelete,
         isStaffUserWithPermission
       ),
     [
@@ -187,6 +210,7 @@ export default function SubjectOptionsPage() {
       setOptionsToPublish,
       setOptionsToUnpublish,
       setOptionsToClone,
+      setOptionsToDelete,
       isStaffUserWithPermission,
     ]
   );
@@ -233,6 +257,11 @@ export default function SubjectOptionsPage() {
         optionsToClone={optionsToClone ?? debouncedOptionsToClone}
         open={Boolean(optionsToClone)}
         onClose={() => setOptionsToClone(null)}
+      />
+      <ConfirmDeleteModal
+        optionsToDelete={optionsToDelete ?? debouncedOptionsToDelete}
+        open={Boolean(optionsToDelete)}
+        onClose={() => setOptionsToDelete(null)}
       />
     </>
   );

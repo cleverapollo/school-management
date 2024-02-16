@@ -1,5 +1,6 @@
 {
   "createSubjectOptions": "Create subject options",
+  "editSubjectOptions": "Edit {{name}}",
   "studentSelection": "Student selection",
   "classGroups": "Class group(s)",
   "subjectSetup": "Subject setup",
@@ -27,6 +28,8 @@
   "editPublishDetails": "Edit publish details",
   "unpublishOptions": "Unpublish options",
   "areYouSureYouWantToUnpublish": "Are you sure you want to unpublish \"{{optionsName}}\"? This will remove access to subject options for contacts.",
+  "deleteOptions": "Delete options",
+  "areYouSureYouWantToDelete": "Are you sure you want to delete \"{{optionsName}}\"? This action can't be undone.",
   "preferences": "Preferences",
   "prefX": "Pref. {{x}}",
   "stats": "Stats",
@@ -45,5 +48,9 @@
   "cloneOptions": "Clone options",
   "optionsSolverStartedSuccessfully": "Options solver has started successfully",
   "optionsSolverStoppedSuccessfully": "Options solver has stopped successfully.",
-  "stopSolver": "Stop solver"
+  "stopSolver": "Stop solver",
+  "confirmSaveDialog": {
+    "title": "Want to continue?",
+    "descriptionPreText": "Making these changes will effect the following data:"
+  }
 }

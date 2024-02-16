@@ -93,6 +93,7 @@ const getNonClassContactColumnDefs = (
               label: t('common:actions.delete'),
               onClick: () => onDelete(data),
               icon: <TrashIcon />,
+              isDelete: true,
               disabled: !numberOfNonClassContacts,
             },
           ]}

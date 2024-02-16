@@ -96,7 +96,7 @@ const getStudentPreferenceColumns = (
   {
     colId: 'student',
     headerName: t('common:name'),
-    valueGetter: ({ data }) => displayName(data?.student),
+    valueGetter: ({ data }) => displayName(data?.student.person),
     cellRenderer: ({ data }: ICellRendererParams<StudentRow, any>) =>
       data ? (
         <StudentTableAvatar
@@ -343,10 +343,10 @@ export default function StudentOptionsPreferencesPage() {
         onRowSelection={(students) =>
           setSelectedStudents(
             students.map(({ student }) => {
-              const { partyId, avatarUrl } = student;
+              const { partyId, avatarUrl } = student.person;
               return {
                 id: partyId,
-                name: displayName(student),
+                name: displayName(student.person),
                 type: 'individual',
                 avatarUrl,
               };

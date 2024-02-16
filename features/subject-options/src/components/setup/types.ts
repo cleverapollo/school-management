@@ -22,5 +22,8 @@ export interface SubjectOptionsFormState {
   yearGroupId: number;
   classGroups: number[];
   pools: Pools[];
-  selectedStudents: ReturnTypeFromUseYearGroupListsByFilter[number]['students'];
+  selectedStudents: Pick<
+    ReturnTypeFromUseYearGroupListsByFilter[number]['students'][number],
+    'partyId' | 'person' | 'classGroup'
+  >[];
 }

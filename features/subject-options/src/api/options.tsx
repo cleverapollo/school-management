@@ -31,14 +31,26 @@ const optionsSetup = graphql(/* GraphQL */ `
       id
       name
       yearGroup {
+        yearGroupId
         name
       }
       students {
         partyId
-        firstName
-        lastName
-        avatarUrl
-        type
+        person {
+          partyId
+          title {
+            id
+            name
+            nameTextId
+          }
+          firstName
+          lastName
+          avatarUrl
+          type
+        }
+        classGroup {
+          name
+        }
       }
       subjectSets {
         id {

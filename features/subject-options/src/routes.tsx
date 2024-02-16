@@ -12,6 +12,7 @@ import { getOptionsPreferences } from './api/options-preferences';
 
 const SubjectOptions = lazyWithRetry(() => import('./pages/index'));
 const CreateSubjectOptions = lazyWithRetry(() => import('./pages/create'));
+const EditSubjectOptions = lazyWithRetry(() => import('./pages/edit'));
 
 const OptionsViewContainer = lazyWithRetry(
   () => import('./components/view/container')
@@ -49,6 +50,20 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.NonMenuLink,
             path: 'create',
             element: <CreateSubjectOptions />,
+          },
+          {
+            type: NavObjectType.NonMenuLink,
+            path: 'edit/:id',
+            element: <EditSubjectOptions />,
+            loader: ({ params }) => {
+              const id = getNumber(params.id);
+
+              if (!id) {
+                throw404Error();
+              }
+
+              return getOptionsSetup(id);
+            },
           },
           {
             type: NavObjectType.NonMenuLink,

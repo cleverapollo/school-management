@@ -11,27 +11,55 @@ import { useTranslation } from '@tyro/i18n';
 import {
   ConfirmDialog,
   RHFTextField,
+  useDebouncedValue,
   useDisclosure,
   useFormValidator,
+  useToast,
 } from '@tyro/core';
+import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { AddIcon, TrashIcon } from '@tyro/icons';
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
 import get from 'lodash/get';
-import { Options_SaveSubjectSet } from '@tyro/api';
+import {
+  Options_SaveSubjectSet,
+  queryClient,
+  useAcademicNamespace,
+} from '@tyro/api';
 import { StudentSelection } from './student-selection';
 import { SubjectOptionsFormState } from './types';
 import { useSaveSubjectOptionsSetup } from '../../api/save-options-setup';
 import { defaultSubjectSetProps, SubjectSets } from './subject-sets';
+import { ReturnTypeFromUseOptionsSetup } from '../../api/options';
+import { optionsKeys } from '../../api/keys';
+import {
+  ConfirmOptionSaveDialog,
+  ConfirmOptionSaveDialogProps,
+} from './confirm-save-dialog';
 
-export function SubjectOptionsSetupForm() {
+interface SubjectOptionsSetupFormProps {
+  defaultOptionsSetup?: ReturnTypeFromUseOptionsSetup;
+}
+
+export function SubjectOptionsSetupForm({
+  defaultOptionsSetup,
+}: SubjectOptionsSetupFormProps) {
   const { t } = useTranslation(['common', 'subjectOptions']);
+  const { activeAcademicNamespace } = useAcademicNamespace();
+  const { toast } = useToast();
   const {
     isOpen: isCancelModalOpen,
     onClose: onCancelModalClose,
     onOpen: onCancelModalOpen,
   } = useDisclosure();
+  const {
+    value: changesToConfirm,
+    debouncedValue: debouncedChangesToConfirm,
+    setValue: setChangesToConfirm,
+  } = useDebouncedValue<ConfirmOptionSaveDialogProps['changeInfo']>({
+    defaultValue: null,
+  });
   const navigate = useNavigate();
   const { mutateAsync: saveOptionsSetup, isLoading: isSubmitting } =
     useSaveSubjectOptionsSetup();
@@ -41,6 +69,7 @@ export function SubjectOptionsSetupForm() {
     control,
     handleSubmit,
     formState: { isDirty },
+    reset,
   } = useForm<SubjectOptionsFormState>({
     resolver: resolver({
       name: rules.required(),
@@ -152,21 +181,74 @@ export function SubjectOptionsSetupForm() {
         []
       );
 
+      const optionsSetupInput = {
+        id: defaultOptionsSetup?.id,
+        name,
+        yearGroupId,
+        studentPartyIds: selectedStudents.map(({ partyId }) => partyId),
+        subjectSets,
+      };
+
       saveOptionsSetup(
         {
-          name,
-          yearGroupId,
-          studentPartyIds: selectedStudents.map(({ partyId }) => partyId),
-          subjectSets,
+          ...optionsSetupInput,
+          validate: true,
         },
         {
-          onSuccess: () => {
-            goBack();
+          onSuccess: async ({ options_saveOptions }) => {
+            if (options_saveOptions.validations?.length) {
+              setChangesToConfirm({
+                changes: optionsSetupInput,
+                validations: options_saveOptions.validations,
+              });
+            } else {
+              await queryClient.invalidateQueries(optionsKeys.all);
+              toast(
+                defaultOptionsSetup?.id
+                  ? t('common:snackbarMessages.updateSuccess')
+                  : t('common:snackbarMessages.createSuccess')
+              );
+              goBack();
+            }
           },
         }
       );
     }
   );
+
+  useEffect(() => {
+    if (defaultOptionsSetup) {
+      const pools = defaultOptionsSetup.subjectSets.reduce<
+        SubjectOptionsFormState['pools']
+      >((acc, subjectSet) => {
+        if (typeof subjectSet.poolIdx !== 'number') return acc;
+
+        if (!acc[subjectSet.poolIdx]) {
+          acc[subjectSet.poolIdx] = {
+            poolIdx: subjectSet.poolIdx,
+            subjectSets: [],
+          };
+        }
+
+        acc[subjectSet.poolIdx].subjectSets.push({
+          name: subjectSet.name,
+          canChoose: subjectSet.canChoose,
+          mustGet: subjectSet.mustGet,
+          subjects: subjectSet.subjects,
+        });
+
+        return acc;
+      }, []);
+
+      reset({
+        name: defaultOptionsSetup.name,
+        yearGroupId: defaultOptionsSetup.yearGroup.yearGroupId,
+        selectedStudents: defaultOptionsSetup.students ?? [],
+        pools,
+        academicYearId: activeAcademicNamespace?.academicNamespaceId,
+      });
+    }
+  }, [defaultOptionsSetup, activeAcademicNamespace, reset]);
 
   return (
     <>
@@ -286,6 +368,12 @@ export function SubjectOptionsSetupForm() {
         description={t('common:cancelConfirmDialog.description')}
         onClose={onCancelModalClose}
         onConfirm={goBack}
+      />
+      <ConfirmOptionSaveDialog
+        changeInfo={changesToConfirm ?? debouncedChangesToConfirm}
+        open={!!changesToConfirm}
+        onClose={() => setChangesToConfirm(null)}
+        goBack={goBack}
       />
     </>
   );

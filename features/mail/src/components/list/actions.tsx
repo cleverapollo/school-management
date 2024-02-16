@@ -42,6 +42,7 @@ export default function MailItemAction({
       {
         name: t('common:actions.delete'),
         icon: <TrashIcon />,
+        isDelete: true,
         action: () => console.log(`delete ${mail.id}`),
       },
       {

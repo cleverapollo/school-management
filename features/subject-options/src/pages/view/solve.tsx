@@ -94,7 +94,7 @@ const getStudentAssignmentColumns = (
   {
     colId: 'student',
     headerName: t('common:name'),
-    valueGetter: ({ data }) => displayName(data?.student),
+    valueGetter: ({ data }) => displayName(data?.student.person),
     cellRenderer: ({ data }: ICellRendererParams<StudentRow, any>) =>
       data ? (
         <StudentTableAvatar
