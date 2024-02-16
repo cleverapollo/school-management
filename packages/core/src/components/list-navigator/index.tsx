@@ -5,9 +5,6 @@ import {
   Divider,
   Grow,
   ListSubheader,
-  MenuItem,
-  MenuList,
-  Paper,
   Popper,
   Stack,
   Typography,
@@ -21,8 +18,14 @@ import {
 import { useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
 
-import { useMemo, useState, useId, useRef, useEffect } from 'react';
-import { useVirtualizer } from '@tanstack/react-virtual';
+import {
+  useMemo,
+  useState,
+  useId,
+  useRef,
+  useCallback,
+  useEffect,
+} from 'react';
 import {
   ListNavigatorSettingsParams,
   useListNavigatorSettings,
@@ -32,6 +35,7 @@ import {
 import { PageHeading, PageHeadingProps } from '../page-heading';
 import { RouterLink } from '../router-link';
 import { SearchInput } from '../search-input';
+import { VirtualizedList } from './virtualized-list';
 
 export * from './menu-items';
 
@@ -49,13 +53,13 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
   optionTextKey,
   getOptionText: customGetOptionText,
   getRenderOption,
-  estimateElementSize = 36,
+  estimateElementSize = 52,
   ...navSettingsProps
 }: ListNavigatorProps<StoreOption>) {
   const id = useId();
   const { t } = useTranslation(['common']);
   const anchorEl = useRef<HTMLButtonElement | null>(null);
-  const listItemContainerRef = useRef<HTMLDivElement | null>(null);
+  const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [searchString, setSearchString] = useState('');
 
@@ -90,44 +94,35 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
       : customGetOptionText;
   }, [optionTextKey, customGetOptionText]);
 
+  const listDataWithRenderedOptions = useMemo(
+    () =>
+      listData.map((item) => ({
+        ...item,
+        to: getItemUrl(item) ?? '',
+        renderedOption:
+          getRenderOption?.({ item }) ?? getOptionText?.(item) ?? '',
+      })),
+    [listData, getItemUrl, getRenderOption, getOptionText]
+  );
+
   const filteredItems = useMemo(() => {
     const searchStringAsLowercase = searchString.toLowerCase();
-    return listData.filter((item) => {
+    return listDataWithRenderedOptions.filter((item) => {
       const optionText = getOptionText?.(item) ?? '';
       return optionText.toLowerCase().includes(searchStringAsLowercase);
     });
-  }, [listData, getOptionText, searchString]);
+  }, [listDataWithRenderedOptions, getOptionText, searchString]);
 
-  // const virtualizer = useVirtualizer({
-  //   count: filteredItems.length ?? 0,
-  //   getScrollElement: () => listItemContainerRef.current,
-  //   estimateSize: () => estimateElementSize,
-  //   overscan: 20,
-  //   paddingEnd: 8,
-  // });
+  const handleSelectItem = useCallback((item: StoreOption['id']) => {
+    setCurrentItemId(item);
+    onClose();
+  }, []);
 
-  // useEffect(() => {
-  //   if (isOpen && filteredItems.length > 0) {
-  //     virtualizer.scrollToIndex(0);
-  //   }
-  // }, [isOpen, filteredItems, searchString, virtualizer]);
-
-  // useEffect(() => {
-  //   if (isOpen) {
-  //     let indexToScrollTo = 0;
-  //     if (currentItem?.id) {
-  //       indexToScrollTo =
-  //         filteredItems.findIndex((item) => item.id === currentItem.id) ?? 0;
-  //     }
-  //     setTimeout(() => {
-  //       virtualizer.scrollToOffset(indexToScrollTo * estimateElementSize);
-  //     }, 0);
-  //   } else {
-  //     setSearchString('');
-  //   }
-  // }, [isOpen]);
-
-  // const virtualItems = virtualizer.getVirtualItems();
+  useEffect(() => {
+    if (isOpen) {
+      setSearchString('');
+    }
+  }, [isOpen]);
 
   const nextUrl = getNextUrl();
   const prevUrl = getPreviousUrl();
@@ -183,143 +178,113 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
               }}
             >
               {({ TransitionProps }) => (
-                <Grow
-                  {...TransitionProps}
-                  timeout={350}
-                  style={{
-                    transformOrigin: 'center top',
-                  }}
-                >
-                  <Paper
-                    ref={listItemContainerRef}
-                    sx={({ customShadows }) => ({
-                      minHeight: 172,
-                      maxHeight: 'min(calc(100vh - 96px), 400px)',
-                      position: 'relative',
-                      overflow: 'auto',
-                      mt: 1,
-                      boxShadow: customShadows.dropdown,
-                    })}
+                <ClickAwayListener onClickAway={onClose}>
+                  <Grow
+                    {...TransitionProps}
+                    timeout={350}
+                    style={{
+                      transformOrigin: 'center top',
+                    }}
                   >
-                    <ClickAwayListener onClickAway={onClose}>
-                      <Stack>
-                        <ListSubheader
-                          component={Stack}
-                          sx={{
-                            pt: 1,
-                            px: 1,
-                            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                            backdropFilter: 'blur(20px)',
-                          }}
+                    <Stack
+                      ref={setContainerRef}
+                      sx={({ customShadows, palette }) => ({
+                        minHeight: 172,
+                        maxHeight: 'min(calc(100vh - 96px), 400px)',
+                        position: 'relative',
+                        overflow: 'auto',
+                        mt: 1,
+                        boxShadow: customShadows.dropdown,
+                        backgroundColor: palette.background.paper,
+                      })}
+                    >
+                      <ListSubheader
+                        component={Stack}
+                        sx={{
+                          pt: 1,
+                          px: 1,
+                          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                          backdropFilter: 'blur(20px)',
+                        }}
+                      >
+                        <Stack
+                          flexDirection="row"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          gap={4}
+                          pb={0.5}
                         >
-                          <Stack
-                            flexDirection="row"
-                            alignItems="center"
-                            justifyContent="space-between"
-                            gap={4}
-                            pb={0.5}
-                          >
-                            {parentPath?.href && (
-                              <Button
-                                variant="text"
-                                size="small"
-                                component={RouterLink}
-                                to={parentPath?.href}
-                                startIcon={<ArrowLeftIcon />}
-                                sx={{
-                                  '.MuiButton-startIcon': {
-                                    marginRight: 0.25,
-                                  },
-                                }}
-                              >
-                                {t('common:profileNavigation.breadcrumbPage', {
-                                  name: parentPath.name,
-                                })}
-                              </Button>
-                            )}
-                            <Stack flexDirection="row" gap={0.5}>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                fontWeight="bold"
-                              >
-                                {t(
-                                  `common:profileNavigation.${navSettingsProps.type}`
-                                )}
-                              </Typography>
-                              <Typography variant="body2">
-                                ({listData.length})
-                              </Typography>
-                            </Stack>
-                          </Stack>
-                          <SearchInput
-                            value={searchString}
-                            onChange={(event) => {
-                              setSearchString(event.target.value);
-                            }}
-                          />
-                        </ListSubheader>
-                        {filteredItems.length === 0 ? (
-                          <Stack
-                            sx={{
-                              width: '100%',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              minHeight: 80,
-                            }}
-                          >
-                            <Typography
-                              variant="body1"
-                              component="span"
-                              color="text.secondary"
+                          {parentPath?.href && (
+                            <Button
+                              variant="text"
+                              size="small"
+                              component={RouterLink}
+                              to={parentPath?.href}
+                              startIcon={<ArrowLeftIcon />}
+                              sx={{
+                                '.MuiButton-startIcon': {
+                                  marginRight: 0.25,
+                                },
+                              }}
                             >
-                              {t(`common:noResultsFound`)}
+                              {t('common:profileNavigation.breadcrumbPage', {
+                                name: parentPath.name,
+                              })}
+                            </Button>
+                          )}
+                          <Stack flexDirection="row" gap={0.5}>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              fontWeight="bold"
+                            >
+                              {t(
+                                `common:profileNavigation.${navSettingsProps.type}`
+                              )}
+                            </Typography>
+                            <Typography variant="body2">
+                              ({listData.length})
                             </Typography>
                           </Stack>
-                        ) : (
-                          <MenuList
-                            variant="selectedMenu"
-                            id={`${id}-menu`}
-                            aria-labelledby={id}
-                            // sx={{
-                            //   pt: 0,
-                            //   height: `${virtualizer.getTotalSize()}px`,
-                            // }}
+                        </Stack>
+                        <SearchInput
+                          value={searchString}
+                          onChange={(event) => {
+                            setSearchString(event.target.value);
+                          }}
+                        />
+                      </ListSubheader>
+                      {filteredItems.length === 0 ? (
+                        <Stack
+                          sx={{
+                            width: '100%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            minHeight: 80,
+                          }}
+                        >
+                          <Typography
+                            variant="body1"
+                            component="span"
+                            color="text.secondary"
                           >
-                            {/**  eslint-disable-next-line arrow-body-style */}
-                            {filteredItems.map((item) => (
-                              // const item = filteredItems[virtualRow.index];
-
-                              <MenuItem
-                                // key={virtualRow.key}
-                                key={item.id}
-                                component={Link}
-                                // data-index={virtualRow.index}
-                                // ref={virtualizer.measureElement}
-                                selected={item.id === currentItem.id}
-                                to={getItemUrl(item) ?? ''}
-                                onClick={() => {
-                                  setCurrentItemId(item.id);
-                                  onClose();
-                                }}
-                                // sx={{
-                                //   position: 'absolute',
-                                //   width: 'calc(100% - 16px)',
-                                //   top: 0,
-                                //   transform: `translateY(${virtualRow.start}px)`,
-                                // }}
-                              >
-                                {getRenderOption?.({ item }) ??
-                                  getOptionText?.(item) ??
-                                  ''}
-                              </MenuItem>
-                            ))}
-                          </MenuList>
-                        )}
-                      </Stack>
-                    </ClickAwayListener>
-                  </Paper>
-                </Grow>
+                            {t(`common:noResultsFound`)}
+                          </Typography>
+                        </Stack>
+                      ) : (
+                        containerRef && (
+                          <VirtualizedList
+                            containerRef={containerRef}
+                            filteredItems={filteredItems}
+                            currentItemId={currentItem.id}
+                            onSelectItem={handleSelectItem}
+                            estimateElementSize={estimateElementSize}
+                          />
+                        )
+                      )}
+                    </Stack>
+                  </Grow>
+                </ClickAwayListener>
               )}
             </Popper>
             <Button
