@@ -60,6 +60,7 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
   const { t } = useTranslation(['common']);
   const anchorEl = useRef<HTMLButtonElement | null>(null);
   const [containerRef, setContainerRef] = useState<HTMLDivElement | null>(null);
+  const headerRef = useRef<HTMLDivElement | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [searchString, setSearchString] = useState('');
 
@@ -152,7 +153,6 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
             >
               {t('common:actions.previous')}
             </Button>
-
             <Button
               ref={anchorEl}
               id={id}
@@ -199,6 +199,7 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
                       })}
                     >
                       <ListSubheader
+                        ref={headerRef}
                         component={Stack}
                         sx={{
                           pt: 1,
@@ -275,6 +276,7 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
                         containerRef && (
                           <VirtualizedList
                             containerRef={containerRef}
+                            headerHeight={headerRef.current?.clientHeight ?? 0}
                             filteredItems={filteredItems}
                             currentItemId={currentItem.id}
                             onSelectItem={handleSelectItem}
