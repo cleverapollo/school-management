@@ -103,11 +103,11 @@ export const getRoutes: NavObjectFunction = (t) => [
                   ]);
                 },
               },
-              {
-                type: NavObjectType.NonMenuLink,
-                path: 'solve',
-                element: <StudentOptionsSolvePage />,
-              },
+              // {
+              //   type: NavObjectType.NonMenuLink,
+              //   path: 'solve',
+              //   element: <StudentOptionsSolvePage />,
+              // },
             ],
           },
         ],

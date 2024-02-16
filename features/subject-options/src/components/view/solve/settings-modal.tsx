@@ -4,38 +4,25 @@ import { useTranslation } from '@tyro/i18n';
 import { LoadingButton } from '@mui/lab';
 import { useState, useEffect } from 'react';
 import set from 'lodash/set';
-import {
-  ReturnTypeFromUseOptionsSolveBlocks,
-  useOptionsSolveBlocks,
-} from '../../../api/solve/blocks';
-import { useOptionSolveSubjectStats } from '../../../api/solve/subject-stats';
+import { ReturnTypeFromUseOptionsSolveBlocks } from '../../../api/solve/blocks';
 import { SubjectStatsTable } from './subject-stats-table';
 import { BlockOrganiser } from './block-organiser';
+import { ReturnTypeFromUseOptionsSolutions } from '../../../api/options-solutions';
 
 interface SolveSettingsModalProps {
-  optionsId: number;
+  optionsSolutions: ReturnTypeFromUseOptionsSolutions;
   isOpen: boolean;
   onClose: () => void;
 }
 
 export function SolveSettingsModal({
-  optionsId,
+  optionsSolutions,
   isOpen,
   onClose,
 }: SolveSettingsModalProps) {
   const { t } = useTranslation(['common', 'subjectOptions']);
   const [blocksState, setBlocksState] =
     useState<ReturnTypeFromUseOptionsSolveBlocks>({ subjectSet: [] });
-
-  const { data: blocksData } = useOptionsSolveBlocks({ ids: [optionsId] });
-  const { data: subjectStatsData } = useOptionSolveSubjectStats({
-    ids: [optionsId],
-  });
-
-  console.log({
-    blocksData,
-    subjectStatsData,
-  });
 
   const onChangeBlocks = (
     subjectSetId: NonNullable<
@@ -67,11 +54,11 @@ export function SolveSettingsModal({
     onClose();
   };
 
-  useEffect(() => {
-    if (blocksData) {
-      setBlocksState(blocksData);
-    }
-  }, [blocksData]);
+  // useEffect(() => {
+  //   if (optionsSolutions) {
+  //     setBlocksState(optionsSolutions);
+  //   }
+  // }, [optionsSolutions]);
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="lg">
@@ -80,7 +67,7 @@ export function SolveSettingsModal({
       </DialogTitle>
       <DialogContent>
         <Stack direction="row" spacing={3} useFlexGap>
-          <Stack>
+          {/* <Stack>
             <Typography component="h3" variant="subtitle1">
               {t('common:blocks')}
             </Typography>
@@ -97,13 +84,13 @@ export function SolveSettingsModal({
                 />
               );
             })}
-          </Stack>
-          <SubjectStatsTable
+          </Stack> */}
+          {/* <SubjectStatsTable
             rowData={subjectStatsData ?? []}
             onRowDataChange={(newRowData) => {
               console.log({ newRowData });
             }}
-          />
+          /> */}
         </Stack>
       </DialogContent>
       <DialogActions>

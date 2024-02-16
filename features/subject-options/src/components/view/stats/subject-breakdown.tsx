@@ -60,27 +60,28 @@ const getBreakdownTableColumns = (
     sortable: false,
     width: 72,
   },
-  ...Array.from({ length: subjectSet?.mustGet ?? 0 }, (_, i) => {
-    const preferenceIdx = i + 1;
-    return {
-      coldId: `pref-${preferenceIdx}`,
-      headerName: t('subjectOptions:prefX', { x: preferenceIdx }),
-      valueGetter: ({ data }: ValueGetterParams<SubjectBreakdownRow>) =>
-        data?.prefBreakdown?.get(preferenceIdx) ?? 0,
-      width: 64,
-      suppressMenu: true,
-      sortable: false,
-      sort: 'desc',
-      sortIndex: i,
-    } as const;
-  }),
+  ...Array.from(
+    { length: subjectSet?.mustGet ?? 0 },
+    (_, preferenceIdx) =>
+      ({
+        coldId: `pref-${preferenceIdx}`,
+        headerName: t('subjectOptions:prefX', { x: preferenceIdx }),
+        valueGetter: ({ data }: ValueGetterParams<SubjectBreakdownRow>) =>
+          data?.prefBreakdown?.get(preferenceIdx) ?? 0,
+        width: 64,
+        suppressMenu: true,
+        sortable: false,
+        sort: 'desc',
+        sortIndex: preferenceIdx,
+      } as const)
+  ),
   {
     colId: 'total',
     headerName: t('common:total'),
     valueGetter: ({ data }) => {
       const mustGetPrefIdxs = Array.from(
         { length: subjectSet?.mustGet ?? 0 },
-        (_, i) => i + 1
+        (_, i) => i
       );
       return mustGetPrefIdxs.reduce(
         (acc, preferenceIdx) =>
@@ -92,7 +93,7 @@ const getBreakdownTableColumns = (
   ...Array.from(
     { length: (subjectSet?.canChoose ?? 0) - (subjectSet?.mustGet ?? 0) },
     (_, i) => {
-      const preferenceIdx = i + (subjectSet?.mustGet ?? 0) + 1;
+      const preferenceIdx = i + (subjectSet?.mustGet ?? 0);
       return {
         coldId: `pref-${preferenceIdx}`,
         headerName: t('subjectOptions:prefX', { x: preferenceIdx }),
@@ -104,7 +105,7 @@ const getBreakdownTableColumns = (
         suppressMenu: true,
         sortable: false,
         sort: 'desc',
-        sortIndex: i + (subjectSet?.mustGet ?? 0),
+        sortIndex: preferenceIdx,
       } as const;
     }
   ),
@@ -116,7 +117,7 @@ const getBreakdownTableColumns = (
     valueGetter: ({ data }) => {
       const allPrefIdxs = Array.from(
         { length: subjectSet?.canChoose ?? 0 },
-        (_, i) => i + 1
+        (_, i) => i
       );
       return allPrefIdxs.reduce(
         (acc, preferenceIdx) =>

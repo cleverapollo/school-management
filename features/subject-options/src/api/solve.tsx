@@ -13,7 +13,7 @@ import { optionsKeys } from './keys';
 const solveOptions = graphql(/* GraphQL */ `
   mutation optionsSol_solve($input: OptionsSol_Solve!) {
     optionsSol_solve(input: $input) {
-      success
+      problemId
     }
   }
 `);

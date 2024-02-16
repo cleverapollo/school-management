@@ -12,7 +12,6 @@ const optionsSolutions = graphql(/* GraphQL */ `
   query options_solutions($filter: SolutionsFilter) {
     options_solutions(filter: $filter) {
       optionId
-      name
       pools {
         poolIdx
         blocks {
@@ -33,30 +32,33 @@ const optionsSolutions = graphql(/* GraphQL */ `
         }
         subjectSets {
           id {
-            solutionId
+            optionId
             idx
           }
-          name
-          canChoose
-          mustGet
-          poolIdx
           studentChoices {
             studentPartyId
+            missed
             subjectSetChoices {
-              subjectSetIdx
-              poolIdx
-              mainChoices {
-                choiceIdx
-                blockIdx
-                subjectId
-                subjectGroupName
-                subject {
-                  name
-                  colour
-                }
+              choiceIdx
+              blockIdx
+              subjectId
+              subjectGroupName
+              subject {
+                name
+                colour
               }
             }
           }
+        }
+        subjects {
+          poolIdx
+          subjectId
+          subject {
+            name
+            colour
+          }
+          maxSize
+          numClasses
         }
       }
     }

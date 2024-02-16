@@ -238,18 +238,18 @@ export function SubjectOptionsSetupForm() {
                 <SubjectSets poolIndex={index} control={control} />
               </Card>
             ))}
-            <Stack width="fit-content">
+            {/* <Stack width="fit-content">
               <Button
                 size="small"
                 color="primary"
                 variant="text"
                 onClick={() =>
                   append({
-                    poolIdx: subjectPools.length + 1,
+                    poolIdx: subjectPools.length,
                     subjectSets: [
                       {
                         ...defaultSubjectSetProps,
-                        idx: 1,
+                        idx: 0,
                       },
                     ],
                   })
@@ -258,7 +258,7 @@ export function SubjectOptionsSetupForm() {
               >
                 {t('subjectOptions:addPool')}
               </Button>
-            </Stack>
+            </Stack> */}
           </Stack>
         </Card>
         <Stack direction="row" gap={2} justifyContent="flex-end">

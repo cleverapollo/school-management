@@ -42,10 +42,10 @@ export default function OptionsViewContainer() {
             label: t('subjectOptions:stats'),
             value: 'stats',
           },
-          {
-            label: t('common:solve'),
-            value: 'solve',
-          },
+          // {
+          //   label: t('common:solve'),
+          //   value: 'solve',
+          // },
         ]}
       />
     </PageContainer>

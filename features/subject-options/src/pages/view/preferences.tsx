@@ -146,8 +146,18 @@ const getStudentPreferenceColumns = (
             node,
             isEditCheckCall,
             isApplyUpdatesCall,
-          }: ValueSetterParams<StudentRow, number>) => {
-            set(data?.choices, colId, newValue);
+          }: ValueSetterParams<StudentRow, number | string | undefined>) => {
+            const isNewValueNumber = !Number.isNaN(Number(newValue));
+            const keyToFindNewValue = isNewValueNumber
+              ? Number(newValue)
+              : (newValue as string | undefined)?.toLowerCase();
+            const matchedOption = options.find((option) =>
+              isNewValueNumber
+                ? option.id === keyToFindNewValue
+                : option.name.toLowerCase() === keyToFindNewValue
+            );
+
+            set(data?.choices, colId, matchedOption?.id);
 
             if (!isEditCheckCall && !isApplyUpdatesCall) {
               Object.entries(data?.choices).forEach(([key, value]) => {
@@ -157,7 +167,7 @@ const getStudentPreferenceColumns = (
                   subjectSetIdx === subjectSet.id.idx &&
                   key !== colId &&
                   value &&
-                  value === newValue
+                  value === matchedOption?.id
                 ) {
                   node?.setDataValue(`choices.${key}`, null);
                 }

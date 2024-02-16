@@ -1,4 +1,3 @@
-import { LoadingButton } from '@mui/lab';
 import { Button, Chip, Stack } from '@mui/material';
 import {
   getNumber,
@@ -29,7 +28,7 @@ import {
 import { useSolveOptions } from '../../api/solve';
 
 type OptionsAssignedValue =
-  ReturnTypeFromUseOptionsSolutions['pools'][number]['subjectSets'][number]['studentChoices'][number]['subjectSetChoices'][number]['mainChoices'][number];
+  ReturnTypeFromUseOptionsSolutions['pools'][number]['subjectSets'][number]['studentChoices'][number]['subjectSetChoices'][number];
 
 type StudentRow = {
   student: NonNullable<ReturnTypeFromUseOptionsSetup['students']>[number];
@@ -45,28 +44,35 @@ const getStudentRows = (
     number,
     Map<string, OptionsAssignedValue>
   >();
-  // TODO - implement missing preferences
   const studentMissingPreferences = new Map<number, number>();
 
   optionsSolutions?.pools?.forEach(({ subjectSets }) => {
-    subjectSets.forEach(({ studentChoices }) => {
-      studentChoices.forEach(({ studentPartyId, subjectSetChoices }) => {
-        const currentStudentsOptionsAssigned = subjectSetChoices.reduce<
-          Map<string, OptionsAssignedValue>
-        >((acc, { subjectSetIdx, mainChoices }) => {
-          mainChoices.forEach((choice) => {
-            if (subjectSetIdx) {
-              acc.set(`${subjectSetIdx}-${choice.choiceIdx}`, choice);
+    subjectSets.forEach(({ id, studentChoices }) => {
+      studentChoices.forEach(
+        ({ studentPartyId, missed, subjectSetChoices }) => {
+          studentMissingPreferences.set(studentPartyId, missed);
+
+          const currentStudentsOptionsAssigned = subjectSetChoices.reduce<
+            Map<string, OptionsAssignedValue>
+          >((acc, choice) => {
+            if (id.idx && choice.choiceIdx) {
+              acc.set(`${id.idx}-${choice.choiceIdx}`, choice);
             }
-          });
-          return acc;
-        }, new Map());
-        studentsOptionsAssigned.set(
-          studentPartyId,
-          currentStudentsOptionsAssigned
-        );
-      });
+            return acc;
+          }, new Map());
+          studentsOptionsAssigned.set(
+            studentPartyId,
+            currentStudentsOptionsAssigned
+          );
+        }
+      );
     });
+  });
+
+  console.log({
+    students: optionsSetup?.students,
+    studentsOptionsAssigned,
+    studentMissingPreferences,
   });
 
   return (optionsSetup?.students ?? []).map((student) => ({
@@ -98,9 +104,6 @@ const getStudentAssignmentColumns = (
       ) : null,
     cellClass: 'cell-value-visible',
     sort: 'asc',
-    headerCheckboxSelection: true,
-    headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: ({ data }) => Boolean(data),
     lockVisible: true,
     filter: true,
     pinned: 'left',
@@ -120,7 +123,7 @@ const getStudentAssignmentColumns = (
         const showLeftBorder = preferenceIdx === 0 && subjectSet.id.idx !== 1;
 
         return {
-          field: `choices.${colId}`,
+          field: `optionsAssigned.${colId}`,
           headerName: t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
           cellClass: [
             isOutsideWhatTheyGet && 'outside-get',
@@ -142,12 +145,23 @@ const getStudentAssignmentColumns = (
 
             const { subjectGroupName, subject } = value;
 
+            if (subjectGroupName) {
+              return (
+                <Chip
+                  size="small"
+                  variant="soft"
+                  color={subject.colour ?? 'slate'}
+                  label={subjectGroupName}
+                />
+              );
+            }
+
             return (
               <Chip
                 size="small"
                 variant="soft"
-                color={subject.colour ?? 'slate'}
-                label={subjectGroupName}
+                color="slate"
+                label={subject.name}
               />
             );
           },
@@ -194,42 +208,42 @@ export default function StudentOptionsSolvePage() {
     });
   };
 
-  console.log({ optionsSolutions });
+  console.log({ studentRows, studentAssignmentColumns });
 
   return (
     <>
-      <Stack>
-        <Stack direction="row" justifyContent="flex-end" spacing={2}>
-          <Button onClick={onOpen} variant="outlined" endIcon={<GearIcon />}>
-            {t('subjectOptions:solverSettings')}
-          </Button>
-          <Button variant="contained" color="primary" onClick={toggleSolver}>
-            {/* {optionsSolutions?.solverRunning
+      <Table
+        sx={{
+          '& .outside-get': {
+            backgroundColor: 'slate.100',
+          },
+          '& .border-left': {
+            borderLeft: '1px solid',
+            borderLeftColor: 'slate.200',
+          },
+        }}
+        rowData={studentRows}
+        columnDefs={studentAssignmentColumns}
+        getRowId={({ data }) => JSON.stringify(data?.student?.partyId)}
+        rightAdornment={
+          <Stack direction="row" justifyContent="flex-end" spacing={2}>
+            <Button onClick={onOpen} variant="soft" endIcon={<GearIcon />}>
+              {t('subjectOptions:solverSettings')}
+            </Button>
+            <Button variant="contained" color="primary" onClick={toggleSolver}>
+              {/* {optionsSolutions?.solverRunning
               ? t('common:solve')
               : t('subjectOptions:stopSolver')} */}
-            {t('common:solve')}
-          </Button>
-        </Stack>
-        <Table
-          sx={{
-            '& .outside-get': {
-              backgroundColor: 'slate.100',
-            },
-            '& .border-left': {
-              borderLeft: '1px solid',
-              borderLeftColor: 'slate.200',
-            },
-          }}
-          rowData={studentRows}
-          columnDefs={studentAssignmentColumns}
-          getRowId={({ data }) => JSON.stringify(data?.student?.partyId)}
-        />
-      </Stack>
-      <SolveSettingsModal
-        optionsId={optionId}
+              {t('common:solve')}
+            </Button>
+          </Stack>
+        }
+      />
+      {/* <SolveSettingsModal
+        optionsSolutions={optionsSolutions}
         isOpen={isOpen}
         onClose={onClose}
-      />
+      /> */}
     </>
   );
 }

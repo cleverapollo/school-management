@@ -13,9 +13,15 @@ import { useTranslation } from '@tyro/i18n';
 import { getColorBasedOnIndex } from '@tyro/api';
 import { useState, useEffect } from 'react';
 import { ReturnTypeFromUseOptionSolveSubjectStats } from '../../../api/solve/subject-stats';
+import { ReturnTypeFromUseOptionsSolutions } from '../../../api/options-solutions';
+
+export type SubjectStatsTableRow =
+  ReturnTypeFromUseOptionsSolutions['pools'][number]['subjects'][number] & {
+    subjectBlocks: ReturnTypeFromUseOptionsSolutions['pools'][number]['blocks'];
+  };
 
 interface SubjectStatsTableProps {
-  rowData: ReturnTypeFromUseOptionSolveSubjectStats[];
+  rowData: SubjectStatsTableRow[];
   onRowDataChange?: (
     newRowData: (SubjectStatsTableProps['rowData'][number] & {
       numberOfClasses: number;
@@ -57,14 +63,14 @@ export function SubjectStatsTable({
     }
   }, [editableRowData, onRowDataChange]);
 
-  useEffect(() => {
-    setEditableRowData(
-      rowData.map((row) => ({
-        ...row,
-        numberOfClasses: row.teachingGroups.length,
-      }))
-    );
-  }, [rowData]);
+  // useEffect(() => {
+  //   setEditableRowData(
+  //     rowData.map((row) => ({
+  //       ...row,
+  //       numberOfClasses: row.teachingGroups.length,
+  //     }))
+  //   );
+  // }, [rowData]);
 
   return (
     <TableContainer>
@@ -109,7 +115,7 @@ export function SubjectStatsTable({
                 />
               </TableCell>
               <TableCell>
-                {row.teachingGroups.map((group) => (
+                {/* {row.teachingGroups.map((group) => (
                   <Tooltip key={group.id} title={group.name}>
                     <Chip
                       label={group.numStudents.toString()}
@@ -117,11 +123,11 @@ export function SubjectStatsTable({
                       size="small"
                     />
                   </Tooltip>
-                ))}
+                ))} */}
               </TableCell>
-              <TableCell>
+              {/* <TableCell>
                 {row.preferencesTotal - row.preferencesGotten}
-              </TableCell>
+              </TableCell> */}
             </TableRow>
           ))}
         </TableBody>

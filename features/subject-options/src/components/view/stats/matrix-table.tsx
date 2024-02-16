@@ -28,7 +28,7 @@ function getMatrixData(
   const allSubjectIds = filteredSubjects.map(({ id }) => id);
   const choiceIdsToInclude =
     subjectSets?.flatMap(({ id, mustGet }) =>
-      Array.from({ length: mustGet }, (_, i) => `${id.idx}-${i + 1}`)
+      Array.from({ length: mustGet }, (_, i) => `${id.idx}-${i}`)
     ) ?? [];
 
   const crossOvers = new Map<number, Map<number, number>>();
