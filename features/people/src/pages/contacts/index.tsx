@@ -187,6 +187,7 @@ export default function ContactsListPage() {
                 count: selectedContacts.length,
               }),
               icon: <TrashIcon />,
+              isDelete: true,
               onClick: onOpenDeleteContacts,
             },
           ]

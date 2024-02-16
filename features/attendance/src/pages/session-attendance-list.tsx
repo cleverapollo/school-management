@@ -168,7 +168,7 @@ export default function AbsentRequests() {
         isStaffUserWithPermission('ps:1:communications:send_sms'),
     },
     {
-      label: t('mail:sendMail'),
+      label: t('mail:mailContacts'),
       icon: <SendMailIcon />,
       hasAccess: ({ isStaffUserHasAllPermissions }: PermissionUtils) =>
         isStaffUserHasAllPermissions([

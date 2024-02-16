@@ -155,6 +155,7 @@ export function StudentMedicalProfessionalWidget({
                 {
                   label: t('common:actions.delete'),
                   icon: <TrashIcon />,
+                  isDelete: true,
                   onClick: handleDeleteCondition,
                   disabled: !numberOfContacts,
                   hasAccess: ({ isStaffUserWithPermission }) =>

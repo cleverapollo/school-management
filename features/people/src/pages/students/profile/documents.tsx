@@ -69,6 +69,7 @@ const getStudentDocumentColumns = (
             {
               label: t('common:actions.delete'),
               icon: <TrashIcon />,
+              isDelete: true,
               onClick: () => onDelete(data),
             },
           ]}
@@ -114,6 +115,7 @@ export default function StudentProfileDocumentsPage() {
     {
       label: t('common:actions.delete'),
       icon: <TrashIcon />,
+      isDelete: true,
       onClick: onOpenDeleteModal,
     },
   ];

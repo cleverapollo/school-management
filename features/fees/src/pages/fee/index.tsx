@@ -170,6 +170,7 @@ const getColumnDefs = (
             {
               label: t('common:actions.delete'),
               icon: <TrashIcon />,
+              isDelete: true,
               disabled: data.paid > 0,
               disabledTooltip: t('fees:cantDeleteFeeWithPayments'),
               onClick: () => {

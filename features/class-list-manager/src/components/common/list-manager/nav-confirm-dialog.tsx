@@ -1,4 +1,4 @@
-import { unstable_useBlocker as useBlocker } from 'react-router-dom';
+import { useBlocker } from 'react-router-dom';
 import { ConfirmDialog } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 

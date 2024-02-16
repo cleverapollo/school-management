@@ -2,14 +2,14 @@ import { Box, Button, Card, Divider, Stack, Tooltip } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { CalendarUploadIcon } from '@tyro/icons';
 import { useDisclosure } from '@tyro/core';
-import { useTimetables } from '../../../api/common/timetables';
+import { useTimetable } from '../../../api/common/timetable';
 import { TimetableStatusDetails } from './status-details';
 import { UnpublishedChangesModal } from './unpublished-changes-modal';
 import { PublishModal } from './publish-modal';
 
 export function EditTimetableStatusBar() {
   const { t } = useTranslation(['timetable']);
-  const { data: timetables } = useTimetables({ liveTimetable: true });
+  const { data: liveTimetable } = useTimetable({ liveTimetable: true });
   const {
     isOpen: isUnpublishedChangesModalOpen,
     onOpen: openUnpublishedChangesModal,
@@ -20,7 +20,6 @@ export function EditTimetableStatusBar() {
     onOpen: openPublishModal,
     onClose: closePublishModal,
   } = useDisclosure();
-  const liveTimetable = timetables?.[0];
 
   const hasNoChanges = !liveTimetable?.liveStatus?.totalChanges;
   const tooltip = hasNoChanges ? t('timetable:thereAreNoChangesAvailable') : '';

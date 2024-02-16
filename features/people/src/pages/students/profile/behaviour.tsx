@@ -170,6 +170,7 @@ const getStudentBehaviourColumns = (
             {
               label: t('common:actions.delete'),
               icon: <TrashIcon />,
+              isDelete: true,
               onClick: () => onDelete(data?.noteId),
             },
             {

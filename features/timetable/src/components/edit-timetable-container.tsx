@@ -6,12 +6,12 @@ import {
   ComingSoonIllustration,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useLiveTimetableId } from '../api/common/timetables';
+import { useTimetable } from '../api/common/timetable';
 import { EditTimetableStatusBar } from './edit-timetable/status-bar';
 
 export default function EditTimetableContainer() {
   const { t } = useTranslation(['common', 'navigation', 'groups', 'timetable']);
-  const { data: liveTimetableId = 0 } = useLiveTimetableId();
+  const { data: liveTimetable } = useTimetable({ liveTimetable: true });
 
   return (
     <PageContainer
@@ -21,7 +21,7 @@ export default function EditTimetableContainer() {
     >
       <PageHeading title={t('navigation:management.timetable.editTimetable')} />
       <EditTimetableStatusBar />
-      {liveTimetableId !== 0 ? (
+      {liveTimetable ? (
         <TabPageContainer
           links={[
             {

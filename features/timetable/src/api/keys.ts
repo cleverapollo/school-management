@@ -1,5 +1,5 @@
 import {
-  TtIndividualViewLessonFilter,
+  TtTimetableListFilter,
   TtResourceTimetableViewFilter,
   TtSwapRoomFilter,
   TtSwapTeacherFilter,
@@ -7,15 +7,16 @@ import {
   Tt_GroupsFilter,
   Tt_AddLessonFilter,
   Tt_EditLessonFilter,
+  TtSolve_SolveParams,
 } from '@tyro/api';
 
 export const timetableKeys = {
   all: ['timetable'] as const,
-  timetableList: (filter: TtTimetableFilter) =>
+  timetableList: (filter: TtTimetableListFilter) =>
     [...timetableKeys.all, filter] as const,
   unpublishedChanges: (filter: TtTimetableFilter) =>
     [...timetableKeys.all, 'unpublishedChanges', filter] as const,
-  timetable: (filter: TtIndividualViewLessonFilter) =>
+  timetable: (filter: TtTimetableFilter) =>
     [...timetableKeys.all, filter] as const,
   timetables: (id: number | undefined) => [...timetableKeys.all, id] as const,
   resourceView: (filter: TtResourceTimetableViewFilter) =>
@@ -31,4 +32,6 @@ export const timetableKeys = {
   editLessonsOptions: (filter: Tt_EditLessonFilter) =>
     [...timetableKeys.all, 'editLessonsOptions', filter] as const,
   search: (query: string) => [...timetableKeys.all, 'search', query] as const,
+  solveInput: (filter: TtSolve_SolveParams) =>
+    [...timetableKeys.all, 'solveInput', filter] as const,
 };

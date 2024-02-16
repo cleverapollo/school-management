@@ -17,10 +17,11 @@ export interface YearGroupSelect {
 type RHFYearGroupAutocompleteProps<TField extends FieldValues> = Omit<
   RHFAutocompleteProps<TField, YearGroupSelect>,
   'options'
->;
+> & { academicNamespaceId?: number };
 
 type YearGroupAutocompleteProps = Omit<
   AutocompleteProps<YearGroupSelect>,
+  | 'options'
   | 'optionIdKey'
   | 'optionTextKey'
   | 'getOptionLabel'
@@ -30,22 +31,26 @@ type YearGroupAutocompleteProps = Omit<
   | 'renderAvatarAdornment'
 >;
 
-export const RHFYearGroupAutocomplete = <TField extends FieldValues>(
-  props: RHFYearGroupAutocompleteProps<TField>
-) => {
+export const RHFYearGroupAutocomplete = <TField extends FieldValues>({
+  academicNamespaceId,
+  ...props
+}: RHFYearGroupAutocompleteProps<TField>) => {
   const { t } = useTranslation(['common']);
-  const { data: yearGroupData, isLoading } = useYearGroups();
+  const { data: yearGroupData, isLoading } = useYearGroups({
+    academicNamespaceIds: academicNamespaceId
+      ? [academicNamespaceId]
+      : undefined,
+  });
 
   const yearGroupOptions = useMemo(
     () =>
-      yearGroupData?.map((yg) => ({
-        partyId: yg.yearGroupEnrollmentPartyId,
-        name: yg.name,
+      yearGroupData?.map(({ yearGroupEnrollmentPartyId, name }) => ({
+        partyId: yearGroupEnrollmentPartyId,
+        name,
       })),
     [yearGroupData]
   );
 
-  // @ts-ignore
   return (
     <RHFAutocomplete<TField, YearGroupSelect>
       label={t('common:year')}
@@ -65,13 +70,13 @@ export const YearGroupAutocomplete = (props: YearGroupAutocompleteProps) => {
 
   const yearGroupOptions = useMemo(
     () =>
-      yearGroupData?.map((yg) => ({
-        partyId: yg.yearGroupEnrollmentPartyId,
-        name: yg.name,
+      yearGroupData?.map(({ yearGroupEnrollmentPartyId, name }) => ({
+        partyId: yearGroupEnrollmentPartyId,
+        name,
       })),
     [yearGroupData]
   );
-  // @ts-ignore
+
   return (
     <Autocomplete
       label={t('common:year')}
@@ -80,6 +85,7 @@ export const YearGroupAutocomplete = (props: YearGroupAutocompleteProps) => {
       optionTextKey="name"
       loading={isLoading}
       options={yearGroupOptions ?? []}
+      {...props}
     />
   );
 };
