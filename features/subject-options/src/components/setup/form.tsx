@@ -132,7 +132,7 @@ export function SubjectOptionsSetupForm({
     defaultValues: {
       pools: [
         {
-          poolIdx: 1,
+          poolIdx: 0,
           subjectSets: [
             {
               ...defaultSubjectSetProps,
