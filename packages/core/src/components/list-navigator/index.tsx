@@ -194,6 +194,7 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
                         position: 'relative',
                         overflow: 'auto',
                         mt: 1,
+                        borderRadius: 1,
                         boxShadow: customShadows.dropdown,
                         backgroundColor: palette.background.paper,
                       })}
