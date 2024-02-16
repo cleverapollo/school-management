@@ -98,8 +98,8 @@ const getStudentAssignmentColumns = (
     cellRenderer: ({ data }: ICellRendererParams<StudentRow, any>) =>
       data ? (
         <StudentTableAvatar
-          person={data?.student}
-          to={getPersonProfileLink(data?.student)}
+          person={data?.student.person}
+          to={getPersonProfileLink(data?.student.person)}
         />
       ) : null,
     cellClass: 'cell-value-visible',
