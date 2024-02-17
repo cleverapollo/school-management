@@ -165,7 +165,7 @@ export const CoverSelectionTable = <TField extends FieldValues>({
                     <TableCell>
                       {substitutionStats.sandsYearCount > 0 &&
                         `${substitutionStats.sandsYearCount} ${toHoursMin(
-                          substitutionStats.sandsWeekMinutes
+                          substitutionStats.sandsYearMinutes
                         )}`}
                     </TableCell>
                     <TableCell>
