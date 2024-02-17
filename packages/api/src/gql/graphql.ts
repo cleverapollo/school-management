@@ -390,42 +390,6 @@ export type Attendance_SaveBulkAttendanceSingleDateInput = {
   date: Scalars['Date'];
 };
 
-export type Attendance_SignInOut = {
-  __typename?: 'Attendance_SignInOut';
-  attendanceCode: AttendanceCode;
-  attendanceCodeId: Scalars['Long'];
-  createdBy: Staff;
-  createdByPartyId: Scalars['Long'];
-  dateTime: Scalars['DateTime'];
-  id: Scalars['Long'];
-  note?: Maybe<Scalars['String']>;
-  student: Student;
-  studentPartyId: Scalars['Long'];
-  type: Attendance_SignInOutType;
-};
-
-export type Attendance_SignInOutInput = {
-  attendanceCodeId: Scalars['Long'];
-  datetime: Scalars['DateTime'];
-  eventAttendance?: InputMaybe<Array<InputMaybe<SaveEventAttendanceInput>>>;
-  note?: InputMaybe<Scalars['String']>;
-  sessionAttendance?: InputMaybe<Array<InputMaybe<SaveStudentSessionAttendanceInput>>>;
-  signInOutType: Attendance_SignInOutType;
-  studentPartyId: Scalars['Long'];
-};
-
-export type Attendance_SignInOutReportFilter = {
-  fromDate?: InputMaybe<Scalars['DateTime']>;
-  ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  studentPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  toDate?: InputMaybe<Scalars['DateTime']>;
-};
-
-export enum Attendance_SignInOutType {
-  SignIn = 'SIGN_IN',
-  SignOut = 'SIGN_OUT'
-}
-
 export type AuditId = {
   __typename?: 'AuditId';
   partyId?: Maybe<Scalars['Long']>;
@@ -638,6 +602,8 @@ export type CalendarEventFilter = {
   alsoShowForParties?: InputMaybe<Calender_EventFilterAlsoShowForParties>;
   calendarIds?: InputMaybe<Array<Scalars['Int']>>;
   cancellationStatus?: InputMaybe<Calendar_CancellationStatusFilter>;
+  /**  excludes events based on whether a school day or not. Default value false */
+  disableDayTypeFilter?: InputMaybe<Scalars['Boolean']>;
   endDate: Scalars['Date'];
   eventIds?: InputMaybe<Array<Scalars['Int']>>;
   individualEventFilter?: InputMaybe<IndividualEventFilter>;
@@ -1344,7 +1310,6 @@ export type CommentBank = {
   __typename?: 'CommentBank';
   active: Scalars['Boolean'];
   comments?: Maybe<Array<Comment>>;
-  custom: Scalars['Boolean'];
   description?: Maybe<Scalars['String']>;
   externalSystemId?: Maybe<Scalars['String']>;
   id: Scalars['Long'];
@@ -1990,7 +1955,6 @@ export type DashboardAssessmentFilter = {
 export type DashboardAssessmentResult = {
   __typename?: 'DashboardAssessmentResult';
   assessmentId: Scalars['Long'];
-  extraFields?: Maybe<Array<ResultExtraField>>;
   grade?: Maybe<Scalars['String']>;
   id: Scalars['Long'];
   result?: Maybe<Scalars['Int']>;
@@ -2497,6 +2461,8 @@ export type FindFreeResourcesFilter = {
   atTimesOfEvents?: InputMaybe<Array<CalendarEventIdInput>>;
   /**  Optionally search for in particular calendars. If not specified, all calendars will be searched. */
   calendarIds?: InputMaybe<Array<Scalars['Int']>>;
+  /**  excludes events based on whether a school day or not. Default value false */
+  disableDayTypeFilter?: InputMaybe<Scalars['Boolean']>;
   /**  Check against recurrence rules whether the resources are free or not. Times is set OR recurrence is set. */
   recurrence?: InputMaybe<FindFreeResourcesRecurrence>;
   resources: CalendarResourceFilter;
@@ -3025,7 +2991,6 @@ export type MakePaymentAmountInput = {
 };
 
 export type MakePaymentInput = {
-  onBehalfOfEmail?: InputMaybe<Scalars['String']>;
   paymentAmounts: Array<MakePaymentAmountInput>;
   paymentIntentId?: InputMaybe<Scalars['String']>;
   paymentMethod: PaymentMethod;
@@ -3060,7 +3025,6 @@ export type Mutation = {
   attendance_saveEventAttendance: Array<EventAttendance>;
   attendance_saveParentalAttendanceRequest: Array<ParentalAttendanceRequest>;
   attendance_saveStudentSessionAttendance: Array<StudentSessionAttendance>;
-  attendance_saveStudentSignInOut: Array<Attendance_SignInOut>;
   attendance_withdrawParentalAttendanceRequest?: Maybe<Success>;
   calendar_createCalendar?: Maybe<Calendar>;
   calendar_createCalendarEvents?: Maybe<Array<Maybe<CalendarEventRaw>>>;
@@ -3083,7 +3047,6 @@ export type Mutation = {
   communications_smsTopUp?: Maybe<SmsTopUpResponse>;
   communications_starred?: Maybe<Scalars['String']>;
   core_archiveStudentContacts: Success;
-  core_createStudent?: Maybe<Success>;
   core_deleteGroups: Success;
   core_enableBlockRotations?: Maybe<Success>;
   core_linkSiblingsAndContacts: Success;
@@ -3160,6 +3123,7 @@ export type Mutation = {
   ttsolve_clearTimeslots: TtSolve_SovlerStatus;
   ttsolve_currentBest: TtSolve_SovlerStatus;
   ttsolve_solve: Success;
+  ttsolve_upsertRestriction: Success;
   users_createProfileForGlobalUser?: Maybe<Profile>;
   users_deactivateProfiles?: Maybe<Success>;
   users_inviteUsers?: Maybe<InviteUsersResponse>;
@@ -3257,11 +3221,6 @@ export type MutationAttendance_SaveStudentSessionAttendanceArgs = {
 };
 
 
-export type MutationAttendance_SaveStudentSignInOutArgs = {
-  input?: InputMaybe<Attendance_SignInOutInput>;
-};
-
-
 export type MutationAttendance_WithdrawParentalAttendanceRequestArgs = {
   input?: InputMaybe<WithdrawParentalAttendanceRequest>;
 };
@@ -3354,11 +3313,6 @@ export type MutationCommunications_StarredArgs = {
 
 export type MutationCore_ArchiveStudentContactsArgs = {
   input: ArchiveStudentContactInput;
-};
-
-
-export type MutationCore_CreateStudentArgs = {
-  input?: InputMaybe<CreateStudentInput>;
 };
 
 
@@ -3737,6 +3691,11 @@ export type MutationTtsolve_SolveArgs = {
 };
 
 
+export type MutationTtsolve_UpsertRestrictionArgs = {
+  input?: InputMaybe<TtSolve_UpsertRestrictions>;
+};
+
+
 export type MutationUsers_CreateProfileForGlobalUserArgs = {
   input?: InputMaybe<CreateProfileForGlobalUserInput>;
 };
@@ -3928,7 +3887,7 @@ export type Notes_StudentBehaviour = {
   incidentDate: Scalars['DateTime'];
   noteId: Scalars['Long'];
   referencedParties: Array<Person>;
-  referencedPartyIds: Array<Scalars['Long']>;
+  referencedPartiesIds: Array<Scalars['Long']>;
   tagIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
   tags?: Maybe<Array<Maybe<Notes_Tag>>>;
   takenBy: Person;
@@ -4926,61 +4885,20 @@ export type Print_AssessmentOptions = {
 };
 
 export type Print_GroupMembers = {
-  fields?: InputMaybe<Array<InputMaybe<Print_GroupMembersFields>>>;
   groupIds: Array<Scalars['Long']>;
   options: Print_GroupMembersOptions;
-  orientation?: InputMaybe<Print_Orientation>;
-  sorting?: InputMaybe<Print_NameSorting>;
 };
-
-export enum Print_GroupMembersFields {
-  ClassGroup = 'CLASS_GROUP',
-  RowNumber = 'ROW_NUMBER',
-  SchoolRollNo = 'SCHOOL_ROLL_NO',
-  StudentDepartmentId = 'STUDENT_DEPARTMENT_ID',
-  StudentId = 'STUDENT_ID',
-  StudentName = 'STUDENT_NAME',
-  StudyLevel = 'STUDY_LEVEL',
-  Subject = 'SUBJECT',
-  SubjectCode = 'SUBJECT_CODE',
-  Teacher = 'TEACHER',
-  TeacherId = 'TEACHER_ID'
-}
 
 export enum Print_GroupMembersOptions {
   Csv = 'CSV',
   Print = 'PRINT'
 }
 
-export enum Print_NameSorting {
-  FirstNameLastName = 'FIRST_NAME_LAST_NAME',
-  LastNameFirstName = 'LAST_NAME_FIRST_NAME'
-}
-
-export enum Print_Orientation {
-  Horizontal = 'HORIZONTAL',
-  Vertical = 'VERTICAL'
-}
-
 export type Print_PersonsGroupMemberships = {
-  fields?: InputMaybe<Array<InputMaybe<Print_PersonsGroupMembershipsFields>>>;
   groupTypes: Array<PartyGroupType>;
   options: Print_GroupMembersOptions;
-  orientation?: InputMaybe<Print_Orientation>;
   personIds: Array<Scalars['Long']>;
-  sorting?: InputMaybe<Print_NameSorting>;
 };
-
-export enum Print_PersonsGroupMembershipsFields {
-  GroupName = 'GROUP_NAME',
-  RowNumber = 'ROW_NUMBER',
-  StudentCount = 'STUDENT_COUNT',
-  StudentNames = 'STUDENT_NAMES',
-  StudyLevel = 'STUDY_LEVEL',
-  Subject = 'SUBJECT',
-  SubjectCode = 'SUBJECT_CODE',
-  Teacher = 'TEACHER'
-}
 
 export enum Print_TimetableLayout {
   Combined = 'COMBINED',
@@ -5172,7 +5090,6 @@ export type Query = {
   attendance_eventAttendanceReport: EventAttendanceReport;
   attendance_parentalAttendanceRequests: Array<ParentalAttendanceRequest>;
   attendance_sessionAttendanceList: Array<SessionAttendanceList>;
-  attendance_signInOutReport: Array<Attendance_SignInOut>;
   attendance_studentSessionAttendance: Array<StudentSessionAttendance>;
   calendar_bellTimes: Array<Calendar_BellTime>;
   calendar_calendar: Array<Calendar>;
@@ -5283,7 +5200,9 @@ export type Query = {
   tt_swapTeacherOptions: TtSwapTeacherOptions;
   tt_timetable: TtTimetable;
   tt_timetables: Array<TtTimetable>;
-  ttsolve_getSolverInput?: Maybe<TtSolve_SolverInput>;
+  ttsolve_getSolverInput: TtSolve_SolverInput;
+  ttsolve_restrictions: TtSolve_Restrictions;
+  ttsolve_restrictionsMeta: TtSolve_RestrictionsMeta;
   users_permissionGroups?: Maybe<Array<Maybe<PermissionGroup>>>;
   users_permissionSets?: Maybe<Array<Maybe<PermissionSet>>>;
   users_schoolInfo?: Maybe<SchoolInfo>;
@@ -5401,11 +5320,6 @@ export type QueryAttendance_ParentalAttendanceRequestsArgs = {
 
 export type QueryAttendance_SessionAttendanceListArgs = {
   filter?: InputMaybe<SessionAttendanceListFilter>;
-};
-
-
-export type QueryAttendance_SignInOutReportArgs = {
-  filter?: InputMaybe<Attendance_SignInOutReportFilter>;
 };
 
 
@@ -5864,6 +5778,16 @@ export type QueryTtsolve_GetSolverInputArgs = {
 };
 
 
+export type QueryTtsolve_RestrictionsArgs = {
+  filter: TtTimetableFilter;
+};
+
+
+export type QueryTtsolve_RestrictionsMetaArgs = {
+  filter: TtTimetableFilter;
+};
+
+
 export type QueryUsers_PermissionGroupsArgs = {
   filter?: InputMaybe<PermissionGroupFilter>;
 };
@@ -6260,6 +6184,8 @@ export type Swm_DeleteSubstitution = {
 };
 
 export type Swm_EventsForSubstitutionFilter = {
+  /**  excludes events based on whether a school day or not. Default value false */
+  disableDayTypeFilter?: InputMaybe<Scalars['Boolean']>;
   fromDate: Scalars['Date'];
   staffPartyIds?: InputMaybe<Array<Scalars['Long']>>;
   toDate: Scalars['Date'];
@@ -6971,7 +6897,6 @@ export type SaveSolution = {
 
 export type SaveStateCbaAssessmentInput = {
   endDate: Scalars['Date'];
-  externalSystemId?: InputMaybe<Scalars['String']>;
   extraFields?: InputMaybe<Array<InputMaybe<SaveExtraFieldInput>>>;
   id?: InputMaybe<Scalars['Long']>;
   startDate: Scalars['Date'];
@@ -8695,6 +8620,97 @@ export type Trustee = {
   trusteeId?: Maybe<Scalars['Int']>;
 };
 
+export enum TtSolveConstraintType {
+  Hard = 'HARD',
+  Soft = 'SOFT'
+}
+
+export type TtSolve_Restriction = {
+  __typename?: 'TtSolve_Restriction';
+  arguments?: Maybe<Array<TtSolve_RestrictionArgumentField>>;
+  createdBy: AuditPerson;
+  createdByPartyId: Scalars['Long'];
+  description: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  restrictionIdx: Scalars['Int'];
+  ruleId: TtSolve_RestrictionRuleId;
+  type: TtSolve_RestrictionType;
+  updatedBy: AuditPerson;
+  updatedByPartyId: Scalars['Long'];
+};
+
+export type TtSolve_RestrictionArgumentField = {
+  __typename?: 'TtSolve_RestrictionArgumentField';
+  type: TtSolve_RestrictionArgumentInputType;
+  /**  possible values if a dropdown list */
+  value?: Maybe<Scalars['Object']>;
+};
+
+export enum TtSolve_RestrictionArgumentFieldType {
+  Number = 'NUMBER',
+  Party = 'PARTY',
+  Room = 'ROOM',
+  SearchExpression = 'SEARCH_EXPRESSION',
+  Timeslot = 'TIMESLOT'
+}
+
+export enum TtSolve_RestrictionArgumentInputType {
+  HardSoft = 'HARD_SOFT',
+  MultiSelect = 'MULTI_SELECT',
+  Number = 'NUMBER',
+  SearchExpression = 'SEARCH_EXPRESSION',
+  Select = 'SELECT',
+  Timeslot = 'TIMESLOT',
+  TimeslotHardSoft = 'TIMESLOT_HARD_SOFT'
+}
+
+export type TtSolve_RestrictionArgumentMetaField = {
+  __typename?: 'TtSolve_RestrictionArgumentMetaField';
+  /**  possible values if a dropdown list */
+  selectValues?: Maybe<Array<TtSolve_RestrictionDropdownValues>>;
+  type: TtSolve_RestrictionArgumentInputType;
+};
+
+export type TtSolve_RestrictionDropdownValues = {
+  __typename?: 'TtSolve_RestrictionDropdownValues';
+  id?: Maybe<Scalars['Object']>;
+  value?: Maybe<Scalars['String']>;
+};
+
+export type TtSolve_RestrictionMeta = {
+  __typename?: 'TtSolve_RestrictionMeta';
+  arguments?: Maybe<Array<Maybe<TtSolve_RestrictionArgumentMetaField>>>;
+  ruleId: TtSolve_RestrictionRuleId;
+};
+
+export enum TtSolve_RestrictionRuleId {
+  RoomExcludedTimeslots = 'room_excluded_timeslots',
+  SubjectGroupExcludedTimeslots = 'subject_group_excluded_timeslots',
+  SubjectGroupNoDoubleOnTimeslots = 'subject_group_no_double_on_timeslots',
+  TeacherExcludedTimeslots = 'teacher_excluded_timeslots',
+  TeacherLunchSplit = 'teacher_lunch_split',
+  TeacherMaxLessonsPerDay = 'teacher_max_lessons_per_day',
+  TeacherNumDaysOff = 'teacher_num_days_off',
+  TeacherNumHalfDays = 'teacher_num_half_days',
+  TeacherPrefRoomId = 'teacher_pref_room_id'
+}
+
+export enum TtSolve_RestrictionType {
+  Room = 'ROOM',
+  SubjectGroup = 'SUBJECT_GROUP',
+  Teacher = 'TEACHER'
+}
+
+export type TtSolve_Restrictions = {
+  __typename?: 'TtSolve_Restrictions';
+  resctriction: Array<TtSolve_Restriction>;
+};
+
+export type TtSolve_RestrictionsMeta = {
+  __typename?: 'TtSolve_RestrictionsMeta';
+  restriction: Array<TtSolve_RestrictionMeta>;
+};
+
 export type TtSolve_SolveParams = {
   timetableId: Scalars['Int'];
 };
@@ -8710,6 +8726,24 @@ export type TtSolve_SovlerStatus = {
   lessonsTotal?: Maybe<Scalars['Int']>;
   score?: Maybe<Scalars['String']>;
   solverStatus?: Maybe<Scalars['String']>;
+};
+
+export type TtSolve_TimeslotHardSoftInput = {
+  hardSoft?: InputMaybe<TtSolveConstraintType>;
+  timeslot?: InputMaybe<TtTimeslotIdInput>;
+};
+
+export type TtSolve_UpsertRestriction = {
+  arguments?: InputMaybe<Array<InputMaybe<Scalars['Object']>>>;
+  description?: InputMaybe<Scalars['String']>;
+  enabled: Scalars['Boolean'];
+  restrictionIdx?: InputMaybe<Scalars['Int']>;
+  ruleId: TtSolve_RestrictionRuleId;
+};
+
+export type TtSolve_UpsertRestrictions = {
+  restriction: Array<TtSolve_UpsertRestriction>;
+  timetableId: Scalars['Int'];
 };
 
 export type Tt_AddLessonFilter = {
@@ -10796,7 +10830,7 @@ export type Ttsolve_GetSolverInputQueryVariables = Exact<{
 }>;
 
 
-export type Ttsolve_GetSolverInputQuery = { __typename?: 'Query', ttsolve_getSolverInput?: { __typename?: 'TtSolve_SolverInput', input?: any | null } | null };
+export type Ttsolve_GetSolverInputQuery = { __typename?: 'Query', ttsolve_getSolverInput: { __typename?: 'TtSolve_SolverInput', input?: any | null } };
 
 export type Ttsolve_SolveMutationVariables = Exact<{
   input?: InputMaybe<TtSolve_SolveParams>;
