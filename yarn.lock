@@ -6879,6 +6879,7 @@ __metadata:
     "@types/file-saver": ^2.0.5
     "@tyro/api": "*"
     "@tyro/attendance": "*"
+    "@tyro/calendar": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"

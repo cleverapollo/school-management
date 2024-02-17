@@ -235,6 +235,9 @@ export function PayFeesStepTwo() {
       paymentMethod:
         paymentsToPayAndMethod?.paymentMethod ?? PaymentMethod.Card,
       paymentStatus: PaymentStatus.Created,
+      onBehalfOfEmail:
+        paymentsToPayAndMethod?.onBehalfOf?.personalInformation?.primaryEmail
+          ?.email,
     }),
     [paymentsToPayAndMethod]
   );

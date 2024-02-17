@@ -83,7 +83,7 @@ const getContactColumns = (
 export default function ContactsListPage() {
   const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
   const { displayName, displayNames } = usePreferredNameLayout();
-  const { data: contactsData = [] } = useContacts();
+  const { data: contactsData = [] } = useContacts({});
   const { composeEmail } = useMailSettings();
   const { hasPermission } = usePermissions();
   const [selectedContacts, setSelectedContacts] = useState<

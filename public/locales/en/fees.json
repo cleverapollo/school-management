@@ -96,5 +96,6 @@
     "OUTSTANDING": "Outstanding",
     "OVERDUE": "Overdue"
   },
-  "cantPayAsSomeSelectedFeesHaveBeenFullyPaid": "You can not pay as some selected fees have been fully paid"
+  "cantPayAsSomeSelectedFeesHaveBeenFullyPaid": "You can not pay as some selected fees have been fully paid",
+  "onBehalfOf": "On behalf of"
 }
