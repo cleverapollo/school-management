@@ -124,6 +124,7 @@ const getStudentNoteColumns = (
             {
               label: translate('common:actions.delete'),
               icon: <TrashIcon />,
+              isDelete: true,
               onClick: () => onDelete(data),
             },
           ]}

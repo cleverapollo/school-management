@@ -237,6 +237,7 @@ export default function SupportGroups() {
       {
         label: t('groups:deleteGroups', { count: selectedGroups.length }),
         icon: <TrashIcon />,
+        isDelete: true,
         hasAccess: () => isTyroUser,
         onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
       },

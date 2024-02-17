@@ -52,7 +52,8 @@ export function getCatalogueSubjects(filter?: SubjectFilter) {
 export function useCatalogueSubjects(filter?: SubjectFilter) {
   return useQuery({
     ...catalogueSubjectsQuery(filter),
-    select: ({ catalogue_subjects }) => catalogue_subjects,
+    select: ({ catalogue_subjects }) =>
+      catalogue_subjects.sort((a, b) => a.id - b.id),
   });
 }
 

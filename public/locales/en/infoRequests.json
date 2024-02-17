@@ -1,0 +1,8 @@
+{
+  "informationRequests": "Information requests",
+  "status": {
+    "COMPLETE": "Complete",
+    "INCOMPLETE": "Incomplete",
+    "PARTIALLY_COMPLETE": "Partially complete"
+  }
+}

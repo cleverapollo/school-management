@@ -109,6 +109,7 @@ const getColumnDefs = (
               label: t('common:actions.delete'),
               icon: <TrashIcon />,
               onClick: () => onClickDelete(data),
+              isDelete: true,
             },
           ]}
         />

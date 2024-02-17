@@ -34,6 +34,7 @@ import { routes as authRoutes } from '@tyro/authentication';
 import { getRoutes as getCalendarRoutes } from '@tyro/calendar';
 import { getRoutes as getClassListManagerRoutes } from '@tyro/class-list-manager';
 import { getRoutes as getGroupRoutes } from '@tyro/groups';
+import { getRoutes as getInfoRequestsRoutes } from '@tyro/info-requests';
 import { getRoutes as getPrintingRoutes } from '@tyro/printing';
 import { getRoutes as getMailRoutes } from '@tyro/mail';
 import { getRoutes as getFeeRoutes } from '@tyro/fees';
@@ -43,6 +44,7 @@ import { getRoutes as getSchoolActivitiesRoutes } from '@tyro/school-activities'
 import { getRoutes as getPeopleRoutes } from '@tyro/people';
 import { getRoutes as getReportingRoutes } from '@tyro/reporting';
 import { getRoutes as getSettingsRoutes } from '@tyro/settings';
+import { getRoutes as getSubjectOptionsRoutes } from '@tyro/subject-options';
 import { getRoutes as getSubstitutionRoutes } from '@tyro/substitution';
 import { getRoutes as getTimetableRoutes } from '@tyro/timetable';
 import { getRoutes as getAdminRoutes } from '@tyro/tyro-admin';
@@ -132,11 +134,13 @@ export const getNavCategories = (t: TFunction<'navigation'[]>) => [
   ...getAttendanceRoutes(t),
   ...getMailRoutes(t),
   ...getFeeRoutes(t),
+  ...getInfoRequestsRoutes(t),
   ...getAssessmentRoutes(t),
   ...getSchoolActivitiesRoutes(t),
   ...getPeopleRoutes(t),
   ...getReportingRoutes(t),
   ...getSmsRoutes(t),
+  ...getSubjectOptionsRoutes(t),
   ...getSubstitutionRoutes(t),
   ...getTimetableRoutes(t),
   ...getPrintingRoutes(t),
