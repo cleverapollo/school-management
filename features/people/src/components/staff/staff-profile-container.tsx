@@ -52,7 +52,6 @@ export default function StaffProfileContainer() {
         type={ListNavigatorType.Staff}
         itemId={idNumber}
         optionTextKey="name"
-        estimateElementSize={44}
         getRenderOption={PartyListNavigatorMenuItem}
         defaultListData={defaultListData}
         pageHeadingProps={{

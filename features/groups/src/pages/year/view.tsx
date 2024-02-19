@@ -166,7 +166,6 @@ export default function ViewYearGroupPage() {
           type={ListNavigatorType.YearGroup}
           itemId={groupIdAsNumber}
           optionTextKey="name"
-          estimateElementSize={44}
           getRenderOption={PartyListNavigatorMenuItem}
           defaultListData={defaultListData}
           pageHeadingProps={{

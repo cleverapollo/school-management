@@ -53,7 +53,7 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
   optionTextKey,
   getOptionText: customGetOptionText,
   getRenderOption,
-  estimateElementSize = 52,
+  estimateElementSize = 44,
   ...navSettingsProps
 }: ListNavigatorProps<StoreOption>) {
   const id = useId();

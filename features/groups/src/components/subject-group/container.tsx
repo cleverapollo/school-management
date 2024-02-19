@@ -57,7 +57,6 @@ export default function SubjectGroupContainer() {
         type={ListNavigatorType.SubjectGroup}
         itemId={groupIdNumber}
         optionTextKey="name"
-        estimateElementSize={44}
         getRenderOption={PartyListNavigatorMenuItem}
         defaultListData={defaultListData}
         pageHeadingProps={{

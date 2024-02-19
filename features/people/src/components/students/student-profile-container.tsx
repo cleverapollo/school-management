@@ -52,6 +52,7 @@ export default function StudentProfileContainer() {
         itemId={idNumber}
         optionTextKey="name"
         getRenderOption={PartyListNavigatorMenuItem}
+        estimateElementSize={52}
         defaultListData={defaultListData}
         pageHeadingProps={{
           title: userProfileName,

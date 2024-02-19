@@ -635,7 +635,6 @@ export default function EditTermAssessmentResults() {
         type={ListNavigatorType.SubjectGroup}
         itemId={subjectGroupIdAsNumber}
         optionTextKey="name"
-        estimateElementSize={44}
         defaultListData={defaultListData}
         getRenderOption={PartyListNavigatorMenuItem}
         pageHeadingProps={{

@@ -55,7 +55,6 @@ export default function SupportGroupContainer() {
         type={ListNavigatorType.SupportGroup}
         itemId={groupIdNumber}
         optionTextKey="name"
-        estimateElementSize={44}
         getRenderOption={PartyListNavigatorMenuItem}
         defaultListData={defaultListData}
         pageHeadingProps={{

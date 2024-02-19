@@ -461,7 +461,6 @@ export default function EditStateCbaResults() {
         type={ListNavigatorType.SubjectGroup}
         itemId={subjectGroupIdAsNumber}
         optionTextKey="name"
-        estimateElementSize={44}
         defaultListData={defaultListData}
         getRenderOption={PartyListNavigatorMenuItem}
         pageHeadingProps={{

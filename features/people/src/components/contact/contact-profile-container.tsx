@@ -49,7 +49,6 @@ export default function ContactProfileContainer() {
         type={ListNavigatorType.Contact}
         itemId={idNumber}
         optionTextKey="name"
-        estimateElementSize={44}
         getRenderOption={PartyListNavigatorMenuItem}
         defaultListData={defaultListData}
         pageHeadingProps={{

@@ -42,7 +42,6 @@ export default function SupportGroupContainer() {
         type={ListNavigatorType.CustomGroup}
         itemId={partyId}
         optionTextKey="name"
-        estimateElementSize={44}
         getRenderOption={PartyListNavigatorMenuItem}
         defaultListData={defaultListData}
         pageHeadingProps={{

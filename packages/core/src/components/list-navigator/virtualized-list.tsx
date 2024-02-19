@@ -25,7 +25,7 @@ function VirtualizedListInner<StoreOption extends ListNavigatorSelectOption>({
   headerHeight,
   currentItemId,
   onSelectItem,
-  estimateElementSize = 52,
+  estimateElementSize = 44,
 }: VirtualizedListProps<StoreOption>) {
   const id = useId();
   const initialItemsLength = useRef(filteredItems.length);
