@@ -13,10 +13,10 @@ export function LinkRender({ text }: LinkRenderProps) {
     }
 
     // Regular expression for detecting links in the format "(href)[linkName]"
-    const linkPattern = /\((http[s]?:\/\/\S+)\)\[(.*?)\]/g;
+    const linkPattern = /\[(.*?)\]\((http[s]?:\/\/\S+)\)/g;
     const textWithCustomLinkParsed = text.replace(
       linkPattern,
-      (_, href: string, linkName: string) =>
+      (_, linkName: string, href: string) =>
         `<a href="${href}" rel="noopener noreferrer">${linkName}</a>`
     );
 
