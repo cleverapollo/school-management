@@ -51,7 +51,9 @@ export function PartyListNavigatorMenuItem({
         }}
       />
       <Stack>
-        <Typography variant="subtitle2">{item.name}</Typography>
+        <Typography variant="subtitle2" component="span">
+          {item.name}
+        </Typography>
         {item?.caption && (
           <Typography variant="caption">{item?.caption}</Typography>
         )}

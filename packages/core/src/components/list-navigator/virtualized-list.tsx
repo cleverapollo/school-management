@@ -90,7 +90,7 @@ function VirtualizedListInner<StoreOption extends ListNavigatorSelectOption>({
       id={`${id}-menu`}
       aria-labelledby={id}
       style={{
-        height: `${virtualizer.getTotalSize()}px`,
+        paddingBottom: `${virtualizer.getTotalSize()}px`,
         position: 'relative',
         pointerEvents: virtualizer.isScrolling ? 'none' : 'auto',
       }}
