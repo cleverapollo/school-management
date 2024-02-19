@@ -34,7 +34,7 @@ import { Box, Button, Chip, ChipProps, Fade, Typography } from '@mui/material';
 import { MobileIcon, SendMailIcon, SyncIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { useMailSettings } from '@tyro/mail';
-import { useAssessmentById } from '../../api/assessments';
+import { useAssessmentById, useAssessments } from '../../api/assessments';
 import { useAssessmentResults } from '../../api/assessment-results';
 import {
   useAssessmentSubjectGroups,
@@ -255,11 +255,23 @@ export default function ViewStateCba() {
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       assessmentData?.name,
-      visibleDataRef.current?.().map(({ subjectGroup }) => ({
-        id: subjectGroup.partyId,
-        name: subjectGroup.name,
-        type: 'group',
-      }))
+      visibleDataRef.current?.().map(({ subjectGroup }) => {
+        const subject = subjectGroup?.subjects?.[0];
+        const bgColorStyle = subject?.colour
+          ? { bgcolor: `${subject.colour}.500` }
+          : {};
+
+        return {
+          id: subjectGroup.partyId,
+          name: subjectGroup.name,
+          type: 'group',
+          avatarProps: {
+            sx: {
+              ...bgColorStyle,
+            },
+          },
+        };
+      })
     );
   }, [assessmentData]);
 
@@ -301,6 +313,25 @@ export default function ViewStateCba() {
     [t, hasPermission, staffFromSelectedGroups, isSendSmsOpen]
   );
 
+  const { data: assessmentsData = [] } = useAssessments({
+    academicNameSpaceId: academicNameSpaceIdAsNumber ?? 0,
+  });
+
+  const defaultListData = useMemo(
+    () =>
+      assessmentsData.map<
+        BasicListNavigatorMenuItemParams & { type: AssessmentType }
+      >(({ id, name, assessmentType }) => ({
+        id,
+        name,
+        type: assessmentType,
+        caption: assessmentType
+          ? t(`assessments:assessmentTypes.${assessmentType}`)
+          : undefined,
+      })),
+    [assessmentsData]
+  );
+
   return (
     <>
       <PageContainer
@@ -314,13 +345,14 @@ export default function ViewStateCba() {
           optionTextKey="name"
           getRenderOption={BasicListNavigatorMenuItem}
           estimateElementSize={52}
+          defaultListData={defaultListData}
           getNavigationUrl={({ currentLocation, currentItem, newItem }) => {
             const currentTypePath =
-              assessmentUrlPathBasedOnType[currentItem.type];
-            const newTypePath = assessmentUrlPathBasedOnType[newItem.type];
+              assessmentUrlPathBasedOnType[currentItem?.type];
+            const newTypePath = assessmentUrlPathBasedOnType[newItem?.type];
             return currentLocation.pathname
               .replace(currentTypePath, newTypePath)
-              .replace(`${currentItem.id}`, `${newItem.id}`);
+              .replace(`${currentItem?.id}`, `${newItem?.id}`);
           }}
           pageHeadingProps={{
             title: t('assessments:pageHeading.termAssessmentSubjectGroups', {

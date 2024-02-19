@@ -390,33 +390,29 @@ export type Attendance_SaveBulkAttendanceSingleDateInput = {
   date: Scalars['Date'];
 };
 
-export type Attendance_SignInOut = {
-  __typename?: 'Attendance_SignInOut';
-  attendanceCode: AttendanceCode;
-  attendanceCodeId: Scalars['Long'];
-  createdBy: Staff;
-  createdByPartyId: Scalars['Long'];
-  dateTime: Scalars['DateTime'];
-  id: Scalars['Long'];
-  note?: Maybe<Scalars['String']>;
-  student: Student;
-  studentPartyId: Scalars['Long'];
-  type: Attendance_SignInOutType;
-};
-
 export type Attendance_SignInOutInput = {
-  attendanceCodeId: Scalars['Long'];
+  attendanceCodeId?: InputMaybe<Scalars['Long']>;
   datetime: Scalars['DateTime'];
   eventAttendance?: InputMaybe<Array<InputMaybe<SaveEventAttendanceInput>>>;
+  firstName?: InputMaybe<Scalars['String']>;
+  lastName?: InputMaybe<Scalars['String']>;
   note?: InputMaybe<Scalars['String']>;
+  personType: Attendance_SignInOutPersonType;
   sessionAttendance?: InputMaybe<Array<InputMaybe<SaveStudentSessionAttendanceInput>>>;
   signInOutType: Attendance_SignInOutType;
-  studentPartyId: Scalars['Long'];
+  studentPartyId?: InputMaybe<Scalars['Long']>;
+  visitingPartyId?: InputMaybe<Scalars['Long']>;
 };
+
+export enum Attendance_SignInOutPersonType {
+  Student = 'STUDENT',
+  Visitor = 'VISITOR'
+}
 
 export type Attendance_SignInOutReportFilter = {
   fromDate?: InputMaybe<Scalars['DateTime']>;
   ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  signInOutPersonType: Attendance_SignInOutPersonType;
   studentPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   toDate?: InputMaybe<Scalars['DateTime']>;
 };
@@ -638,6 +634,8 @@ export type CalendarEventFilter = {
   alsoShowForParties?: InputMaybe<Calender_EventFilterAlsoShowForParties>;
   calendarIds?: InputMaybe<Array<Scalars['Int']>>;
   cancellationStatus?: InputMaybe<Calendar_CancellationStatusFilter>;
+  /**  excludes events based on whether a school day or not. Default value false */
+  disableDayTypeFilter?: InputMaybe<Scalars['Boolean']>;
   endDate: Scalars['Date'];
   eventIds?: InputMaybe<Array<Scalars['Int']>>;
   individualEventFilter?: InputMaybe<IndividualEventFilter>;
@@ -2497,6 +2495,8 @@ export type FindFreeResourcesFilter = {
   atTimesOfEvents?: InputMaybe<Array<CalendarEventIdInput>>;
   /**  Optionally search for in particular calendars. If not specified, all calendars will be searched. */
   calendarIds?: InputMaybe<Array<Scalars['Int']>>;
+  /**  excludes events based on whether a school day or not. Default value false */
+  disableDayTypeFilter?: InputMaybe<Scalars['Boolean']>;
   /**  Check against recurrence rules whether the resources are free or not. Times is set OR recurrence is set. */
   recurrence?: InputMaybe<FindFreeResourcesRecurrence>;
   resources: CalendarResourceFilter;
@@ -3059,8 +3059,8 @@ export type Mutation = {
   attendance_saveBulkAttendance?: Maybe<Success>;
   attendance_saveEventAttendance: Array<EventAttendance>;
   attendance_saveParentalAttendanceRequest: Array<ParentalAttendanceRequest>;
+  attendance_saveSignInOut: Array<SignInOut>;
   attendance_saveStudentSessionAttendance: Array<StudentSessionAttendance>;
-  attendance_saveStudentSignInOut: Array<Attendance_SignInOut>;
   attendance_withdrawParentalAttendanceRequest?: Maybe<Success>;
   calendar_createCalendar?: Maybe<Calendar>;
   calendar_createCalendarEvents?: Maybe<Array<Maybe<CalendarEventRaw>>>;
@@ -3160,6 +3160,7 @@ export type Mutation = {
   ttsolve_clearTimeslots: TtSolve_SovlerStatus;
   ttsolve_currentBest: TtSolve_SovlerStatus;
   ttsolve_solve: Success;
+  ttsolve_upsertRestriction: Success;
   users_createProfileForGlobalUser?: Maybe<Profile>;
   users_deactivateProfiles?: Maybe<Success>;
   users_inviteUsers?: Maybe<InviteUsersResponse>;
@@ -3252,13 +3253,13 @@ export type MutationAttendance_SaveParentalAttendanceRequestArgs = {
 };
 
 
-export type MutationAttendance_SaveStudentSessionAttendanceArgs = {
-  input?: InputMaybe<SaveStudentSessionAttendanceInput>;
+export type MutationAttendance_SaveSignInOutArgs = {
+  input?: InputMaybe<Attendance_SignInOutInput>;
 };
 
 
-export type MutationAttendance_SaveStudentSignInOutArgs = {
-  input?: InputMaybe<Attendance_SignInOutInput>;
+export type MutationAttendance_SaveStudentSessionAttendanceArgs = {
+  input?: InputMaybe<SaveStudentSessionAttendanceInput>;
 };
 
 
@@ -3734,6 +3735,11 @@ export type MutationTtsolve_CurrentBestArgs = {
 
 export type MutationTtsolve_SolveArgs = {
   input?: InputMaybe<TtSolve_SolveParams>;
+};
+
+
+export type MutationTtsolve_UpsertRestrictionArgs = {
+  input?: InputMaybe<TtSolve_UpsertRestrictions>;
 };
 
 
@@ -5172,7 +5178,7 @@ export type Query = {
   attendance_eventAttendanceReport: EventAttendanceReport;
   attendance_parentalAttendanceRequests: Array<ParentalAttendanceRequest>;
   attendance_sessionAttendanceList: Array<SessionAttendanceList>;
-  attendance_signInOutReport: Array<Attendance_SignInOut>;
+  attendance_signInOutReport: Array<SignInOut>;
   attendance_studentSessionAttendance: Array<StudentSessionAttendance>;
   calendar_bellTimes: Array<Calendar_BellTime>;
   calendar_calendar: Array<Calendar>;
@@ -5283,7 +5289,9 @@ export type Query = {
   tt_swapTeacherOptions: TtSwapTeacherOptions;
   tt_timetable: TtTimetable;
   tt_timetables: Array<TtTimetable>;
-  ttsolve_getSolverInput?: Maybe<TtSolve_SolverInput>;
+  ttsolve_getSolverInput: TtSolve_SolverInput;
+  ttsolve_restrictions: TtSolve_Restrictions;
+  ttsolve_restrictionsMeta: TtSolve_RestrictionsMeta;
   users_permissionGroups?: Maybe<Array<Maybe<PermissionGroup>>>;
   users_permissionSets?: Maybe<Array<Maybe<PermissionSet>>>;
   users_schoolInfo?: Maybe<SchoolInfo>;
@@ -5864,6 +5872,16 @@ export type QueryTtsolve_GetSolverInputArgs = {
 };
 
 
+export type QueryTtsolve_RestrictionsArgs = {
+  filter: TtTimetableFilter;
+};
+
+
+export type QueryTtsolve_RestrictionsMetaArgs = {
+  filter: TtTimetableFilter;
+};
+
+
 export type QueryUsers_PermissionGroupsArgs = {
   filter?: InputMaybe<PermissionGroupFilter>;
 };
@@ -6260,6 +6278,8 @@ export type Swm_DeleteSubstitution = {
 };
 
 export type Swm_EventsForSubstitutionFilter = {
+  /**  excludes events based on whether a school day or not. Default value false */
+  disableDayTypeFilter?: InputMaybe<Scalars['Boolean']>;
   fromDate: Scalars['Date'];
   staffPartyIds?: InputMaybe<Array<Scalars['Long']>>;
   toDate: Scalars['Date'];
@@ -7359,6 +7379,16 @@ export type Sibling = {
   studentPartyId: Scalars['Long'];
 };
 
+export type SignInOut = {
+  createdBy: Staff;
+  createdByPartyId: Scalars['Long'];
+  dateTime: Scalars['DateTime'];
+  id: Scalars['Long'];
+  note?: Maybe<Scalars['String']>;
+  signInOutPersonType: Attendance_SignInOutPersonType;
+  type: Attendance_SignInOutType;
+};
+
 export type Sms = {
   __typename?: 'Sms';
   body: Scalars['String'];
@@ -7860,6 +7890,21 @@ export type StudentSessionAttendanceFilter = {
   from: Scalars['Date'];
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   to: Scalars['Date'];
+};
+
+export type StudentSignInOut = SignInOut & {
+  __typename?: 'StudentSignInOut';
+  attendanceCode: AttendanceCode;
+  attendanceCodeId: Scalars['Long'];
+  createdBy: Staff;
+  createdByPartyId: Scalars['Long'];
+  dateTime: Scalars['DateTime'];
+  id: Scalars['Long'];
+  note?: Maybe<Scalars['String']>;
+  signInOutPersonType: Attendance_SignInOutPersonType;
+  student: Student;
+  studentPartyId: Scalars['Long'];
+  type: Attendance_SignInOutType;
 };
 
 export type StudentSubjectGroup = {
@@ -8695,6 +8740,97 @@ export type Trustee = {
   trusteeId?: Maybe<Scalars['Int']>;
 };
 
+export enum TtSolveConstraintType {
+  Hard = 'HARD',
+  Soft = 'SOFT'
+}
+
+export type TtSolve_Restriction = {
+  __typename?: 'TtSolve_Restriction';
+  arguments?: Maybe<Array<TtSolve_RestrictionArgumentField>>;
+  createdBy: AuditPerson;
+  createdByPartyId: Scalars['Long'];
+  description: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  restrictionIdx: Scalars['Int'];
+  ruleId: TtSolve_RestrictionRuleId;
+  type: TtSolve_RestrictionType;
+  updatedBy: AuditPerson;
+  updatedByPartyId: Scalars['Long'];
+};
+
+export type TtSolve_RestrictionArgumentField = {
+  __typename?: 'TtSolve_RestrictionArgumentField';
+  type: TtSolve_RestrictionArgumentInputType;
+  /**  possible values if a dropdown list */
+  value?: Maybe<Scalars['Object']>;
+};
+
+export enum TtSolve_RestrictionArgumentFieldType {
+  Number = 'NUMBER',
+  Party = 'PARTY',
+  Room = 'ROOM',
+  SearchExpression = 'SEARCH_EXPRESSION',
+  Timeslot = 'TIMESLOT'
+}
+
+export enum TtSolve_RestrictionArgumentInputType {
+  HardSoft = 'HARD_SOFT',
+  MultiSelect = 'MULTI_SELECT',
+  Number = 'NUMBER',
+  SearchExpression = 'SEARCH_EXPRESSION',
+  Select = 'SELECT',
+  Timeslot = 'TIMESLOT',
+  TimeslotHardSoft = 'TIMESLOT_HARD_SOFT'
+}
+
+export type TtSolve_RestrictionArgumentMetaField = {
+  __typename?: 'TtSolve_RestrictionArgumentMetaField';
+  /**  possible values if a dropdown list */
+  selectValues?: Maybe<Array<TtSolve_RestrictionDropdownValues>>;
+  type: TtSolve_RestrictionArgumentInputType;
+};
+
+export type TtSolve_RestrictionDropdownValues = {
+  __typename?: 'TtSolve_RestrictionDropdownValues';
+  id?: Maybe<Scalars['Object']>;
+  value?: Maybe<Scalars['String']>;
+};
+
+export type TtSolve_RestrictionMeta = {
+  __typename?: 'TtSolve_RestrictionMeta';
+  arguments?: Maybe<Array<Maybe<TtSolve_RestrictionArgumentMetaField>>>;
+  ruleId: TtSolve_RestrictionRuleId;
+};
+
+export enum TtSolve_RestrictionRuleId {
+  RoomExcludedTimeslots = 'room_excluded_timeslots',
+  SubjectGroupExcludedTimeslots = 'subject_group_excluded_timeslots',
+  SubjectGroupNoDoubleOnTimeslots = 'subject_group_no_double_on_timeslots',
+  TeacherExcludedTimeslots = 'teacher_excluded_timeslots',
+  TeacherLunchSplit = 'teacher_lunch_split',
+  TeacherMaxLessonsPerDay = 'teacher_max_lessons_per_day',
+  TeacherNumDaysOff = 'teacher_num_days_off',
+  TeacherNumHalfDays = 'teacher_num_half_days',
+  TeacherPrefRoomId = 'teacher_pref_room_id'
+}
+
+export enum TtSolve_RestrictionType {
+  Room = 'ROOM',
+  SubjectGroup = 'SUBJECT_GROUP',
+  Teacher = 'TEACHER'
+}
+
+export type TtSolve_Restrictions = {
+  __typename?: 'TtSolve_Restrictions';
+  resctriction: Array<TtSolve_Restriction>;
+};
+
+export type TtSolve_RestrictionsMeta = {
+  __typename?: 'TtSolve_RestrictionsMeta';
+  restriction: Array<TtSolve_RestrictionMeta>;
+};
+
 export type TtSolve_SolveParams = {
   timetableId: Scalars['Int'];
 };
@@ -8710,6 +8846,24 @@ export type TtSolve_SovlerStatus = {
   lessonsTotal?: Maybe<Scalars['Int']>;
   score?: Maybe<Scalars['String']>;
   solverStatus?: Maybe<Scalars['String']>;
+};
+
+export type TtSolve_TimeslotHardSoftInput = {
+  hardSoft?: InputMaybe<TtSolveConstraintType>;
+  timeslot?: InputMaybe<TtTimeslotIdInput>;
+};
+
+export type TtSolve_UpsertRestriction = {
+  arguments?: InputMaybe<Array<InputMaybe<Scalars['Object']>>>;
+  description?: InputMaybe<Scalars['String']>;
+  enabled: Scalars['Boolean'];
+  restrictionIdx?: InputMaybe<Scalars['Int']>;
+  ruleId: TtSolve_RestrictionRuleId;
+};
+
+export type TtSolve_UpsertRestrictions = {
+  restriction: Array<TtSolve_UpsertRestriction>;
+  timetableId: Scalars['Int'];
 };
 
 export type Tt_AddLessonFilter = {
@@ -9091,6 +9245,21 @@ export enum UserType {
   Tyro = 'TYRO'
 }
 
+export type VisitorSignInOut = SignInOut & {
+  __typename?: 'VisitorSignInOut';
+  createdBy: Staff;
+  createdByPartyId: Scalars['Long'];
+  dateTime: Scalars['DateTime'];
+  firstname?: Maybe<Scalars['String']>;
+  id: Scalars['Long'];
+  lastname?: Maybe<Scalars['String']>;
+  note?: Maybe<Scalars['String']>;
+  signInOutPersonType: Attendance_SignInOutPersonType;
+  type: Attendance_SignInOutType;
+  visitingStaff: Staff;
+  visitingStaffPartyId: Scalars['Long'];
+};
+
 export type Wellbeing_DeleteStudentAenInput = {
   id: Scalars['Int'];
   studentPartyId: Scalars['Long'];
@@ -9215,7 +9384,7 @@ export type AssessmentSubjectGroupsQueryVariables = Exact<{
 }>;
 
 
-export type AssessmentSubjectGroupsQuery = { __typename?: 'Query', assessment_assessmentSubjectGroups?: Array<{ __typename?: 'AssessmentSubjectGroup', resultsTotal: number, resultsEntered: number, commentsEntered: number, commentsTotal: number, extraFieldResultsEntered: number, ppodSyncStatus?: SyncStatus | null, published?: boolean | null, subjectGroup: { __typename?: 'SubjectGroup', partyId: number, name: string, avatarUrl?: string | null, subjects: Array<{ __typename?: 'Subject', name: string }>, staff: Array<{ __typename?: 'Person', partyId: number, avatarUrl?: string | null, firstName?: string | null, lastName?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null }>, yearGroups: Array<{ __typename?: 'YearGroupEnrollment', yearGroupId: number, name: string }> } }> | null };
+export type AssessmentSubjectGroupsQuery = { __typename?: 'Query', assessment_assessmentSubjectGroups?: Array<{ __typename?: 'AssessmentSubjectGroup', resultsTotal: number, resultsEntered: number, commentsEntered: number, commentsTotal: number, extraFieldResultsEntered: number, ppodSyncStatus?: SyncStatus | null, published?: boolean | null, subjectGroup: { __typename?: 'SubjectGroup', partyId: number, name: string, avatarUrl?: string | null, subjects: Array<{ __typename?: 'Subject', name: string, colour?: Colour | null }>, staff: Array<{ __typename?: 'Person', partyId: number, avatarUrl?: string | null, firstName?: string | null, lastName?: string | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null }>, yearGroups: Array<{ __typename?: 'YearGroupEnrollment', yearGroupId: number, name: string }> } }> | null };
 
 export type AssessmentsListQueryVariables = Exact<{
   filter?: InputMaybe<AssessmentFilter>;
@@ -10796,7 +10965,7 @@ export type Ttsolve_GetSolverInputQueryVariables = Exact<{
 }>;
 
 
-export type Ttsolve_GetSolverInputQuery = { __typename?: 'Query', ttsolve_getSolverInput?: { __typename?: 'TtSolve_SolverInput', input?: any | null } | null };
+export type Ttsolve_GetSolverInputQuery = { __typename?: 'Query', ttsolve_getSolverInput: { __typename?: 'TtSolve_SolverInput', input?: any | null } };
 
 export type Ttsolve_SolveMutationVariables = Exact<{
   input?: InputMaybe<TtSolve_SolveParams>;
@@ -10962,7 +11131,7 @@ export type MyAuthDetailsQuery = { __typename?: 'Query', myAuthDetails?: { __typ
 export const SearchQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"searchQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SearchFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"search_search"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}}]}}]}}]}}]} as unknown as DocumentNode<SearchQueryQuery, SearchQueryQueryVariables>;
 export const Assessment_AssessmentResultDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"assessment_assessmentResult"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"AssessmentResultFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_assessmentResult"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"assessmentId"}},{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"student"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"extensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"priority"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentClassGroup"}},{"kind":"Field","name":{"kind":"Name","value":"studentProgramme"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"shortName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"irePP"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"examinable"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"studentStudyLevel"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"targetResult"}},{"kind":"Field","name":{"kind":"Name","value":"gradeResult"}},{"kind":"Field","name":{"kind":"Name","value":"gradeId"}},{"kind":"Field","name":{"kind":"Name","value":"gradeNameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"targetGradeResult"}},{"kind":"Field","name":{"kind":"Name","value":"targetGradeNameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"teacherComment"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"assessmentId"}},{"kind":"Field","name":{"kind":"Name","value":"studentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"comment"}},{"kind":"Field","name":{"kind":"Name","value":"commentBankCommentId"}},{"kind":"Field","name":{"kind":"Name","value":"commenterUserType"}},{"kind":"Field","name":{"kind":"Name","value":"commenterPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroupPartyId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"extraFields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"extraFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"assessmentResultId"}},{"kind":"Field","name":{"kind":"Name","value":"assessmentExtraFieldId"}},{"kind":"Field","name":{"kind":"Name","value":"result"}},{"kind":"Field","name":{"kind":"Name","value":"gradeSetGradeId"}},{"kind":"Field","name":{"kind":"Name","value":"gradeNameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"commentBankCommentId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"examinable"}},{"kind":"Field","name":{"kind":"Name","value":"ppodPublished"}},{"kind":"Field","name":{"kind":"Name","value":"ppodResult"}}]}}]}}]} as unknown as DocumentNode<Assessment_AssessmentResultQuery, Assessment_AssessmentResultQueryVariables>;
 export const Assessment_SaveAssessmentResultsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"assessment_saveAssessmentResults"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SaveAssessmentResultInput"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_saveAssessmentResults"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<Assessment_SaveAssessmentResultsMutation, Assessment_SaveAssessmentResultsMutationVariables>;
-export const AssessmentSubjectGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"assessmentSubjectGroups"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"AssessmentSubjectGroupsFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_assessmentSubjectGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yearGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"resultsTotal"}},{"kind":"Field","name":{"kind":"Name","value":"resultsEntered"}},{"kind":"Field","name":{"kind":"Name","value":"commentsEntered"}},{"kind":"Field","name":{"kind":"Name","value":"commentsTotal"}},{"kind":"Field","name":{"kind":"Name","value":"extraFieldResultsEntered"}},{"kind":"Field","name":{"kind":"Name","value":"ppodSyncStatus"}},{"kind":"Field","name":{"kind":"Name","value":"published"}}]}}]}}]} as unknown as DocumentNode<AssessmentSubjectGroupsQuery, AssessmentSubjectGroupsQueryVariables>;
+export const AssessmentSubjectGroupsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"assessmentSubjectGroups"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"AssessmentSubjectGroupsFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_assessmentSubjectGroups"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectGroup"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yearGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"resultsTotal"}},{"kind":"Field","name":{"kind":"Name","value":"resultsEntered"}},{"kind":"Field","name":{"kind":"Name","value":"commentsEntered"}},{"kind":"Field","name":{"kind":"Name","value":"commentsTotal"}},{"kind":"Field","name":{"kind":"Name","value":"extraFieldResultsEntered"}},{"kind":"Field","name":{"kind":"Name","value":"ppodSyncStatus"}},{"kind":"Field","name":{"kind":"Name","value":"published"}}]}}]}}]} as unknown as DocumentNode<AssessmentSubjectGroupsQuery, AssessmentSubjectGroupsQueryVariables>;
 export const AssessmentsListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"assessmentsList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"AssessmentFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_assessment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"assessmentType"}},{"kind":"Field","name":{"kind":"Name","value":"stateCbaType"}},{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}},{"kind":"Field","name":{"kind":"Name","value":"years"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yearGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"publish"}},{"kind":"Field","name":{"kind":"Name","value":"publishedFrom"}},{"kind":"Field","name":{"kind":"Name","value":"publishLearner"}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"canEnterOverallComments"}}]}}]}}]} as unknown as DocumentNode<AssessmentsListQuery, AssessmentsListQueryVariables>;
 export const AssessmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"assessment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"AssessmentFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_assessment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"assessmentType"}},{"kind":"Field","name":{"kind":"Name","value":"academicNamespaceId"}},{"kind":"Field","name":{"kind":"Name","value":"years"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yearGroupId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearGroupEnrolments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"yearGroupEnrollmentPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"publish"}},{"kind":"Field","name":{"kind":"Name","value":"createdOn"}},{"kind":"Field","name":{"kind":"Name","value":"gradeType"}},{"kind":"Field","name":{"kind":"Name","value":"gradeSets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gradeSetId"}},{"kind":"Field","name":{"kind":"Name","value":"gradeSetName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"passFailThreshold"}},{"kind":"Field","name":{"kind":"Name","value":"captureTarget"}},{"kind":"Field","name":{"kind":"Name","value":"commentType"}},{"kind":"Field","name":{"kind":"Name","value":"commentLength"}},{"kind":"Field","name":{"kind":"Name","value":"commentBank"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"commentBankId"}},{"kind":"Field","name":{"kind":"Name","value":"commentBankName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"publish"}},{"kind":"Field","name":{"kind":"Name","value":"publishLearner"}},{"kind":"Field","name":{"kind":"Name","value":"extraFields"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"assessmentId"}},{"kind":"Field","name":{"kind":"Name","value":"extraFieldType"}},{"kind":"Field","name":{"kind":"Name","value":"gradeSetId"}},{"kind":"Field","name":{"kind":"Name","value":"commentBankId"}},{"kind":"Field","name":{"kind":"Name","value":"commentBankName"}},{"kind":"Field","name":{"kind":"Name","value":"selectOptions"}},{"kind":"Field","name":{"kind":"Name","value":"commentLength"}},{"kind":"Field","name":{"kind":"Name","value":"resultsEntered"}}]}},{"kind":"Field","name":{"kind":"Name","value":"createdBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"stateCbaType"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjects"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"startDate"}},{"kind":"Field","name":{"kind":"Name","value":"endDate"}},{"kind":"Field","name":{"kind":"Name","value":"captureTutorComment"}},{"kind":"Field","name":{"kind":"Name","value":"capturePrincipalComment"}},{"kind":"Field","name":{"kind":"Name","value":"captureYearHeadComment"}},{"kind":"Field","name":{"kind":"Name","value":"captureHouseMasterComment"}},{"kind":"Field","name":{"kind":"Name","value":"tutorCommentType"}},{"kind":"Field","name":{"kind":"Name","value":"tutorCommentBank"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"commentBankId"}},{"kind":"Field","name":{"kind":"Name","value":"commentBankName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tutorCommentLength"}},{"kind":"Field","name":{"kind":"Name","value":"yearHeadCommentType"}},{"kind":"Field","name":{"kind":"Name","value":"yearHeadCommentBank"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"commentBankId"}},{"kind":"Field","name":{"kind":"Name","value":"commentBankName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"yearHeadCommentLength"}},{"kind":"Field","name":{"kind":"Name","value":"principalCommentType"}},{"kind":"Field","name":{"kind":"Name","value":"principalCommentBank"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"commentBankId"}},{"kind":"Field","name":{"kind":"Name","value":"commentBankName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"principalCommentLength"}},{"kind":"Field","name":{"kind":"Name","value":"housemasterCommentType"}},{"kind":"Field","name":{"kind":"Name","value":"housemasterCommentBank"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"commentBankId"}},{"kind":"Field","name":{"kind":"Name","value":"commentBankName"}}]}},{"kind":"Field","name":{"kind":"Name","value":"housemasterCommentLength"}}]}}]}}]} as unknown as DocumentNode<AssessmentQuery, AssessmentQueryVariables>;
 export const CommentBankAssessmentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"commentBankAssessment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommentBankFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"assessment_commentBank"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<CommentBankAssessmentQuery, CommentBankAssessmentQueryVariables>;

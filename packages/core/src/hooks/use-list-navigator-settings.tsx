@@ -64,6 +64,7 @@ export function useListNavigatorSettings<
   type,
   itemId,
   getNavigationUrl = defaultGetNavigationUrl,
+  defaultListData = [],
 }: ListNavigatorSettingsParams<StoreOption>) {
   const location = useLocation();
 
@@ -75,7 +76,7 @@ export function useListNavigatorSettings<
   const [storedList, setStoredList] = useSessionStorage<
     StoredList<StoreOption>
   >(storeKey, {
-    listData: [],
+    listData: defaultListData,
   });
 
   const listById = useMemo(
@@ -154,6 +155,12 @@ export function useListNavigatorSettings<
 
     setCurrentItemId(itemId);
   }, [itemId]);
+
+  useEffect(() => {
+    if (storedList.listData.length === 0) {
+      setStoredList({ listData: defaultListData });
+    }
+  }, [defaultListData.length]);
 
   return {
     isLoading: itemId !== currentItemId,

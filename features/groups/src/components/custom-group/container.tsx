@@ -9,8 +9,9 @@ import {
   PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { useMemo } from 'react';
 import { CustomGroupStatusBar } from './status-bar';
-import { useCustomGroupDefinition } from '../../api';
+import { useCustomGroupDefinition, useCustomGroups } from '../../api';
 
 export default function SupportGroupContainer() {
   const { t } = useTranslation(['groups', 'common']);
@@ -18,11 +19,22 @@ export default function SupportGroupContainer() {
   const { groupId } = useParams();
   const partyId = useNumber(groupId) ?? 0;
 
+  const { data: groupsListData = [] } = useCustomGroups();
   const { data: customGroupData } = useCustomGroupDefinition({ partyId });
 
   const customGroupName = t('groups:subjectGroupsProfile', {
     name: customGroupData?.name,
   });
+
+  const defaultListData = useMemo(
+    () =>
+      (groupsListData || []).map<PartyListNavigatorMenuItemParams>((group) => ({
+        id: group.partyId,
+        name: group.name,
+        type: 'group',
+      })),
+    [groupsListData]
+  );
 
   return (
     <PageContainer title={customGroupName}>
@@ -32,6 +44,7 @@ export default function SupportGroupContainer() {
         optionTextKey="name"
         estimateElementSize={44}
         getRenderOption={PartyListNavigatorMenuItem}
+        defaultListData={defaultListData}
         pageHeadingProps={{
           title: customGroupName,
           breadcrumbs: {

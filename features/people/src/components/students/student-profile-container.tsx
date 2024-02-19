@@ -11,7 +11,8 @@ import {
   PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useStudent } from '../../api/student/students';
+import { useMemo } from 'react';
+import { useStudent, useStudentsForSelect } from '../../api/student/students';
 import { StudentOverviewBar } from './student-overview-bar';
 
 export default function StudentProfileContainer() {
@@ -20,6 +21,7 @@ export default function StudentProfileContainer() {
   const { id } = useParams();
   const idNumber = useNumber(id);
   const { data: studentData } = useStudent(idNumber);
+  const { data: studentsListData = [] } = useStudentsForSelect({});
 
   const { displayName } = usePreferredNameLayout();
 
@@ -29,6 +31,20 @@ export default function StudentProfileContainer() {
     }),
   });
 
+  const defaultListData = useMemo(
+    () =>
+      studentsListData.map<PartyListNavigatorMenuItemParams>((student) => ({
+        id: student.partyId,
+        type: 'person',
+        name: displayName(student),
+        firstName: student.firstName,
+        lastName: student.lastName,
+        avatarUrl: student.avatarUrl,
+        caption: student.caption,
+      })),
+    [studentsListData]
+  );
+
   return (
     <PageContainer title={userProfileName}>
       <ListNavigator<PartyListNavigatorMenuItemParams>
@@ -36,6 +52,7 @@ export default function StudentProfileContainer() {
         itemId={idNumber}
         optionTextKey="name"
         getRenderOption={PartyListNavigatorMenuItem}
+        defaultListData={defaultListData}
         pageHeadingProps={{
           title: userProfileName,
           breadcrumbs: {

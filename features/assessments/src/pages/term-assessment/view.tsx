@@ -34,7 +34,7 @@ import {
   useAssessmentSubjectGroups,
   ReturnTypeFromUseAssessmentSubjectGroups,
 } from '../../api/assessment-subject-groups';
-import { useAssessmentById } from '../../api/assessments';
+import { useAssessmentById, useAssessments } from '../../api/assessments';
 import { assessmentUrlPathBasedOnType } from '../../utils/get-assessment-subject-groups-link';
 
 const getColumnDefs = (
@@ -252,17 +252,48 @@ export default function ViewTermAssessment() {
   const onBeforeNavigateProfile = useCallback(() => {
     storeList(
       assessmentData?.name,
-      visibleDataRef.current?.().map(({ subjectGroup }) => ({
-        id: subjectGroup.partyId,
-        name: subjectGroup.name,
-        type: 'group',
-      }))
+      visibleDataRef.current?.().map(({ subjectGroup }) => {
+        const subject = subjectGroup?.subjects?.[0];
+        const bgColorStyle = subject?.colour
+          ? { bgcolor: `${subject.colour}.500` }
+          : {};
+
+        return {
+          id: subjectGroup.partyId,
+          name: subjectGroup.name,
+          type: 'group',
+          avatarProps: {
+            sx: {
+              ...bgColorStyle,
+            },
+          },
+        };
+      })
     );
   }, [assessmentData]);
 
   const columnDefs = useMemo(
     () => getColumnDefs(!!isDesktop, t, onBeforeNavigateProfile, displayNames),
     [t, onBeforeNavigateProfile, displayNames]
+  );
+
+  const { data: assessmentsData = [] } = useAssessments({
+    academicNameSpaceId: academicNameSpaceIdAsNumber ?? 0,
+  });
+
+  const defaultListData = useMemo(
+    () =>
+      assessmentsData.map<
+        BasicListNavigatorMenuItemParams & { type: AssessmentType }
+      >(({ id, name, assessmentType }) => ({
+        id,
+        name,
+        type: assessmentType,
+        caption: assessmentType
+          ? t(`assessments:assessmentTypes.${assessmentType}`)
+          : undefined,
+      })),
+    [assessmentsData]
   );
 
   return (
@@ -277,14 +308,15 @@ export default function ViewTermAssessment() {
           itemId={assessmentIdAsNumber}
           estimateElementSize={52}
           getRenderOption={BasicListNavigatorMenuItem}
+          defaultListData={defaultListData}
           optionTextKey="name"
           getNavigationUrl={({ currentLocation, currentItem, newItem }) => {
             const currentTypePath =
-              assessmentUrlPathBasedOnType[currentItem.type];
-            const newTypePath = assessmentUrlPathBasedOnType[newItem.type];
+              assessmentUrlPathBasedOnType[currentItem?.type];
+            const newTypePath = assessmentUrlPathBasedOnType[newItem?.type];
             return currentLocation.pathname
               .replace(currentTypePath, newTypePath)
-              .replace(`${currentItem.id}`, `${newItem.id}`);
+              .replace(`${currentItem?.id}`, `${newItem?.id}`);
           }}
           pageHeadingProps={{
             title: t('assessments:pageHeading.termAssessmentSubjectGroups', {

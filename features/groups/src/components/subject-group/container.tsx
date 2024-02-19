@@ -9,8 +9,12 @@ import {
   PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { useMemo } from 'react';
 import { SubjectGroupStatusBar } from './status-bar';
-import { useSubjectGroupById } from '../../api/subject-groups';
+import {
+  useSubjectGroupById,
+  useSubjectGroups,
+} from '../../api/subject-groups';
 
 export default function SubjectGroupContainer() {
   const { t } = useTranslation(['groups', 'common', 'people']);
@@ -18,11 +22,34 @@ export default function SubjectGroupContainer() {
   const { groupId } = useParams();
   const groupIdNumber = useNumber(groupId);
 
+  const { data: groupsListData = [] } = useSubjectGroups();
   const { data: subjectGroupData } = useSubjectGroupById(groupIdNumber);
 
   const subjectGroupName = t('groups:subjectGroupsProfile', {
     name: subjectGroupData?.name,
   });
+
+  const defaultListData = useMemo(
+    () =>
+      (groupsListData || []).map<PartyListNavigatorMenuItemParams>((group) => {
+        const subject = group.subjects?.[0];
+        const bgColorStyle = subject?.colour
+          ? { bgcolor: `${subject.colour}.500` }
+          : {};
+
+        return {
+          id: group.partyId,
+          name: group.name,
+          type: 'group',
+          avatarProps: {
+            sx: {
+              ...bgColorStyle,
+            },
+          },
+        };
+      }),
+    [groupsListData]
+  );
 
   return (
     <PageContainer title={subjectGroupName}>
@@ -30,8 +57,9 @@ export default function SubjectGroupContainer() {
         type={ListNavigatorType.SubjectGroup}
         itemId={groupIdNumber}
         optionTextKey="name"
-        estimateElementSize={52}
+        estimateElementSize={44}
         getRenderOption={PartyListNavigatorMenuItem}
+        defaultListData={defaultListData}
         pageHeadingProps={{
           title: subjectGroupName,
           breadcrumbs: {

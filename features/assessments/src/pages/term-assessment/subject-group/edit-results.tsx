@@ -50,6 +50,7 @@ import { checkAndSetGrades } from '../../../utils/check-and-set-grades';
 import { CommentTypeCellEditor } from '../../../components/common/comment-type-cell-editor';
 import { getExtraFields } from '../../../utils/get-extra-fields';
 import { updateStudentAssessmentExclusion } from '../../../api/student-assessment-exclusion';
+import { useAssessmentSubjectGroups } from '../../../api/assessment-subject-groups';
 
 export type ReturnTypeFromUseAssessmentById = UseQueryReturnType<
   typeof useAssessmentById
@@ -593,6 +594,37 @@ export default function EditTermAssessmentResults() {
     return updateAssessmentResult(results);
   };
 
+  const { data: assessmentSubjectGroupsData = [] } = useAssessmentSubjectGroups(
+    academicNamespaceIdAsNumber ?? 0,
+    {
+      assessmentId: assessmentIdAsNumber,
+    }
+  );
+
+  const defaultListData = useMemo(
+    () =>
+      assessmentSubjectGroupsData.map<PartyListNavigatorMenuItemParams>(
+        ({ subjectGroup: group }) => {
+          const subject = group?.subjects?.[0];
+          const bgColorStyle = subject?.colour
+            ? { bgcolor: `${subject.colour}.500` }
+            : {};
+
+          return {
+            id: group.partyId,
+            name: group.name,
+            type: 'group',
+            avatarProps: {
+              sx: {
+                ...bgColorStyle,
+              },
+            },
+          };
+        }
+      ),
+    [assessmentSubjectGroupsData]
+  );
+
   return (
     <PageContainer
       title={t('assessments:pageHeading.editResultsFor', {
@@ -603,7 +635,8 @@ export default function EditTermAssessmentResults() {
         type={ListNavigatorType.SubjectGroup}
         itemId={subjectGroupIdAsNumber}
         optionTextKey="name"
-        estimateElementSize={52}
+        estimateElementSize={44}
+        defaultListData={defaultListData}
         getRenderOption={PartyListNavigatorMenuItem}
         pageHeadingProps={{
           title: t('assessments:pageHeading.editResultsFor', {

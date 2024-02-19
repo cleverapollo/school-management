@@ -11,7 +11,8 @@ import {
   PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useStaff } from '../../api/staff';
+import { useMemo } from 'react';
+import { useStaff, useStaffForSelect } from '../../api/staff';
 import { StaffOverviewBar } from './staff-overview-bar';
 
 export default function StaffProfileContainer() {
@@ -20,6 +21,7 @@ export default function StaffProfileContainer() {
   const { id } = useParams();
   const idNumber = useNumber(id);
 
+  const { data: staffListData = [] } = useStaffForSelect({});
   const { data = [] } = useStaff({ partyIds: idNumber ? [idNumber] : [] });
   const [staffData] = data;
 
@@ -31,14 +33,28 @@ export default function StaffProfileContainer() {
     }),
   });
 
+  const defaultListData = useMemo(
+    () =>
+      staffListData.map<PartyListNavigatorMenuItemParams>((staff) => ({
+        id: staff.partyId,
+        type: 'person',
+        name: displayName(staff),
+        firstName: staff.firstName,
+        lastName: staff.lastName,
+        avatarUrl: staff.avatarUrl,
+      })),
+    [staffListData]
+  );
+
   return (
     <PageContainer title={userProfileName}>
       <ListNavigator<PartyListNavigatorMenuItemParams>
         type={ListNavigatorType.Staff}
         itemId={idNumber}
         optionTextKey="name"
-        estimateElementSize={52}
+        estimateElementSize={44}
         getRenderOption={PartyListNavigatorMenuItem}
+        defaultListData={defaultListData}
         pageHeadingProps={{
           title: userProfileName,
           breadcrumbs: {

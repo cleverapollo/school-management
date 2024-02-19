@@ -10,8 +10,10 @@ import {
   PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
+import { useMemo } from 'react';
 import { ContactOverviewBar } from './contact-overview-bar';
 import { useContactPersonal } from '../../api/contact/personal';
+import { useContactsForSelect } from '../../api/contact/list';
 
 export default function ContactProfileContainer() {
   const { t } = useTranslation(['common', 'people']);
@@ -20,6 +22,7 @@ export default function ContactProfileContainer() {
   const idNumber = useNumber(id);
 
   const { data: contactData } = useContactPersonal(idNumber);
+  const { data: contactsListData = [] } = useContactsForSelect();
 
   const { displayName } = usePreferredNameLayout();
 
@@ -27,14 +30,28 @@ export default function ContactProfileContainer() {
     name: displayName(contactData?.person),
   });
 
+  const defaultListData = useMemo(
+    () =>
+      contactsListData.map<PartyListNavigatorMenuItemParams>((contact) => ({
+        id: contact.partyId,
+        type: 'person',
+        name: displayName(contact),
+        firstName: contact.firstName,
+        lastName: contact.lastName,
+        avatarUrl: contact.avatarUrl,
+      })),
+    [contactsListData]
+  );
+
   return (
     <PageContainer title={userProfileName}>
       <ListNavigator<PartyListNavigatorMenuItemParams>
         type={ListNavigatorType.Contact}
         itemId={idNumber}
         optionTextKey="name"
-        estimateElementSize={52}
+        estimateElementSize={44}
         getRenderOption={PartyListNavigatorMenuItem}
+        defaultListData={defaultListData}
         pageHeadingProps={{
           title: userProfileName,
           breadcrumbs: {

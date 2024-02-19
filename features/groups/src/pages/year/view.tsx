@@ -27,7 +27,7 @@ import {
 } from '@tyro/api';
 import { MobileIcon } from '@tyro/icons';
 import { StudentTableAvatar } from '@tyro/people';
-import { useYearGroupById } from '../../api/year-groups';
+import { useYearGroupById, useYearGroups } from '../../api/year-groups';
 
 type MembersReturnTypeFromUseYearGroupsById = NonNullable<
   NonNullable<ReturnType<typeof useYearGroupById>['data']>['students']
@@ -147,6 +147,18 @@ export default function ViewYearGroupPage() {
 
   const title = t('groups:namedMemberList', { groupName });
 
+  const { data: yearGroupData = [] } = useYearGroups();
+
+  const defaultListData = useMemo(
+    () =>
+      yearGroupData.map<PartyListNavigatorMenuItemParams>((year) => ({
+        id: year.yearGroupEnrollmentPartyId,
+        type: 'group',
+        name: year.name,
+      })),
+    [yearGroupData]
+  );
+
   return (
     <>
       <PageContainer title={title}>
@@ -156,6 +168,7 @@ export default function ViewYearGroupPage() {
           optionTextKey="name"
           estimateElementSize={44}
           getRenderOption={PartyListNavigatorMenuItem}
+          defaultListData={defaultListData}
           pageHeadingProps={{
             title,
             breadcrumbs: {
