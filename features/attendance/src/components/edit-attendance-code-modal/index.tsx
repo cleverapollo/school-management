@@ -271,7 +271,6 @@ export const EditAttendanceCodeModal = ({
                     sx: { ml: 0, height: '100%' },
                   }}
                   checkboxProps={{
-                    color: 'primary',
                     value: true,
                     disabled: true,
                   }}
@@ -284,7 +283,6 @@ export const EditAttendanceCodeModal = ({
               controlLabelProps={{
                 sx: { width: '100%', ml: 0, height: '100%' },
               }}
-              checkboxProps={{ color: 'primary' }}
               controlProps={{ name: 'visibleForTeacher', control }}
             />
             <RHFCheckbox
@@ -292,7 +290,6 @@ export const EditAttendanceCodeModal = ({
               controlLabelProps={{
                 sx: { width: '100%', ml: 0, height: '100%' },
               }}
-              checkboxProps={{ color: 'primary' }}
               controlProps={{ name: 'visibleForContact', control }}
             />
           </Box>

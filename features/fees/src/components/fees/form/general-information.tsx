@@ -143,7 +143,6 @@ export function GeneralInformation({ control }: GeneralInformationProps) {
                   </Stack>
                 }
                 controlLabelProps={{ sx: { height: '100%' } }}
-                checkboxProps={{ color: 'primary' }}
                 controlProps={{
                   name: 'absorbFees',
                   control,
