@@ -30,7 +30,7 @@ export default function Dashboard() {
               showTeacher={false}
               partyId={activeProfile?.partyId ?? 0}
             />,
-            //  isStaffUserWithPermission(''ps:1:attendance:write_attendance'')
+            //  isStaffUserWithPermission('ps:1:attendance:write_attendance')
             isTyroUser && <OverdueAttendanceWidget />,
           ]}
         />
