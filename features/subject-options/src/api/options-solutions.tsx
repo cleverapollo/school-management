@@ -5,6 +5,7 @@ import {
   queryClient,
   UseQueryReturnType,
   SolutionsFilter,
+  SolutionStatus,
 } from '@tyro/api';
 import { optionsKeys } from './keys';
 
@@ -12,6 +13,7 @@ const optionsSolutions = graphql(/* GraphQL */ `
   query options_solutions($filter: SolutionsFilter) {
     options_solutions(filter: $filter) {
       optionId
+      solverStatus
       pools {
         poolIdx
         blocks {
@@ -24,6 +26,7 @@ const optionsSolutions = graphql(/* GraphQL */ `
             subjectId
             subject {
               name
+              shortCode
               colour
             }
             numStudents
@@ -45,6 +48,7 @@ const optionsSolutions = graphql(/* GraphQL */ `
               subjectGroupName
               subject {
                 name
+                shortCode
                 colour
               }
             }
@@ -55,10 +59,13 @@ const optionsSolutions = graphql(/* GraphQL */ `
           subjectId
           subject {
             name
+            shortCode
             colour
           }
           maxSize
           numClasses
+          numPreferences
+          missed
         }
       }
     }
@@ -74,6 +81,8 @@ export function useOptionsSolutions(filter: SolutionsFilter) {
   return useQuery({
     ...optionsSolutionsQuery(filter),
     select: ({ options_solutions }) => options_solutions,
+    refetchInterval: (data) =>
+      data?.solverStatus === SolutionStatus.NotSolving ? false : 10000,
   });
 }
 

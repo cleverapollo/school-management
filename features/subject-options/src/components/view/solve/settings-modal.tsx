@@ -3,17 +3,23 @@ import { Button, Stack, Typography } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { LoadingButton } from '@mui/lab';
 import { useState, useEffect } from 'react';
-import set from 'lodash/set';
-import { ReturnTypeFromUseOptionsSolveBlocks } from '../../../api/solve/blocks';
+import { SolutionStatus } from '@tyro/api';
 import { SubjectStatsTable } from './subject-stats-table';
 import { BlockOrganiser } from './block-organiser';
 import { ReturnTypeFromUseOptionsSolutions } from '../../../api/options-solutions';
+import { useSaveSolveSettings } from '../../../api/save-solve-settings';
 
 interface SolveSettingsModalProps {
-  optionsSolutions: ReturnTypeFromUseOptionsSolutions;
+  optionsSolutions: ReturnTypeFromUseOptionsSolutions | undefined;
   isOpen: boolean;
   onClose: () => void;
 }
+
+const defaultOptionsSolutions: ReturnTypeFromUseOptionsSolutions = {
+  optionId: 0,
+  pools: [],
+  solverStatus: SolutionStatus.NotSolving,
+};
 
 export function SolveSettingsModal({
   optionsSolutions,
@@ -21,83 +27,132 @@ export function SolveSettingsModal({
   onClose,
 }: SolveSettingsModalProps) {
   const { t } = useTranslation(['common', 'subjectOptions']);
-  const [blocksState, setBlocksState] =
-    useState<ReturnTypeFromUseOptionsSolveBlocks>({ subjectSet: [] });
+  const [editableSolutionsCopy, setEditableSolutionsCopy] =
+    useState<ReturnTypeFromUseOptionsSolutions>(defaultOptionsSolutions);
 
-  const onChangeBlocks = (
-    subjectSetId: NonNullable<
-      ReturnTypeFromUseOptionsSolveBlocks['subjectSet'][number]
-    >['subjectSet']['id'],
-    newBlocks: NonNullable<
-      ReturnTypeFromUseOptionsSolveBlocks['subjectSet'][number]
-    >['blocks']
-  ) => {
-    setBlocksState((previousState) => {
-      const clonedState = { ...previousState };
-      const blockIndex =
-        clonedState?.subjectSet?.findIndex(
-          (blockSet) =>
-            JSON.stringify(blockSet?.subjectSet.id) ===
-            JSON.stringify(subjectSetId)
-        ) ?? -1;
-
-      if (blockIndex >= 0) {
-        set(clonedState, `subjectSet[${blockIndex}].blocks`, newBlocks);
-      }
-
-      return clonedState;
-    });
-  };
+  const { mutateAsync: saveSolveSettings, isLoading: isSubmitting } =
+    useSaveSolveSettings();
 
   const onSave = () => {
-    console.log('Save');
+    saveSolveSettings(
+      {
+        optionId: editableSolutionsCopy.optionId,
+        subjects: editableSolutionsCopy.pools.flatMap((pool) =>
+          pool.subjects.map(({ poolIdx, subjectId, maxSize, numClasses }) => ({
+            poolIdx,
+            subjectId,
+            maxSize,
+            numberOfClasses: numClasses,
+          }))
+        ),
+        subjectGroups: editableSolutionsCopy.pools.flatMap((pool) =>
+          pool.blocks.flatMap(({ subjectGroups }) =>
+            subjectGroups.flatMap(({ id, blockIdx, pinned, name }) => ({
+              id,
+              blockIdx,
+              pinBlock: pinned,
+              name,
+            }))
+          )
+        ),
+      },
+      {
+        onSuccess: onClose,
+      }
+    );
     onClose();
   };
 
-  // useEffect(() => {
-  //   if (optionsSolutions) {
-  //     setBlocksState(optionsSolutions);
-  //   }
-  // }, [optionsSolutions]);
+  const cancel = () => {
+    onClose();
+    setTimeout(
+      () =>
+        setEditableSolutionsCopy(optionsSolutions ?? defaultOptionsSolutions),
+      300
+    );
+  };
+
+  useEffect(() => {
+    if (optionsSolutions) {
+      setEditableSolutionsCopy(optionsSolutions);
+    }
+  }, [optionsSolutions]);
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="lg">
-      <DialogTitle onClose={onClose}>
+    <Dialog open={isOpen} onClose={cancel} fullWidth maxWidth="xl">
+      <DialogTitle onClose={cancel}>
         {t('subjectOptions:solverSettings')}
       </DialogTitle>
       <DialogContent>
         <Stack direction="row" spacing={3} useFlexGap>
-          {/* <Stack>
+          <Stack spacing={2} minWidth="40%">
             <Typography component="h3" variant="subtitle1">
               {t('common:blocks')}
             </Typography>
-            {blocksState?.subjectSet.map((blockSet) => {
-              if (!blockSet) return null;
-
-              const { subjectSet, blocks } = blockSet;
-              return (
+            {editableSolutionsCopy?.pools.map(({ poolIdx, blocks }, index) => (
+              <Stack key={poolIdx} spacing={1}>
+                <Typography component="h4" variant="subtitle2">
+                  {t('subjectOptions:poolN', {
+                    number: poolIdx + 1,
+                  })}
+                </Typography>
                 <BlockOrganiser
-                  key={JSON.stringify(subjectSet.id)}
-                  subjectSet={subjectSet}
                   blocks={blocks}
-                  onChangeBlocks={onChangeBlocks}
+                  onChangeBlocks={(newBlocks) => {
+                    setEditableSolutionsCopy((previousState) => {
+                      const clonedPools = [...previousState.pools];
+                      clonedPools[index].blocks = newBlocks;
+                      return {
+                        ...previousState,
+                        pools: clonedPools,
+                      };
+                    });
+                  }}
                 />
-              );
-            })}
-          </Stack> */}
-          {/* <SubjectStatsTable
-            rowData={subjectStatsData ?? []}
-            onRowDataChange={(newRowData) => {
-              console.log({ newRowData });
-            }}
-          /> */}
+              </Stack>
+            ))}
+          </Stack>
+          <Stack spacing={2} flex={1}>
+            <Typography component="h3" variant="subtitle1">
+              {t('subjectOptions:subjectStats')}
+            </Typography>
+            {editableSolutionsCopy?.pools.map(
+              ({ poolIdx, subjects, blocks }, index) => (
+                <Stack key={poolIdx} spacing={1}>
+                  <Typography component="h4" variant="subtitle2">
+                    {t('subjectOptions:poolN', {
+                      number: poolIdx + 1,
+                    })}
+                  </Typography>
+                  <SubjectStatsTable
+                    rowData={subjects ?? []}
+                    blocks={blocks}
+                    onRowDataChange={(newRowData) => {
+                      setEditableSolutionsCopy((previousState) => {
+                        const clonedPools = [...previousState.pools];
+                        clonedPools[index].subjects = newRowData;
+                        return {
+                          ...previousState,
+                          pools: clonedPools,
+                        };
+                      });
+                    }}
+                  />
+                </Stack>
+              )
+            )}
+          </Stack>
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button variant="soft" autoFocus onClick={onClose}>
+        <Button variant="soft" autoFocus onClick={cancel}>
           {t('common:actions.cancel')}
         </Button>
-        <LoadingButton variant="contained" onClick={onSave}>
+        <LoadingButton
+          variant="contained"
+          loading={isSubmitting}
+          onClick={onSave}
+        >
           {t('common:actions.save')}
         </LoadingButton>
       </DialogActions>

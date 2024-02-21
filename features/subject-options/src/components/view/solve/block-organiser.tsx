@@ -1,46 +1,60 @@
-import { Card, CardHeader, Chip, Box } from '@mui/material';
+import { Card, Chip, Box, Stack, useTheme } from '@mui/material';
 import {
   DragDropContext,
   Droppable,
   Draggable,
   DropResult,
-  ResponderProvided,
 } from 'react-beautiful-dnd';
 import { useTranslation } from '@tyro/i18n';
 import { getColorBasedOnIndex } from '@tyro/api';
 import { PinIcon } from '@tyro/icons';
-import { ReturnTypeFromUseOptionsSolveBlocks } from '../../../api/solve/blocks';
+import cloneDeep from 'lodash/cloneDeep';
+import { ReturnTypeFromUseOptionsSolutions } from '../../../api/options-solutions';
 
 interface BlockOrganiserProps {
-  subjectSet: NonNullable<
-    ReturnTypeFromUseOptionsSolveBlocks['subjectSet'][number]
-  >['subjectSet'];
-  blocks: NonNullable<
-    ReturnTypeFromUseOptionsSolveBlocks['subjectSet'][number]
-  >['blocks'];
-  onChangeBlocks: (
-    subjectSetId: NonNullable<
-      ReturnTypeFromUseOptionsSolveBlocks['subjectSet'][number]
-    >['subjectSet']['id'],
-    updatedBlocks: NonNullable<
-      ReturnTypeFromUseOptionsSolveBlocks['subjectSet'][number]
-    >['blocks']
-  ) => void;
+  blocks: ReturnTypeFromUseOptionsSolutions['pools'][number]['blocks'];
+  onChangeBlocks: (updatedBlocks: BlockOrganiserProps['blocks']) => void;
 }
 
 export function BlockOrganiser({
-  subjectSet,
   blocks,
   onChangeBlocks,
 }: BlockOrganiserProps) {
   const { t } = useTranslation(['subjectOptions']);
+  const theme = useTheme();
 
-  const onDragEnd = (result: DropResult, provided: ResponderProvided) => {
-    console.log(result, provided);
+  const onDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+
+    const sourceBlockIndex = Number(result.source.droppableId);
+    const destinationBlockIndex = Number(result.destination.droppableId);
+
+    if (sourceBlockIndex === destinationBlockIndex) {
+      return;
+    }
+
+    const newBlocks = cloneDeep(blocks);
+    const [removed] = newBlocks[sourceBlockIndex].subjectGroups.splice(
+      result.source.index,
+      1
+    );
+
+    newBlocks[destinationBlockIndex].subjectGroups.splice(
+      result.destination.index,
+      0,
+      {
+        ...removed,
+        blockIdx: destinationBlockIndex,
+      }
+    );
+
+    onChangeBlocks(newBlocks);
   };
 
   const toggleItemPin = (blockIndex: number, subjectGroupIndex: number) => {
-    const newBlocks = [...blocks];
+    const newBlocks = cloneDeep(blocks);
     const currentGroupValue =
       newBlocks[blockIndex].subjectGroups[subjectGroupIndex];
 
@@ -49,31 +63,52 @@ export function BlockOrganiser({
       pinned: !currentGroupValue.pinned,
     };
 
-    onChangeBlocks(subjectSet.id, newBlocks);
+    onChangeBlocks(newBlocks);
   };
 
   return (
-    <Card>
-      <CardHeader
-        title={t('subjectOptions:poolXSubjectSetYBlocks', {
-          x: subjectSet.poolIdx,
-          y: subjectSet.name,
-        })}
-      />
+    <Card variant="outlined">
       <DragDropContext onDragEnd={onDragEnd}>
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, auto)' }}>
-          {blocks.map((block, blockIndex) => (
-            <Droppable
-              key={block.blockIdx}
-              droppableId={block.blockIdx.toString()}
-              direction="horizontal"
-            >
-              {(provided, snapshot) => (
-                <>
-                  <Box>{block.name}</Box>
-                  <Box ref={provided.innerRef} {...provided.droppableProps}>
-                    {block.subjectGroups.map(
-                      ({ id, name, blockIdx, pinned }, index) => (
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, auto)',
+            '& > div:nth-of-type(1n + 3)': {
+              borderTop: '1px solid',
+              borderTopColor: 'indigo.50',
+            },
+          }}
+        >
+          {blocks.map(({ blockIdx, subjectGroups }, blockIndex) => {
+            const blockColor = getColorBasedOnIndex(blockIdx);
+            return (
+              <Droppable
+                key={blockIdx}
+                droppableId={blockIdx.toString()}
+                direction="horizontal"
+                type="block"
+              >
+                {(provided, snapshot) => (
+                  <>
+                    <Box
+                      sx={{
+                        p: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        borderRight: '1px solid',
+                        borderRightColor: 'indigo.50',
+                      }}
+                    >
+                      {t('subjectOptions:blockN', { number: blockIdx + 1 })}
+                    </Box>
+                    <Stack
+                      ref={provided.innerRef}
+                      direction="row"
+                      spacing={1}
+                      p={1}
+                      {...provided.droppableProps}
+                    >
+                      {subjectGroups?.map(({ id, name, pinned }, index) => (
                         <Draggable
                           key={id}
                           draggableId={id.toString()}
@@ -81,28 +116,66 @@ export function BlockOrganiser({
                         >
                           {(draggableProvided) => (
                             <Chip
-                              ref={provided.innerRef}
+                              ref={draggableProvided.innerRef}
                               {...draggableProvided.draggableProps}
                               {...draggableProvided.dragHandleProps}
+                              variant="soft"
                               label={name}
-                              color={getColorBasedOnIndex(blockIdx)}
+                              color={blockColor}
                               onDelete={() => toggleItemPin(blockIndex, index)}
+                              sx={{
+                                '& .MuiChip-deleteIcon': {
+                                  transitionProperty: 'width, opacity',
+                                  transitionDelay: '0.100s, 0s',
+                                  transitionTimingFunction: 'ease-in-out',
+                                  transitionDuration: '0.150s',
+                                  width: pinned ? 22 : 0,
+                                  opacity: pinned ? 1 : 0,
+                                  color: pinned
+                                    ? `${blockColor}.900`
+                                    : undefined,
+                                },
+                                '&:hover .MuiChip-deleteIcon': {
+                                  width: 22,
+                                  opacity: 1,
+                                  transitionDelay: '0s, 0.100s',
+                                },
+                              }}
                               deleteIcon={
-                                <Box>
+                                <Box
+                                  sx={{
+                                    backgroundColor: 'currentColor',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    borderRadius: '50%',
+                                    height: 22,
+                                    '& svg': {
+                                      color: `${blockColor}.100`,
+                                      width: 18,
+                                      height: 18,
+                                    },
+                                    '&:hover': {
+                                      '& svg': {
+                                        color: `${blockColor}.600`,
+                                      },
+                                    },
+                                  }}
+                                >
                                   <PinIcon />
                                 </Box>
                               }
                             />
                           )}
                         </Draggable>
-                      )
-                    )}
-                    {provided.placeholder}
-                  </Box>
-                </>
-              )}
-            </Droppable>
-          ))}
+                      ))}
+                      {provided.placeholder}
+                    </Stack>
+                  </>
+                )}
+              </Droppable>
+            );
+          })}
         </Box>
       </DragDropContext>
     </Card>

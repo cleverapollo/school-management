@@ -13,7 +13,12 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { GearIcon } from '@tyro/icons';
 import { StudentTableAvatar } from '@tyro/people';
-import { getPersonProfileLink, OptionsSol_SolverOperation } from '@tyro/api';
+import {
+  getPersonProfileLink,
+  OptionsSol_SolverOperation,
+  getColorBasedOnIndex,
+  SolutionStatus,
+} from '@tyro/api';
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
 import {
@@ -46,20 +51,21 @@ const getStudentRows = (
   >();
   const studentMissingPreferences = new Map<number, number>();
 
-  optionsSolutions?.pools?.forEach(({ subjectSets }) => {
+  optionsSolutions?.pools?.forEach(({ poolIdx, subjectSets }) => {
     subjectSets.forEach(({ id, studentChoices }) => {
       studentChoices.forEach(
-        ({ studentPartyId, missed, subjectSetChoices }) => {
-          studentMissingPreferences.set(studentPartyId, missed);
+        ({ studentPartyId, missed = 0, subjectSetChoices }) => {
+          studentMissingPreferences.set(
+            studentPartyId,
+            (studentMissingPreferences.get(studentPartyId) ?? 0) + missed
+          );
 
           const currentStudentsOptionsAssigned = subjectSetChoices.reduce<
             Map<string, OptionsAssignedValue>
           >((acc, choice) => {
-            if (id.idx && choice.choiceIdx) {
-              acc.set(`${id.idx}-${choice.choiceIdx}`, choice);
-            }
+            acc.set(`${poolIdx}-${id.idx}-${choice.choiceIdx}`, choice);
             return acc;
-          }, new Map());
+          }, new Map(studentsOptionsAssigned.get(studentPartyId) ?? []));
           studentsOptionsAssigned.set(
             studentPartyId,
             currentStudentsOptionsAssigned
@@ -67,12 +73,6 @@ const getStudentRows = (
         }
       );
     });
-  });
-
-  console.log({
-    students: optionsSetup?.students,
-    studentsOptionsAssigned,
-    studentMissingPreferences,
   });
 
   return (optionsSetup?.students ?? []).map((student) => ({
@@ -118,7 +118,9 @@ const getStudentAssignmentColumns = (
     headerClass: subjectSet.id.idx !== 1 ? 'border-left' : undefined,
     children: Array.from(Array(subjectSet.canChoose)).map(
       (_, preferenceIdx) => {
-        const colId = `${subjectSet.id.idx}-${preferenceIdx}`;
+        const colId = `${subjectSet.poolIdx ?? 0}-${
+          subjectSet.id.idx
+        }-${preferenceIdx}`;
         const isOutsideWhatTheyGet = preferenceIdx > subjectSet.mustGet - 1;
         const showLeftBorder = preferenceIdx === 0 && subjectSet.id.idx !== 1;
 
@@ -143,27 +145,20 @@ const getStudentAssignmentColumns = (
           >) => {
             if (!value) return '-';
 
-            const { subjectGroupName, subject } = value;
+            const { subjectGroupName, subject, blockIdx } = value;
 
-            if (subjectGroupName) {
+            if (subjectGroupName && typeof blockIdx === 'number') {
               return (
                 <Chip
                   size="small"
                   variant="soft"
-                  color={subject.colour ?? 'slate'}
+                  color={getColorBasedOnIndex(blockIdx)}
                   label={subjectGroupName}
                 />
               );
             }
 
-            return (
-              <Chip
-                size="small"
-                variant="soft"
-                color="slate"
-                label={subject.name}
-              />
-            );
+            return subject.name;
           },
           valueFormatter: ({
             value,
@@ -200,15 +195,13 @@ export default function StudentOptionsSolvePage() {
 
   const toggleSolver = () => {
     solveOptions({
-      // operation: optionsSolutions?.solverRunning
-      //   ? OptionsSol_SolverOperation.Stop
-      //   : OptionsSol_SolverOperation.Start,
-      operation: OptionsSol_SolverOperation.Start,
+      operation:
+        optionsSolutions?.solverStatus === SolutionStatus.NotSolving
+          ? OptionsSol_SolverOperation.Start
+          : OptionsSol_SolverOperation.Stop,
       optionId,
     });
   };
-
-  console.log({ studentRows, studentAssignmentColumns });
 
   return (
     <>
@@ -231,19 +224,18 @@ export default function StudentOptionsSolvePage() {
               {t('subjectOptions:solverSettings')}
             </Button>
             <Button variant="contained" color="primary" onClick={toggleSolver}>
-              {/* {optionsSolutions?.solverRunning
-              ? t('common:solve')
-              : t('subjectOptions:stopSolver')} */}
-              {t('common:solve')}
+              {optionsSolutions?.solverStatus === SolutionStatus.NotSolving
+                ? t('common:solve')
+                : t('subjectOptions:stopSolver')}
             </Button>
           </Stack>
         }
       />
-      {/* <SolveSettingsModal
+      <SolveSettingsModal
         optionsSolutions={optionsSolutions}
         isOpen={isOpen}
         onClose={onClose}
-      /> */}
+      />
     </>
   );
 }
