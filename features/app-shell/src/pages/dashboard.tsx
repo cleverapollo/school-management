@@ -12,7 +12,7 @@ import { usePermissions, useUser } from '@tyro/api';
 export default function Dashboard() {
   const { t } = useTranslation(['navigation']);
   const { activeProfile } = useUser();
-  const { isStaffUserWithPermission } = usePermissions();
+  const { isStaffUserWithPermission, isTyroUser } = usePermissions();
 
   return (
     <Page title={t('navigation:general.dashboard')}>
@@ -30,9 +30,8 @@ export default function Dashboard() {
               showTeacher={false}
               partyId={activeProfile?.partyId ?? 0}
             />,
-            isStaffUserWithPermission('ps:1:attendance:write_attendance') && (
-              <OverdueAttendanceWidget />
-            ),
+            //  isStaffUserWithPermission('ps:1:attendance:write_attendance')
+            isTyroUser && <OverdueAttendanceWidget />,
           ]}
         />
       </Container>
