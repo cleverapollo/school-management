@@ -73,7 +73,6 @@ export function SubjectOptionsSetupForm({
   } = useForm<SubjectOptionsFormState>({
     resolver: resolver({
       name: rules.required(),
-      academicYearId: rules.required(),
       yearGroupId: rules.required(),
       selectedStudents: rules.required(),
       pools: {
@@ -246,7 +245,6 @@ export function SubjectOptionsSetupForm({
         yearGroupId: defaultOptionsSetup.yearGroup.yearGroupId,
         selectedStudents: defaultOptionsSetup.students ?? [],
         pools,
-        academicYearId: activeAcademicNamespace?.academicNamespaceId,
       });
     }
   }, [defaultOptionsSetup, activeAcademicNamespace, reset]);

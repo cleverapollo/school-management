@@ -1,15 +1,15 @@
-import { Control, useController, useWatch } from 'react-hook-form';
+import { Control, useController } from 'react-hook-form';
 import { SelectionList, usePreferredNameLayout } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import {
-  RHFYearGroupAutocomplete,
-  useYearGroupListsByFilter,
-} from '@tyro/groups';
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef, useEffect, useState } from 'react';
 import { FormHelperText, Stack } from '@mui/material';
 import { SubjectOptionsFormState } from './types';
-import { AcademicYearSelect } from './academic-year-select';
 import { YearGroupEnrolment } from './year-group-enrolment';
+import { OptionsYearAutocomplete } from './options-year-autocomplete';
+import {
+  ReturnTypeFromUseOptionsAvailableEnrollmentGroups,
+  useOptionsEnrollmentGroupsStudents,
+} from '../../api/options-enrolment-groups';
 
 interface StudentSelectionProps {
   control: Control<SubjectOptionsFormState>;
@@ -19,13 +19,10 @@ export function StudentSelection({ control }: StudentSelectionProps) {
   const { displayName } = usePreferredNameLayout();
   const containerRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation(['common', 'subjectOptions']);
-  const [academicYearId, selectedStudentYearGroups] = useWatch({
-    name: ['academicYearId', 'selectedStudentYearGroups'],
-    control,
-  });
-  const dependenciesSet = Boolean(
-    academicYearId && selectedStudentYearGroups?.length > 0
-  );
+  const [selectedYearGroups, setSelectedYearGroups] = useState<
+    ReturnTypeFromUseOptionsAvailableEnrollmentGroups[]
+  >([]);
+  const dependenciesSet = Boolean(selectedYearGroups.length > 0);
 
   const {
     field: { value, onChange },
@@ -36,35 +33,29 @@ export function StudentSelection({ control }: StudentSelectionProps) {
     defaultValue: [],
   });
 
-  const { data, isLoading } = useYearGroupListsByFilter(
+  const { data: students, isLoading } = useOptionsEnrollmentGroupsStudents(
     {
-      academicNamespaceIds: [academicYearId],
-      yearGroupEnrollmentPartyId: selectedStudentYearGroups?.map(
-        ({ partyId }) => partyId
-      ),
+      groupIds: selectedYearGroups.map((group) => group.id),
     },
     dependenciesSet
   );
 
   const options = useMemo(() => {
-    if (!data) return [];
+    if (!students) return [];
 
-    return data
-      .flatMap((yearGroup) => yearGroup.students)
-      .sort((a, b) => {
-        if (a.classGroup?.name !== b.classGroup?.name) {
-          return (
-            (a.classGroup?.name ?? '').localeCompare(
-              b.classGroup?.name ?? ''
-            ) || 0
-          );
-        }
+    return students.sort((a, b) => {
+      if (a.classGroup?.name !== b.classGroup?.name) {
+        return (
+          (a.classGroup?.name ?? '').localeCompare(b.classGroup?.name ?? '') ||
+          0
+        );
+      }
 
-        const aName = displayName(a.person);
-        const bName = displayName(b.person);
-        return aName.localeCompare(bName);
-      });
-  }, [data]);
+      const aName = displayName(a.person);
+      const bName = displayName(b.person);
+      return aName.localeCompare(bName);
+    });
+  }, [students]);
 
   useEffect(() => {
     if (errors.selectedStudents && !errors.name && containerRef.current) {
@@ -95,43 +86,17 @@ export function StudentSelection({ control }: StudentSelectionProps) {
         }
         firstColumnHeader={
           <Stack direction="row" spacing={1}>
-            <AcademicYearSelect
-              variant="white-filled"
-              controlProps={{
-                name: 'academicYearId',
-                control,
-              }}
-              sx={{
-                maxWidth: 300,
-                '& .MuiInputBase-root': {
-                  border: '1px solid',
-                  borderColor: 'indigo.50',
-                },
-              }}
-            />
-            <RHFYearGroupAutocomplete
-              label={t('common:years')}
-              controlProps={{
-                name: 'selectedStudentYearGroups',
-                control,
-              }}
-              limitTags={1}
-              academicNamespaceId={academicYearId}
-              multiple
-              inputProps={{
-                variant: 'white-filled',
-              }}
-              sx={{
-                maxWidth: 320,
-                '& .MuiInputBase-root': {
-                  border: '1px solid',
-                  borderColor: 'indigo.50',
-                },
-              }}
-              ChipProps={{
-                size: 'small',
-                variant: 'soft',
-                color: 'primary',
+            <OptionsYearAutocomplete
+              value={selectedYearGroups}
+              onChange={(_, newYearGroups) => {
+                let checkedValue: ReturnTypeFromUseOptionsAvailableEnrollmentGroups[] =
+                  [];
+                if (newYearGroups) {
+                  checkedValue = Array.isArray(newYearGroups)
+                    ? newYearGroups
+                    : [newYearGroups];
+                }
+                setSelectedYearGroups(checkedValue);
               }}
             />
           </Stack>

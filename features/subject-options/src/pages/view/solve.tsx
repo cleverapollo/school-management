@@ -1,4 +1,11 @@
-import { Button, Chip, Stack } from '@mui/material';
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Stack,
+  Typography,
+} from '@mui/material';
 import {
   getNumber,
   GridOptions,
@@ -107,10 +114,13 @@ const getStudentAssignmentColumns = (
     lockVisible: true,
     filter: true,
     pinned: 'left',
+    suppressMenu: true,
   },
   {
     field: 'missedPreferences',
     headerName: t('subjectOptions:prefsMissed'),
+    suppressMenu: true,
+    pinned: 'left',
   },
   ...(optionsSetup?.subjectSets?.map((subjectSet) => ({
     colId: JSON.stringify(subjectSet.id),
@@ -127,6 +137,8 @@ const getStudentAssignmentColumns = (
         return {
           field: `optionsAssigned.${colId}`,
           headerName: t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
+          suppressMenu: true,
+          sortable: false,
           cellClass: [
             isOutsideWhatTheyGet && 'outside-get',
             showLeftBorder && 'border-left',
@@ -158,19 +170,45 @@ const getStudentAssignmentColumns = (
               );
             }
 
-            return subject.name;
+            return (
+              <Box component="span" color="text.secondary">
+                {subject.shortCode}
+              </Box>
+            );
           },
           valueFormatter: ({
             value,
           }: ValueFormatterParams<
             StudentRow,
             ReturnType<StudentRow['optionsAssigned']['get']>
-          >) => value?.subject?.name ?? '-',
+          >) => value?.subjectGroupName ?? value?.subject?.shortCode ?? '-',
         };
       }
     ),
   })) ?? []),
 ];
+
+function SolverStatus({ status }: { status: SolutionStatus | undefined }) {
+  const { t } = useTranslation(['subjectOptions']);
+  if (!status || status === SolutionStatus.NotSolving) return null;
+
+  if (status === SolutionStatus.SolvingScheduled) {
+    return (
+      <Typography variant="caption" color="text.secondary">
+        {t('subjectOptions:scheduledStatus')}
+      </Typography>
+    );
+  }
+
+  return (
+    <Stack direction="row" spacing={1} alignItems="center" color="slate.400">
+      <CircularProgress size={18} color="inherit" thickness={4} />
+      <Typography variant="caption" color="text.secondary" fontWeight="medium">
+        {t('subjectOptions:activeStatus')}
+      </Typography>
+    </Stack>
+  );
+}
 
 export default function StudentOptionsSolvePage() {
   const { id } = useParams();
@@ -219,14 +257,22 @@ export default function StudentOptionsSolvePage() {
         columnDefs={studentAssignmentColumns}
         getRowId={({ data }) => JSON.stringify(data?.student?.partyId)}
         rightAdornment={
-          <Stack direction="row" justifyContent="flex-end" spacing={2}>
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            alignItems="center"
+            spacing={2}
+          >
+            <SolverStatus status={optionsSolutions?.solverStatus} />
             <Button onClick={onOpen} variant="soft" endIcon={<GearIcon />}>
               {t('subjectOptions:solverSettings')}
             </Button>
             <Button variant="contained" color="primary" onClick={toggleSolver}>
-              {optionsSolutions?.solverStatus === SolutionStatus.NotSolving
-                ? t('common:solve')
-                : t('subjectOptions:stopSolver')}
+              {optionsSolutions?.solverStatus
+                ? t(
+                    `subjectOptions:solverButtonActions.${optionsSolutions.solverStatus}`
+                  )
+                : t(`subjectOptions:solverButtonActions.NOT_SOLVING`)}
             </Button>
           </Stack>
         }

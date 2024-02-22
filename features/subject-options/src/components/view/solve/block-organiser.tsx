@@ -1,4 +1,4 @@
-import { Card, Chip, Box, Stack, useTheme } from '@mui/material';
+import { Card, Chip, Box, Stack, Typography } from '@mui/material';
 import {
   DragDropContext,
   Droppable,
@@ -21,7 +21,6 @@ export function BlockOrganiser({
   onChangeBlocks,
 }: BlockOrganiserProps) {
   const { t } = useTranslation(['subjectOptions']);
-  const theme = useTheme();
 
   const onDragEnd = (result: DropResult) => {
     if (!result.destination) {
@@ -69,16 +68,22 @@ export function BlockOrganiser({
   return (
     <Card variant="outlined">
       <DragDropContext onDragEnd={onDragEnd}>
-        <Box
+        <Stack
           sx={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, auto)',
-            '& > div:nth-of-type(1n + 3)': {
-              borderTop: '1px solid',
-              borderTopColor: 'indigo.50',
-            },
+            backgroundColor: 'slate.100',
+            pt: 1,
+            pb: 4,
+            px: 1.25,
           }}
         >
+          <Typography
+            component="h3"
+            variant="subtitle2"
+            color="text.secondary"
+            pb={0.75}
+          >
+            {t('subjectOptions:dragNDropToOrganiseGroups')}
+          </Typography>
           {blocks.map(({ blockIdx, subjectGroups }, blockIndex) => {
             const blockColor = getColorBasedOnIndex(blockIdx);
             return (
@@ -89,94 +94,95 @@ export function BlockOrganiser({
                 type="block"
               >
                 {(provided, snapshot) => (
-                  <>
+                  <Stack
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    direction="row"
+                    useFlexGap
+                    spacing={1}
+                    flexWrap="wrap"
+                    sx={{
+                      px: 1,
+                      py: 1.25,
+                      borderTop: '1px dashed',
+                      borderTopColor: 'slate.300',
+                      borderLeft: '1px dashed transparent',
+                      borderRight: '1px dashed transparent',
+                      '&:last-of-type': {
+                        borderBottom: '1px dashed',
+                        borderBottomColor: 'slate.300',
+                      },
+                    }}
+                  >
                     <Box
                       sx={{
-                        p: 1,
                         display: 'flex',
                         alignItems: 'center',
-                        borderRight: '1px solid',
-                        borderRightColor: 'indigo.50',
                       }}
                     >
                       {t('subjectOptions:blockN', { number: blockIdx + 1 })}
                     </Box>
-                    <Stack
-                      ref={provided.innerRef}
-                      direction="row"
-                      spacing={1}
-                      p={1}
-                      {...provided.droppableProps}
-                    >
-                      {subjectGroups?.map(({ id, name, pinned }, index) => (
-                        <Draggable
-                          key={id}
-                          draggableId={id.toString()}
-                          index={index}
-                        >
-                          {(draggableProvided) => (
-                            <Chip
-                              ref={draggableProvided.innerRef}
-                              {...draggableProvided.draggableProps}
-                              {...draggableProvided.dragHandleProps}
-                              variant="soft"
-                              label={name}
-                              color={blockColor}
-                              onDelete={() => toggleItemPin(blockIndex, index)}
-                              sx={{
-                                '& .MuiChip-deleteIcon': {
-                                  transitionProperty: 'width, opacity',
-                                  transitionDelay: '0.100s, 0s',
-                                  transitionTimingFunction: 'ease-in-out',
-                                  transitionDuration: '0.150s',
-                                  width: pinned ? 22 : 0,
-                                  opacity: pinned ? 1 : 0,
-                                  color: pinned
-                                    ? `${blockColor}.900`
+                    {subjectGroups?.map(({ id, name, pinned }, index) => (
+                      <Draggable
+                        key={id}
+                        draggableId={id.toString()}
+                        index={index}
+                      >
+                        {(draggableProvided) => (
+                          <Chip
+                            ref={draggableProvided.innerRef}
+                            {...draggableProvided.draggableProps}
+                            {...draggableProvided.dragHandleProps}
+                            variant="soft"
+                            label={name}
+                            color={blockColor}
+                            onDelete={() => toggleItemPin(blockIndex, index)}
+                            sx={({ palette }) => ({
+                              '& .MuiChip-label': {
+                                transition: 'transform 0.150s ease-in-out',
+                                transform: `translateX(${pinned ? 0 : 10}px)`,
+                              },
+                              '& .MuiChip-deleteIcon': {
+                                transitionProperty: 'transform, opacity',
+                                transitionTimingFunction: 'ease-in-out',
+                                transitionDuration: '0.150s',
+                                opacity: pinned ? 1 : 0,
+                                transform: pinned ? 'scale(1)' : 'scale(0)',
+                                color: `${blockColor}.700`,
+
+                                '& path:first-of-type': {
+                                  fill: pinned
+                                    ? palette[blockColor][700]
                                     : undefined,
                                 },
-                                '&:hover .MuiChip-deleteIcon': {
-                                  width: 22,
-                                  opacity: 1,
-                                  transitionDelay: '0s, 0.100s',
+
+                                '&:hover': {
+                                  transform: 'scale(1.25) !important',
+                                  color: `${blockColor}.700`,
                                 },
-                              }}
-                              deleteIcon={
-                                <Box
-                                  sx={{
-                                    backgroundColor: 'currentColor',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    borderRadius: '50%',
-                                    height: 22,
-                                    '& svg': {
-                                      color: `${blockColor}.100`,
-                                      width: 18,
-                                      height: 18,
-                                    },
-                                    '&:hover': {
-                                      '& svg': {
-                                        color: `${blockColor}.600`,
-                                      },
-                                    },
-                                  }}
-                                >
-                                  <PinIcon />
-                                </Box>
-                              }
-                            />
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </Stack>
-                  </>
+                              },
+                              '&:hover': {
+                                '& .MuiChip-label': {
+                                  transform: 'translateX(0px)',
+                                },
+                                '& .MuiChip-deleteIcon': {
+                                  opacity: 1,
+                                  transform: 'scale(1)',
+                                },
+                              },
+                            })}
+                            deleteIcon={<PinIcon />}
+                          />
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </Stack>
                 )}
               </Droppable>
             );
           })}
-        </Box>
+        </Stack>
       </DragDropContext>
     </Card>
   );

@@ -52,10 +52,17 @@
   "cloneOptions": "Clone options",
   "optionsSolverStartedSuccessfully": "Options solver has started successfully",
   "optionsSolverStoppedSuccessfully": "Options solver has stopped successfully.",
-  "stopSolver": "Stop solver",
+  "solverButtonActions": {
+    "NOT_SOLVING": "Solve",
+    "SOLVING_ACTIVE": "Stop solver",
+    "SOLVING_SCHEDULED": "Cancel solver"
+  },
   "subjectStats": "Subject stats",
   "confirmSaveDialog": {
     "title": "Want to continue?",
     "descriptionPreText": "Making these changes will effect the following data:"
-  }
+  },
+  "dragNDropToOrganiseGroups": "Drag and drop to organise subject groups",
+  "scheduledStatus": "Solver scheduled. Results will appear shortly",
+  "activeStatus": "Solver running. Stop to get the current best"
 }

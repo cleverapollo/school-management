@@ -84,14 +84,12 @@ export function SolveSettingsModal({
         {t('subjectOptions:solverSettings')}
       </DialogTitle>
       <DialogContent>
-        <Stack direction="row" spacing={3} useFlexGap>
+        <Stack direction="row" spacing={3} useFlexGap pb={2}>
           <Stack spacing={2} minWidth="40%">
-            <Typography component="h3" variant="subtitle1">
-              {t('common:blocks')}
-            </Typography>
             {editableSolutionsCopy?.pools.map(({ poolIdx, blocks }, index) => (
               <Stack key={poolIdx} spacing={1}>
-                <Typography component="h4" variant="subtitle2">
+                <Typography component="h3" variant="subtitle1">
+                  {t('common:blocks')} -{' '}
                   {t('subjectOptions:poolN', {
                     number: poolIdx + 1,
                   })}
@@ -113,13 +111,11 @@ export function SolveSettingsModal({
             ))}
           </Stack>
           <Stack spacing={2} flex={1}>
-            <Typography component="h3" variant="subtitle1">
-              {t('subjectOptions:subjectStats')}
-            </Typography>
             {editableSolutionsCopy?.pools.map(
               ({ poolIdx, subjects, blocks }, index) => (
                 <Stack key={poolIdx} spacing={1}>
-                  <Typography component="h4" variant="subtitle2">
+                  <Typography component="h3" variant="subtitle1">
+                    {t('subjectOptions:subjectStats')} -{' '}
                     {t('subjectOptions:poolN', {
                       number: poolIdx + 1,
                     })}

@@ -26,6 +26,7 @@ const optionsEnrollmentGroupsStudents = graphql(/* GraphQL */ `
       name
       id
       students {
+        partyId
         person {
           partyId
           firstName
@@ -33,7 +34,9 @@ const optionsEnrollmentGroupsStudents = graphql(/* GraphQL */ `
           avatarUrl
           type
         }
-        partitionKey
+        classGroup {
+          name
+        }
       }
     }
   }
@@ -71,12 +74,14 @@ const optionsEnrollmentGroupsStudentsQuery = (
 });
 
 export function useOptionsEnrollmentGroupsStudents(
-  filter: Options_AvailableGroupsFilter
+  filter: Options_AvailableGroupsFilter,
+  enabled = true
 ) {
   return useQuery({
     ...optionsEnrollmentGroupsStudentsQuery(filter),
     select: ({ options_availableEnrollmentGroups }) =>
-      options_availableEnrollmentGroups,
+      options_availableEnrollmentGroups.flatMap((group) => group.students),
+    enabled,
   });
 }
 
@@ -88,3 +93,6 @@ export function geOptionsEnrollmentGroupsStudents(
 
 export type ReturnTypeFromUseOptionsAvailableEnrollmentGroups =
   UseQueryReturnType<typeof useOptionsAvailableEnrollmentGroups>[number];
+
+export type ReturnTypeFromUseOptionsEnrollmentGroupsStudents =
+  UseQueryReturnType<typeof useOptionsEnrollmentGroupsStudents>[number];

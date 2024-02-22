@@ -82,7 +82,7 @@ export function useOptionsSolutions(filter: SolutionsFilter) {
     ...optionsSolutionsQuery(filter),
     select: ({ options_solutions }) => options_solutions,
     refetchInterval: (data) =>
-      data?.solverStatus === SolutionStatus.NotSolving ? false : 10000,
+      data?.solverStatus === SolutionStatus.NotSolving ? false : 5000,
   });
 }
 

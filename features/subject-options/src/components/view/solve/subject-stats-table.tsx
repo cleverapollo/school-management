@@ -8,11 +8,11 @@ import {
   TextField,
   Tooltip,
   Chip,
+  Card,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { getColorBasedOnIndex } from '@tyro/api';
 import { useMemo } from 'react';
-import { ReturnTypeFromUseOptionSolveSubjectStats } from '../../../api/solve/subject-stats';
 import { ReturnTypeFromUseOptionsSolutions } from '../../../api/options-solutions';
 
 interface SubjectStatsTableProps {
@@ -67,8 +67,19 @@ export function SubjectStatsTable({
   };
 
   return (
-    <TableContainer>
-      <Table size="small">
+    <TableContainer component={Card}>
+      <Table
+        size="small"
+        sx={{
+          '& th': {
+            backgroundColor: 'white',
+          },
+          '& tbody td, & tbody th': {
+            borderTop: '1px solid',
+            borderTopColor: 'slate.200',
+          },
+        }}
+      >
         <TableHead>
           <TableRow>
             <TableCell>{t('common:subject')}</TableCell>
@@ -84,19 +95,14 @@ export function SubjectStatsTable({
           {rowData.map((row, index) => (
             <TableRow key={row.subjectId}>
               <TableCell component="th" scope="row">
-                <Chip
-                  variant="soft"
-                  label={row.subject?.name}
-                  color={row.subject?.colour ?? 'slate'}
-                  size="small"
-                  sx={{ lineHeight: 1.5 }}
-                />
+                {row.subject?.shortCode}
               </TableCell>
               <TableCell>
                 <TextField
                   hiddenLabel
-                  variant="standard"
+                  variant="filled"
                   value={row.maxSize}
+                  size="small"
                   type="number"
                   onChange={(e) => {
                     editMaxSize(e.target.value, index);
@@ -106,6 +112,9 @@ export function SubjectStatsTable({
                       editMaxSize('0', index);
                     }
                   }}
+                  sx={{
+                    maxWidth: 80,
+                  }}
                 />
               </TableCell>
               <TableCell>
@@ -113,12 +122,16 @@ export function SubjectStatsTable({
                   hiddenLabel
                   variant="filled"
                   value={row.numClasses}
+                  size="small"
                   type="number"
                   onChange={(e) => editNumberOfClasses(e.target.value, index)}
                   onBlur={(e) => {
                     if (e.target.value === '') {
                       editNumberOfClasses('0', index);
                     }
+                  }}
+                  sx={{
+                    maxWidth: 80,
                   }}
                 />
               </TableCell>
