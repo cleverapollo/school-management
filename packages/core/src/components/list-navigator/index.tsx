@@ -130,7 +130,7 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
 
   return (
     <Stack gap={1}>
-      {currentItem && listData.length > 1 ? (
+      {currentItem && (
         <>
           <Stack
             flexDirection="row"
@@ -309,7 +309,7 @@ export function ListNavigator<StoreOption extends ListNavigatorSelectOption>({
           </Stack>
           <Divider sx={{ borderColor: 'indigo.200' }} />
         </>
-      ) : null}
+      )}
       <PageHeading
         {...pageHeadingProps}
         breadcrumbs={{

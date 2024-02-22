@@ -19,10 +19,10 @@ type TabNavigationProps = PropsWithChildren<{
 }>;
 
 function getInitialTabValue(
+  lastUrl: string,
   matches: ReturnType<typeof useMatches>,
   tabs: TabLink[]
 ) {
-  const lastUrl = matches[matches.length - 1].pathname;
   const matchedPathname = tabs.find(({ value }) => lastUrl.endsWith(value));
 
   return matchedPathname?.value ?? tabs[0].value;
@@ -31,16 +31,19 @@ function getInitialTabValue(
 export const TabPageContainer = ({ links, TabProps }: TabNavigationProps) => {
   const matches = useMatches();
   const permissions = usePermissions();
+
+  const lastUrl = matches[matches.length - 1].pathname;
+
   const [value, setValue] = useState<string>(() =>
-    getInitialTabValue(matches, links)
+    getInitialTabValue(lastUrl, matches, links)
   );
 
   useEffect(() => {
-    const matchedPath = getInitialTabValue(matches, links);
+    const matchedPath = getInitialTabValue(lastUrl, matches, links);
     if (value !== matchedPath) {
       setValue(matchedPath);
     }
-  }, [matches]);
+  }, [lastUrl, matches]);
 
   return (
     <Stack flexDirection="column" gap={3} flex={1}>
@@ -76,7 +79,7 @@ export const TabPageContainer = ({ links, TabProps }: TabNavigationProps) => {
           </Box>
         }
       >
-        <Outlet />
+        <Outlet key={lastUrl} />
       </LazyLoader>
     </Stack>
   );
