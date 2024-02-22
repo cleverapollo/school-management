@@ -18,11 +18,7 @@ type TabNavigationProps = PropsWithChildren<{
   TabProps?: Omit<ComponentProps<typeof Tabs>, 'value' | 'onChange'>;
 }>;
 
-function getInitialTabValue(
-  lastUrl: string,
-  matches: ReturnType<typeof useMatches>,
-  tabs: TabLink[]
-) {
+function getInitialTabValue(lastUrl: string, tabs: TabLink[]) {
   const matchedPathname = tabs.find(({ value }) => lastUrl.endsWith(value));
 
   return matchedPathname?.value ?? tabs[0].value;
@@ -35,15 +31,15 @@ export const TabPageContainer = ({ links, TabProps }: TabNavigationProps) => {
   const lastUrl = matches[matches.length - 1].pathname;
 
   const [value, setValue] = useState<string>(() =>
-    getInitialTabValue(lastUrl, matches, links)
+    getInitialTabValue(lastUrl, links)
   );
 
   useEffect(() => {
-    const matchedPath = getInitialTabValue(lastUrl, matches, links);
+    const matchedPath = getInitialTabValue(lastUrl, links);
     if (value !== matchedPath) {
       setValue(matchedPath);
     }
-  }, [lastUrl, matches]);
+  }, [lastUrl]);
 
   return (
     <Stack flexDirection="column" gap={3} flex={1}>
