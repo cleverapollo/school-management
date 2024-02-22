@@ -135,6 +135,7 @@ function ReadOnlyRecipientListInner({
                 >
                   <Avatar
                     src={recipient?.avatarUrl}
+                    person={recipient}
                     name={name}
                     sx={{
                       my: 1,

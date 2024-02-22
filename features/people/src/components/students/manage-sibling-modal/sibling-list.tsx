@@ -66,6 +66,7 @@ export function SiblingListItem({
       <Avatar
         src={person?.avatarUrl}
         name={displayName(person)}
+        person={person}
         sx={{
           my: 1,
           mr: 0.5,

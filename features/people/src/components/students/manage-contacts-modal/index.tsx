@@ -194,6 +194,7 @@ export function ManageContactsModal({
                   <Avatar
                     src={person?.avatarUrl}
                     name={displayName(person)}
+                    person={person}
                     sx={{
                       my: 1,
                     }}

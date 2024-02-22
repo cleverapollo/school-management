@@ -10,7 +10,7 @@ import {
   Stack,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
-import { useResponsive, Avatar } from '@tyro/core';
+import { useResponsive, Avatar, usePreferredNameLayout } from '@tyro/core';
 import { LinkIcon, StarIcon } from '@tyro/icons';
 import { ReturnTypeUseMailList, useMail, useStarMail } from '../../api/mails';
 import { useMailSettings } from '../../store/mail-settings';
@@ -51,6 +51,8 @@ export default function MailItem({
   const { activeProfileId } = useMailSettings();
   const isDesktop = useResponsive('up', 'md');
   const { t } = useTranslation(['mail']);
+
+  const { displayName } = usePreferredNameLayout();
 
   const latestThreadSentOn = useMemo(
     () =>
@@ -98,7 +100,7 @@ export default function MailItem({
       )} */}
 
       <Link
-        to={`view/${mail.id}`}
+        to={`${window.location.pathname}/view/${mail.id}`}
         relative="path"
         style={{
           color: 'inherit',
@@ -117,9 +119,8 @@ export default function MailItem({
           }}
         >
           <Avatar
-            name={`${firstRecipient?.firstName ?? ''} ${
-              firstRecipient?.lastName ?? ''
-            }`}
+            name={displayName(firstRecipient)}
+            person={firstRecipient}
             src={firstRecipient?.avatarUrl}
             sx={{ width: 32, height: 32 }}
           />

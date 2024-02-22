@@ -5,6 +5,7 @@ import {
   PageHeading,
   Select,
   useBreakpointValue,
+  usePreferredNameLayout,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
@@ -21,6 +22,7 @@ export default function Cover() {
   const [date, setDate] = useState(dayjs());
   const { t } = useTranslation(['common', 'navigation', 'substitution']);
   const { spacing } = useTheme();
+  const { displayName } = usePreferredNameLayout();
   const [viewType, setViewType] = useState<'day' | 'staff'>('day');
   const [selectedStaff, setSelectedStaff] = useState<StaffSelectOption | null>(
     null
@@ -59,6 +61,15 @@ export default function Cover() {
     }
   }, [teacherData]);
 
+  const printHeading =
+    viewType === 'day'
+      ? `${t('navigation:management.substitution.cover')} - ${date.format(
+          'll'
+        )}`
+      : `${t('navigation:management.substitution.cover')} - ${displayName(
+          selectedStaff
+        )}, ${date.format('ll')}`;
+
   return (
     <PageContainer
       title={t('navigation:management.substitution.cover')}
@@ -68,6 +79,21 @@ export default function Cover() {
       <PageHeading
         title={t('navigation:management.substitution.cover')}
         titleProps={{ variant: 'h3' }}
+        sx={{
+          '@media print': {
+            display: 'none',
+          },
+        }}
+      />
+      <PageHeading
+        title={printHeading}
+        titleProps={{ variant: 'h3' }}
+        sx={{
+          display: 'none',
+          '@media print': {
+            display: 'block',
+          },
+        }}
       />
       <Stack direction={dropdownDirection} spacing={2}>
         <Select

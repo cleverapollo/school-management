@@ -72,6 +72,7 @@ export function StudentListItems({
       <Avatar
         src={student?.avatarUrl}
         name={displayName(student)}
+        person={student}
         sx={{
           my: 1,
           mr: 0.5,
@@ -86,7 +87,7 @@ export function StudentListItems({
           onClick={() => onRemove(student)}
           color="primary"
         >
-          {undoIcon ? <UndoIcon /> :  <CloseIcon />}
+          {undoIcon ? <UndoIcon /> : <CloseIcon />}
         </IconButton>
       </Tooltip>
     </Stack>

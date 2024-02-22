@@ -223,6 +223,7 @@ export const GroupAttendance = ({
                           isPriorityStudent={!!student?.extensions?.priority}
                           hasSupportPlan={false}
                           src={student?.person?.avatarUrl}
+                          person={student?.person}
                         />
                         <Stack direction="column">
                           <Typography variant="body2" fontWeight={600}>

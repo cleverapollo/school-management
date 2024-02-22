@@ -55,7 +55,9 @@ const getColumnDefs = (
   {
     field: 'amount',
     headerName: t('fees:amount'),
-    valueGetter: ({ data }) => formatCurrency(data?.amount ?? 0),
+    valueFormatter: ({ data }) => formatCurrency(data?.amount ?? 0),
+    comparator: (a: number, b: number) => a - b,
+    type: 'numericColumn',
   },
   {
     field: 'categories',
@@ -88,21 +90,29 @@ const getColumnDefs = (
     valueFormatter: ({ data }) =>
       data?.dueDate ? dayjs(data.dueDate).format('LL') : '-',
     sort: 'asc',
+    comparator: (dateA: string, dateB: string) =>
+      dayjs(dateA).unix() - dayjs(dateB).unix(),
   },
   {
     field: 'total',
     headerName: t('common:total'),
-    valueGetter: ({ data }) => formatCurrency(data?.total ?? 0),
+    valueFormatter: ({ data }) => formatCurrency(data?.total ?? 0),
+    comparator: (a: number, b: number) => a - b,
+    type: 'numericColumn',
   },
   {
     field: 'paid',
     headerName: t('common:paid'),
-    valueGetter: ({ data }) => formatCurrency(data?.paid ?? 0),
+    valueFormatter: ({ data }) => formatCurrency(data?.paid ?? 0),
+    comparator: (a: number, b: number) => a - b,
+    type: 'numericColumn',
   },
   {
     field: 'due',
     headerName: t('fees:due'),
-    valueGetter: ({ data }) => formatCurrency(data?.due ?? 0),
+    valueFormatter: ({ data }) => formatCurrency(data?.due ?? 0),
+    comparator: (a: number, b: number) => a - b,
+    type: 'numericColumn',
   },
   {
     field: 'feeStatus',

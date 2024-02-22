@@ -70,19 +70,22 @@ const getColumnDefs = (
   {
     field: 'amount',
     headerName: t('fees:amount'),
-    valueGetter: ({ data }) => formatCurrency(data?.amount ?? 0),
+    valueFormatter: ({ data }) => formatCurrency(data?.amount ?? 0),
+    comparator: (a: number, b: number) => a - b,
     type: 'numericColumn',
   },
   {
     field: 'amountDue',
     headerName: t('fees:due'),
-    valueGetter: ({ data }) => formatCurrency(data?.amountDue ?? 0),
+    valueFormatter: ({ data }) => formatCurrency(data?.amountDue ?? 0),
+    comparator: (a: number, b: number) => a - b,
     type: 'numericColumn',
   },
   {
     field: 'amountPaid',
     headerName: t('fees:amountPaid'),
-    valueGetter: ({ data }) => formatCurrency(data?.amountPaid ?? 0),
+    valueFormatter: ({ data }) => formatCurrency(data?.amountPaid ?? 0),
+    comparator: (a: number, b: number) => a - b,
     type: 'numericColumn',
   },
   {

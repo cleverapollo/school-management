@@ -50,8 +50,8 @@ const getColumnDefs = (
   {
     field: 'totalCost',
     headerName: t('sms:totalCost'),
-    valueGetter: ({ data }) =>
-      data?.totalCost ? formatCurrency(data.totalCost) : null,
+    valueFormatter: ({ data }) => formatCurrency(data?.totalCost ?? 0),
+    comparator: (a: number, b: number) => a - b,
     type: 'numericColumn',
   },
   {

@@ -37,6 +37,7 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
             isPriorityStudent={!!studentData?.extensions?.priority}
             hasSupportPlan={false}
             size={62}
+            person={studentData?.person}
           />
           <Stack sx={{ ml: 0.5, mr: 2.5 }}>
             <Typography variant="subtitle1" component="h2">
