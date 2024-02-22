@@ -24,7 +24,12 @@ export default function EditTimetable() {
       >(
         (acc, party) => {
           // TODO: Filter rooms when added to endpoint
+          if (party.type === SearchType.Room) {
+            acc.roomIds.push(party.partyId);
+          } else {
           acc.partyIds.push(party.partyId);
+          }
+
           return acc;
         },
         { partyIds: [], roomIds: [] }

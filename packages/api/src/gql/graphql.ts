@@ -4445,6 +4445,12 @@ export type Options_StudentChoices = {
   subjectSetChoices: Array<Options_Choice>;
 };
 
+export type Options_StudentInput = {
+  __typename?: 'Options_StudentInput';
+  partitionKey: Scalars['String'];
+  person: Person;
+};
+
 export type Options_StudentPreference = {
   __typename?: 'Options_StudentPreference';
   choices: Array<Options_StudentChoice>;
