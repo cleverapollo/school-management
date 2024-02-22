@@ -118,7 +118,7 @@ const getStudentAssignmentColumns = (
   },
   {
     field: 'missedPreferences',
-    headerName: t('subjectOptions:prefsMissed'),
+    headerName: t('subjectOptions:missed'),
     suppressMenu: true,
     pinned: 'left',
   },
