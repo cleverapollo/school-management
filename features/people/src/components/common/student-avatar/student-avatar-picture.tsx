@@ -27,7 +27,7 @@ export function StudentAvatarPicture({
   hasSupportPlan,
   AvatarProps,
   avatarBackgroundColor,
-  size = 40,
+  size = 42,
 }: StudentAvatarPictureProps) {
   const { palette } = useTheme();
 

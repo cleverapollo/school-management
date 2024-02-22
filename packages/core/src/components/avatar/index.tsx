@@ -40,8 +40,13 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
         ref={ref}
         sx={{
           bgcolor,
+          '&:has(> img)': {
+            backgroundColor: 'white',
+          },
           width: size,
           height: size,
+          border: '1px solid',
+          borderColor: 'divider',
           fontSize: size ? Math.ceil(size * 0.35) : undefined,
           ...sx,
         }}
