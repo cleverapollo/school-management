@@ -167,10 +167,13 @@ export function SelectionListProvider<T extends string | object>({
   const moveToSelected = useCallback(() => {
     const valueIds = value.map((option) => getOptionId(option));
     const newValueIds = new Set([...valueIds, ...checkedCardIds]);
-    const newValue = [...options, ...value].filter((option) => {
-      const optionId = getOptionId(option);
-      return newValueIds.has(optionId);
-    });
+    const optionsMap = new Map(
+      [...options, ...value].map((option) => [getOptionId(option), option])
+    );
+    const newValue = Array.from(newValueIds)
+      .map((id) => optionsMap.get(id))
+      .filter(Boolean) as T[];
+
     onChange(newValue);
     unselectAll();
   }, [value, checkedCardIds, getOptionId, onChange]);

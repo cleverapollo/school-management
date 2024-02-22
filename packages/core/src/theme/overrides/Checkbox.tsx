@@ -13,6 +13,7 @@ export default function Checkbox(theme: Theme) {
         icon: <CheckboxIcon />,
         checkedIcon: <CheckboxCheckedIcon />,
         indeterminateIcon: <CheckboxIndeterminateIcon />,
+        color: 'primary',
       },
 
       styleOverrides: {

@@ -18,6 +18,7 @@ const getExtensions = ({ placeholder }: ExtensionOptions) => [
   }),
   Link.configure({
     openOnClick: false,
+    validate: (href) => /^https?:\/\//.test(href),
   }),
 ];
 

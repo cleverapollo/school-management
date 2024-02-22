@@ -91,7 +91,6 @@ export const PersonalInformation = <
         <RHFCheckbox
           label={t('people:personal.about.requiresInterpreter')}
           controlLabelProps={{ sx: { width: '100%', ml: 0, height: '100%' } }}
-          checkboxProps={{ color: 'primary' }}
           controlProps={{ name: 'requiresInterpreter', control }}
         />
       </Grid>

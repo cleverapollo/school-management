@@ -89,7 +89,6 @@ export function UpsertFeeCategoryModal({
 
             <RHFCheckbox
               label={t('common:active')}
-              checkboxProps={{ color: 'primary' }}
               controlProps={{
                 name: 'active',
                 control,

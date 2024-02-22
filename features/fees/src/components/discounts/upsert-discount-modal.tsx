@@ -168,7 +168,6 @@ export function UpsertDiscountModal({
 
             <RHFCheckbox
               label={t('fees:isSiblingDiscount')}
-              checkboxProps={{ color: 'primary' }}
               controlProps={{
                 name: 'siblingDiscount',
                 control,
