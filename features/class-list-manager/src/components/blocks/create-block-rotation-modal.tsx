@@ -214,7 +214,6 @@ export const CreateBlockRotationModal = ({
 
         <DialogContent>
           <Collapse in={isTipOpen}>
-            {/* @ts-expect-error */}
             <Alert severity="primary" onClose={onCloseTip} sx={{ mb: 3 }}>
               <AlertTitle>
                 {t('classListManager:classListManagerTip')}
