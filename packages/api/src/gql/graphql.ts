@@ -4180,6 +4180,18 @@ export type OptionsSol_SubjectSetBlocks = {
   subjectSet: Array<Maybe<OptionsSol_SubjectSetBlock>>;
 };
 
+export type Options_AvailableGroups = {
+  __typename?: 'Options_AvailableGroups';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  students: Array<Options_StudentInput>;
+};
+
+export type Options_AvailableGroupsFilter = {
+  groupIds: Array<InputMaybe<Scalars['String']>>;
+  optionId: Scalars['Int'];
+};
+
 export type Options_Block = {
   __typename?: 'Options_Block';
   blockIdx: Scalars['Int'];
@@ -4390,6 +4402,12 @@ export type Options_StudentChoices = {
   missed: Scalars['Int'];
   studentPartyId: Scalars['Long'];
   subjectSetChoices: Array<Options_Choice>;
+};
+
+export type Options_StudentInput = {
+  __typename?: 'Options_StudentInput';
+  partitionKey: Scalars['String'];
+  person: Person;
 };
 
 export type Options_StudentPreference = {
@@ -5159,6 +5177,7 @@ export type Query = {
   optionsSol_blocks: OptionsSol_SubjectSetBlocks;
   optionsSol_studentAssignment: Array<OptionsSol_StudentAssignments>;
   optionsSol_subjectStats: Array<OptionsSol_Subject>;
+  options_availableEnrollmentGroups: Array<Options_AvailableGroups>;
   options_currentBest: Options_Solution;
   options_options: Array<Options_Option>;
   options_preferences: Array<Options_StudentPreference>;
@@ -5590,6 +5609,11 @@ export type QueryOptionsSol_StudentAssignmentArgs = {
 
 export type QueryOptionsSol_SubjectStatsArgs = {
   filter?: InputMaybe<Options_OptionFilter>;
+};
+
+
+export type QueryOptions_AvailableEnrollmentGroupsArgs = {
+  filter?: InputMaybe<Options_AvailableGroupsFilter>;
 };
 
 
