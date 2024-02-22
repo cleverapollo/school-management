@@ -661,6 +661,7 @@ export default function EditTermAssessmentResults() {
         }}
       />
       <Table
+        key={subjectGroupIdAsNumber}
         visibleDataRef={visibleDataRef}
         rowData={studentResults ?? []}
         columnDefs={columnDefs}

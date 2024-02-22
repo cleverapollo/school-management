@@ -487,6 +487,7 @@ export default function EditStateCbaResults() {
         }}
       />
       <Table
+        key={subjectGroupIdAsNumber}
         visibleDataRef={visibleDataRef}
         rowData={studentResults ?? []}
         columnDefs={columnDefs}
