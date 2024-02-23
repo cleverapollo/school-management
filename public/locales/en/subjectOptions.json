@@ -51,6 +51,7 @@
   "cloneOptions": "Clone options",
   "optionsSolverStartedSuccessfully": "Options solver has started successfully",
   "optionsSolverStoppedSuccessfully": "Options solver has stopped successfully.",
+  "autoAssignPref": "Auto assign preferences",
   "solverButtonActions": {
     "NOT_SOLVING": "Solve",
     "SOLVING_ACTIVE": "Stop solver",

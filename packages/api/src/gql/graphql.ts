@@ -3141,6 +3141,7 @@ export type Mutation = {
   notes_upsertBehaviourTags: Array<Notes_Tag>;
   notes_upsertNotes: Array<Notes_Note>;
   notes_upsertNotesTags: Array<Notes_Tag>;
+  optionsSol_fillInOptions: Success;
   optionsSol_modifySolutionSettings: Success;
   optionsSol_solve: Options_Solve;
   options_clone: Success;
@@ -3170,6 +3171,7 @@ export type Mutation = {
   ttsolve_clearTimeslots: TtSolve_SovlerStatus;
   ttsolve_currentBest: TtSolve_SovlerStatus;
   ttsolve_solve: Success;
+  ttsolve_updateConfigurations: Success;
   ttsolve_upsertRestriction: Success;
   users_createProfileForGlobalUser?: Maybe<Profile>;
   users_deactivateProfiles?: Maybe<Success>;
@@ -3598,6 +3600,11 @@ export type MutationNotes_UpsertNotesTagsArgs = {
 };
 
 
+export type MutationOptionsSol_FillInOptionsArgs = {
+  input: SolutionsFilter;
+};
+
+
 export type MutationOptionsSol_ModifySolutionSettingsArgs = {
   input: OptionsSol_ModifySolutionSettings;
 };
@@ -3743,8 +3750,13 @@ export type MutationTtsolve_SolveArgs = {
 };
 
 
+export type MutationTtsolve_UpdateConfigurationsArgs = {
+  input: TtSolve_UpdateConfigurations;
+};
+
+
 export type MutationTtsolve_UpsertRestrictionArgs = {
-  input?: InputMaybe<TtSolve_UpsertRestrictions>;
+  input: TtSolve_UpsertRestrictions;
 };
 
 
@@ -4443,12 +4455,6 @@ export type Options_StudentChoices = {
   missed: Scalars['Int'];
   studentPartyId: Scalars['Long'];
   subjectSetChoices: Array<Options_Choice>;
-};
-
-export type Options_StudentInput = {
-  __typename?: 'Options_StudentInput';
-  partitionKey: Scalars['String'];
-  person: Person;
 };
 
 export type Options_StudentPreference = {
@@ -5302,6 +5308,7 @@ export type Query = {
   tt_swapTeacherOptions: TtSwapTeacherOptions;
   tt_timetable: TtTimetable;
   tt_timetables: Array<TtTimetable>;
+  ttsolve_configuration: TtSolve_Configuration;
   ttsolve_getSolverInput: TtSolve_SolverInput;
   ttsolve_restrictions: TtSolve_Restrictions;
   ttsolve_restrictionsMeta: TtSolve_RestrictionsMeta;
@@ -5882,6 +5889,11 @@ export type QueryTt_TimetableArgs = {
 
 export type QueryTt_TimetablesArgs = {
   filter?: InputMaybe<TtTimetableListFilter>;
+};
+
+
+export type QueryTtsolve_ConfigurationArgs = {
+  filter: TtSolve_SolveParams;
 };
 
 
@@ -8769,6 +8781,30 @@ export enum TtSolveConstraintType {
   Soft = 'SOFT'
 }
 
+export type TtSolve_Configuration = {
+  __typename?: 'TtSolve_Configuration';
+  weightings?: Maybe<TtSolve_ConfigurationRestrictions>;
+};
+
+export type TtSolve_ConfigurationRestrictionMeta = {
+  __typename?: 'TtSolve_ConfigurationRestrictionMeta';
+  description: Scalars['String'];
+  id: Scalars['String'];
+  name: Scalars['String'];
+};
+
+export type TtSolve_ConfigurationRestrictionValue = {
+  __typename?: 'TtSolve_ConfigurationRestrictionValue';
+  id: Scalars['String'];
+  value: Scalars['Int'];
+};
+
+export type TtSolve_ConfigurationRestrictions = {
+  __typename?: 'TtSolve_ConfigurationRestrictions';
+  meta?: Maybe<TtSolve_ConfigurationRestrictionMeta>;
+  values?: Maybe<TtSolve_ConfigurationRestrictionValue>;
+};
+
 export type TtSolve_Restriction = {
   __typename?: 'TtSolve_Restriction';
   arguments?: Maybe<Array<TtSolve_RestrictionArgumentField>>;
@@ -8810,6 +8846,8 @@ export enum TtSolve_RestrictionArgumentInputType {
 
 export type TtSolve_RestrictionArgumentMetaField = {
   __typename?: 'TtSolve_RestrictionArgumentMetaField';
+  description?: Maybe<Scalars['String']>;
+  label: Scalars['String'];
   /**  possible values if a dropdown list */
   selectValues?: Maybe<Array<TtSolve_RestrictionDropdownValues>>;
   type: TtSolve_RestrictionArgumentInputType;
@@ -8875,6 +8913,16 @@ export type TtSolve_SovlerStatus = {
 export type TtSolve_TimeslotHardSoftInput = {
   hardSoft?: InputMaybe<TtSolveConstraintType>;
   timeslot?: InputMaybe<TtTimeslotIdInput>;
+};
+
+export type TtSolve_UpdateConfigurations = {
+  timetableId: Scalars['Int'];
+  weightings?: InputMaybe<Array<InputMaybe<TtSolve_UpdateConfigurationsWeightings>>>;
+};
+
+export type TtSolve_UpdateConfigurationsWeightings = {
+  id: Scalars['String'];
+  value: Scalars['Int'];
 };
 
 export type TtSolve_UpsertRestriction = {
@@ -10886,6 +10934,13 @@ export type Options_SaveStudentPreferencesMutationVariables = Exact<{
 
 export type Options_SaveStudentPreferencesMutation = { __typename?: 'Mutation', options_saveStudentPreferences: { __typename?: 'Success', success?: boolean | null } };
 
+export type OptionsSol_FillInOptionsMutationVariables = Exact<{
+  input: SolutionsFilter;
+}>;
+
+
+export type OptionsSol_FillInOptionsMutation = { __typename?: 'Mutation', optionsSol_fillInOptions: { __typename?: 'Success', success?: boolean | null } };
+
 export type OptionsSol_SolveMutationVariables = Exact<{
   input: OptionsSol_Solve;
 }>;
@@ -11392,6 +11447,7 @@ export const Options_PublishDocument = {"kind":"Document","definitions":[{"kind"
 export const Options_SaveOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_saveOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_SaveOptions"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_saveOptions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"validations"}}]}}]}}]} as unknown as DocumentNode<Options_SaveOptionsMutation, Options_SaveOptionsMutationVariables>;
 export const OptionsSol_ModifySolutionSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"optionsSol_modifySolutionSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"OptionsSol_ModifySolutionSettings"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionsSol_modifySolutionSettings"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<OptionsSol_ModifySolutionSettingsMutation, OptionsSol_ModifySolutionSettingsMutationVariables>;
 export const Options_SaveStudentPreferencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"options_saveStudentPreferences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_SaveStudentPreference"}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_saveStudentPreferences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Options_SaveStudentPreferencesMutation, Options_SaveStudentPreferencesMutationVariables>;
+export const OptionsSol_FillInOptionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"optionsSol_fillInOptions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SolutionsFilter"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionsSol_fillInOptions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<OptionsSol_FillInOptionsMutation, OptionsSol_FillInOptionsMutationVariables>;
 export const OptionsSol_SolveDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"optionsSol_solve"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"OptionsSol_Solve"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionsSol_solve"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"problemId"}}]}}]}}]} as unknown as DocumentNode<OptionsSol_SolveMutation, OptionsSol_SolveMutationVariables>;
 export const OptionsSol_BlocksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"optionsSol_blocks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_OptionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionsSol_blocks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectSet"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blocks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blockIdx"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolIdx"}},{"kind":"Field","name":{"kind":"Name","value":"blockIdx"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjectId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"shortCode"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numStudents"}},{"kind":"Field","name":{"kind":"Name","value":"pinned"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"subjectSet"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionId"}},{"kind":"Field","name":{"kind":"Name","value":"idx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"poolIdx"}}]}}]}}]}}]}}]} as unknown as DocumentNode<OptionsSol_BlocksQuery, OptionsSol_BlocksQueryVariables>;
 export const OptionsSol_SubjectStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"optionsSol_subjectStats"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_OptionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionsSol_subjectStats"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"shortCode"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}},{"kind":"Field","name":{"kind":"Name","value":"maxSize"}},{"kind":"Field","name":{"kind":"Name","value":"preferencesTotal"}},{"kind":"Field","name":{"kind":"Name","value":"preferencesGotten"}},{"kind":"Field","name":{"kind":"Name","value":"teachingGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolIdx"}},{"kind":"Field","name":{"kind":"Name","value":"blockIdx"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"numStudents"}}]}}]}}]}}]} as unknown as DocumentNode<OptionsSol_SubjectStatsQuery, OptionsSol_SubjectStatsQueryVariables>;
