@@ -30,6 +30,7 @@ export function DialogTitle({
       {typeof onClose === 'function' && (
         <DialogCloseButton
           onClick={onClose}
+          autoFocus
           sx={{
             position: 'absolute',
             right: 24,

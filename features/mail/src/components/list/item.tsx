@@ -100,7 +100,7 @@ export default function MailItem({
       )} */}
 
       <Link
-        to={`view/${mail.id}`}
+        to={`${window.location.pathname}/view/${mail.id}`}
         relative="path"
         style={{
           color: 'inherit',

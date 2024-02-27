@@ -35,6 +35,9 @@ export function MailEditor({ editor, sx }: MailEditorProps) {
               pointerEvents: 'none',
             },
           },
+          ' & a': {
+            color: 'primary.main',
+          },
         },
         ...sx,
       }}

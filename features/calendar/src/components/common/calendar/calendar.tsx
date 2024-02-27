@@ -14,7 +14,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 // @mui
 import { Box, Card, Fade, IconButton, Stack } from '@mui/material';
 // routes
-import { usePermissions, UserType, CalendarEventType } from '@tyro/api';
+import {usePermissions, UserType, CalendarEventType, SearchType} from '@tyro/api';
 import { useResponsive, useDisclosure } from '@tyro/core';
 import { ChevronLeftIcon } from '@tyro/icons';
 import dayjs from 'dayjs';
@@ -84,7 +84,12 @@ export const Calendar = function Calendar({
     {
       date,
       resources: {
-        partyIds: selectedPartys.map((party) => party.partyId),
+        partyIds: selectedPartys
+          ?.filter((a) => a.type !== SearchType.Room)
+          .map((party) => party.partyId),
+        roomIds: selectedPartys
+          ?.filter((a) => a.type === SearchType.Room)
+          .map((party) => party.partyId),
       },
     },
     visableEventTypes

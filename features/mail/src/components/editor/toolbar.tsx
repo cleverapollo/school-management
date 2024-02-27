@@ -3,6 +3,7 @@ import { LoadingButton } from '@mui/lab';
 import { Editor } from '@tiptap/react';
 import { useTranslation } from '@tyro/i18n';
 import { MailEditorTextPopover } from './text-popover';
+import { InsertLinkButton } from './insert-link-button';
 
 interface MailEditorToolbarProps {
   editor: Editor | null;
@@ -35,15 +36,18 @@ export function MailEditorToolbar({
           {t('common:actions.send')}
         </LoadingButton>
 
-        <MailEditorTextPopover editor={editor} />
-        {/* Look at adding back in with attachments in v2 */}
-        {/* <IconButton size="small" sx={{ ml: 2, mr: 1 }}>
-                  <AddPhotoIcon />
-                </IconButton>
-  
-                <IconButton size="small">
-                  <AttachmentIcon />
-                </IconButton> */}
+        <Stack direction="row" alignItems="center">
+          <MailEditorTextPopover editor={editor} />
+          <InsertLinkButton editor={editor} />
+          {/* Look at adding back in with attachments in v2 */}
+          {/* <IconButton size="small" sx={{ ml: 2, mr: 1 }}>
+                    <AddPhotoIcon />
+                  </IconButton>
+    
+                  <IconButton size="small">
+                    <AttachmentIcon />
+                  </IconButton> */}
+        </Stack>
       </Stack>
       {onCanReplyChange && (
         <FormControlLabel

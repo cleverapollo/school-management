@@ -35,7 +35,9 @@
     "deselect": "Deselect",
     "exportCSV": "Export CSV",
     "publish": "Publish",
-    "unpublish": "Unpublish"
+    "unpublish": "Unpublish",
+    "change": "Change",
+    "update": "Update"
   },
   "snackbarMessages": {
     "createSuccess": "Created successfully!",

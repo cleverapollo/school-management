@@ -5246,6 +5246,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tiptap/extension-bubble-menu@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "@tiptap/extension-bubble-menu@npm:2.2.3"
+  dependencies:
+    tippy.js: ^6.3.7
+  peerDependencies:
+    "@tiptap/core": ^2.0.0
+    "@tiptap/pm": ^2.0.0
+  checksum: 91f337a9a6bf5f42afa0c969bee9566d9babdd3372a0f00d92a1033df144bb7e130aa8046fe96d74624ab115030fd06c0aa52bb48f7d6ef2bbc2ea7f127cf0fe
+  languageName: node
+  linkType: hard
+
 "@tiptap/extension-bullet-list@npm:^2.1.13":
   version: 2.1.13
   resolution: "@tiptap/extension-bullet-list@npm:2.1.13"
@@ -5362,15 +5374,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-link@npm:^2.1.10":
-  version: 2.1.13
-  resolution: "@tiptap/extension-link@npm:2.1.13"
+"@tiptap/extension-link@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "@tiptap/extension-link@npm:2.2.3"
   dependencies:
     linkifyjs: ^4.1.0
   peerDependencies:
     "@tiptap/core": ^2.0.0
     "@tiptap/pm": ^2.0.0
-  checksum: 0d48258c558098aac60a43b9b208d10c80d021b63f87599342e5ba8b1845c4ea2ad3234ace3d441bb63c15d5277a76a4f7a560e4a8fb319aa0ed816f97c1328d
+  checksum: 66b64ff79d00cd3eb09f34366cd6763c0025cc1f3362a88f43ad12c2739208066d53b8f8b3304108a804fa31bb9da478e6e1503ef6ea9e6db1e90b7de9ccafa6
   languageName: node
   linkType: hard
 
@@ -6720,7 +6732,8 @@ __metadata:
     "@mui/system": ^5.15.0
     "@tanstack/react-query": ^4.29.7
     "@tanstack/react-virtual": 3.0.4
-    "@tiptap/extension-link": ^2.1.10
+    "@tiptap/extension-bubble-menu": ^2.2.3
+    "@tiptap/extension-link": ^2.2.3
     "@tiptap/extension-placeholder": ^2.1.8
     "@tiptap/extension-underline": ^2.1.8
     "@tiptap/pm": ^2.1.8

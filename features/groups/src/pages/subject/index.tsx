@@ -490,13 +490,13 @@ export default function SubjectGroups() {
             'ps:1:printing_and_exporting:print_group_members'
           ),
       },
-      {
-        label: t('groups:deleteGroups', { count: selectedGroups.length }),
-        icon: <TrashIcon />,
-        isDelete: true,
-        onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
-        hasAccess: () => permissions.isTyroUser,
-      },
+      // {
+      //   label: t('groups:deleteGroups', { count: selectedGroups.length }),
+      //   icon: <TrashIcon />,
+      //   isDelete: true,
+      //   onClick: () => setDeleteGroupIds(selectedGroups.map(({ id }) => id)),
+      //   hasAccess: () => permissions.isTyroUser,
+      // },
     ],
     [selectedGroups, onOpenSendSms, permissions]
   );
