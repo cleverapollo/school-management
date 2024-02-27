@@ -66,6 +66,15 @@ export function searchDisplayName<T extends DisplayNamePersonProps>(
   });
 }
 
+export function preferredNameLayoutUtils() {
+  return {
+    displayName,
+    displayNames,
+    sortByDisplayName,
+    searchDisplayName,
+  };
+}
+
 export function usePreferredNameLayout() {
   return {
     displayName,

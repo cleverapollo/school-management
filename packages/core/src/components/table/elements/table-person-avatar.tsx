@@ -5,9 +5,14 @@ import { TableAvatar } from './table-avatar';
 type TablePersonAvatarProps = {
   to?: string | null;
   person: Partial<Person> | undefined;
+  onBeforeNavigate?: () => void;
 };
 
-export function TablePersonAvatar({ to, person }: TablePersonAvatarProps) {
+export function TablePersonAvatar({
+  to,
+  person,
+  onBeforeNavigate,
+}: TablePersonAvatarProps) {
   const { displayName } = usePreferredNameLayout();
   const name = displayName(person);
 
@@ -16,6 +21,7 @@ export function TablePersonAvatar({ to, person }: TablePersonAvatarProps) {
       to={to}
       name={name}
       avatarUrl={person?.avatarUrl}
+      onBeforeNavigate={onBeforeNavigate}
       AvatarProps={{ person }}
     />
   );

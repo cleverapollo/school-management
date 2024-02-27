@@ -3,8 +3,6 @@ import {
   GridOptions,
   ICellRendererParams,
   PageContainer,
-  PageHeading,
-  ReturnOfUseToast,
   ReturnTypeDisplayName,
   StudyLevelSelectCellEditor,
   Table,
@@ -14,9 +12,13 @@ import {
   TableBooleanValue,
   useNumber,
   usePreferredNameLayout,
-  useToast,
   ValueSetterParams,
   ValueFormatterParams,
+  ListNavigatorType,
+  ListNavigator,
+  useListNavigatorSettings,
+  PartyListNavigatorMenuItemParams,
+  PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import {
   CommenterUserType,
@@ -29,7 +31,7 @@ import {
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
 import { Chip } from '@mui/material';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import set from 'lodash/set';
 import { StudentTableAvatar } from '@tyro/people';
 import { useAssessmentById } from '../../api/assessments';
@@ -49,6 +51,7 @@ import {
 import { useCommentBanksWithComments } from '../../api/comment-bank';
 import { getExtraFields } from '../../utils/get-extra-fields';
 import { updateStudentAssessmentExclusion } from '../../api/student-assessment-exclusion';
+import { useAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
 
 const getColumnDefs = (
   t: TFunction<
@@ -57,7 +60,7 @@ const getColumnDefs = (
     ('common' | 'assessments')[]
   >,
   displayName: ReturnTypeDisplayName,
-  toast: ReturnOfUseToast['toast'],
+  onBeforeNavigate: () => void,
   gradeSets: ReturnTypeFromUseCbaGradeSets[],
   assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined
@@ -75,6 +78,7 @@ const getColumnDefs = (
           isPriorityStudent={!!data?.student?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.student?.person)}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -210,7 +214,6 @@ const getColumnDefs = (
 export default function EditStateCbaResults() {
   const { academicNamespaceId, subjectGroupId, assessmentId } = useParams();
   const { activeProfile } = useUser();
-  const { toast } = useToast();
   const academicNamespaceIdAsNumber = useNumber(academicNamespaceId);
   const assessmentIdAsNumber = useNumber(assessmentId);
   const subjectGroupIdAsNumber = useNumber(subjectGroupId);
@@ -269,25 +272,57 @@ export default function EditStateCbaResults() {
     }
   );
 
-  const columnDefs = useMemo(
-    () =>
-      getColumnDefs(
-        t,
-        displayName,
-        toast,
-        gradeSets,
-        assessmentData,
-        commentBanks
-      ),
-    [t, displayName, toast, gradeSets, assessmentData, commentBanks]
-  );
-
   const subjectGroup =
     Array.isArray(studentResults) && studentResults.length > 0
       ? studentResults[0]?.subjectGroup ?? null
       : null;
 
   const subjectGroupName = subjectGroup?.name ?? '';
+
+  const visibleDataRef =
+    useRef<() => ReturnTypeFromUseAssessmentResults[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      subjectGroupName,
+      visibleDataRef
+        .current?.()
+        .map(({ student: { person }, studentPartyId, studentClassGroup }) => ({
+          id: studentPartyId,
+          type: 'person',
+          name: displayName(person),
+          firstName: person.firstName,
+          lastName: person.lastName,
+          avatarUrl: person.avatarUrl,
+          caption: studentClassGroup,
+        }))
+    );
+  }, [subjectGroupName]);
+
+  const columnDefs = useMemo(
+    () =>
+      getColumnDefs(
+        t,
+        displayName,
+        onBeforeNavigateProfile,
+        gradeSets,
+        assessmentData,
+        commentBanks
+      ),
+    [
+      t,
+      displayName,
+      onBeforeNavigateProfile,
+      gradeSets,
+      assessmentData,
+      commentBanks,
+    ]
+  );
 
   const handleBulkSave = async (
     data: BulkEditedRows<
@@ -385,35 +420,75 @@ export default function EditStateCbaResults() {
     return updateStateCbaResult(formattedData as SaveAssessmentResultInput[]);
   };
 
+  const { data: assessmentSubjectGroupsData = [] } = useAssessmentSubjectGroups(
+    academicNamespaceIdAsNumber ?? 0,
+    {
+      assessmentId: assessmentIdAsNumber,
+    }
+  );
+
+  const defaultListData = useMemo(
+    () =>
+      assessmentSubjectGroupsData.map<PartyListNavigatorMenuItemParams>(
+        ({ subjectGroup: group }) => {
+          const subject = group?.subjects?.[0];
+          const bgColorStyle = subject?.colour
+            ? { bgcolor: `${subject.colour}.500` }
+            : {};
+
+          return {
+            id: group.partyId,
+            name: group.name,
+            type: 'group',
+            avatarProps: {
+              sx: {
+                ...bgColorStyle,
+              },
+            },
+          };
+        }
+      ),
+    [assessmentSubjectGroupsData]
+  );
+
   return (
     <PageContainer
       title={t('assessments:pageHeading.editResultsFor', {
-        name: 'subjectGroupName',
+        name: subjectGroupName,
       })}
     >
-      <PageHeading
-        title={t('assessments:pageHeading.editResultsFor', {
-          name: subjectGroupName,
-        })}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('assessments:pageHeading.assessments'),
-              href: '/assessments',
-            },
-            {
-              name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
-                name: assessmentData?.name,
-              }),
-              href: './../..',
-            },
-            {
-              name: t('assessments:actions.editResults'),
-            },
-          ],
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.SubjectGroup}
+        itemId={subjectGroupIdAsNumber}
+        optionTextKey="name"
+        defaultListData={defaultListData}
+        getRenderOption={PartyListNavigatorMenuItem}
+        pageHeadingProps={{
+          title: t('assessments:pageHeading.editResultsFor', {
+            name: subjectGroupName,
+          }),
+          breadcrumbs: {
+            links: [
+              {
+                name: t('assessments:pageHeading.assessments'),
+                href: '/assessments',
+              },
+              {
+                name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
+                  name: assessmentData?.name,
+                }),
+                href: './../..',
+              },
+              {
+                name: t('assessments:actions.editResults'),
+              },
+            ],
+          },
         }}
       />
       <Table
+        key={subjectGroupIdAsNumber}
+        visibleDataRef={visibleDataRef}
         rowData={studentResults ?? []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.studentPartyId)}

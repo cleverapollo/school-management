@@ -2,7 +2,6 @@ import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   GridOptions,
   ICellRendererParams,
-  PageHeading,
   Table,
   TableLinearProgress,
   useNumber,
@@ -12,10 +11,21 @@ import {
   useResponsive,
   useDisclosure,
   ActionMenu,
+  ListNavigatorType,
+  ListNavigator,
+  PartyListNavigatorMenuItemParams,
+  useListNavigatorSettings,
+  BasicListNavigatorMenuItemParams,
+  BasicListNavigatorMenuItem,
 } from '@tyro/core';
-import { Search, SearchType, SmsRecipientType } from '@tyro/api';
+import {
+  AssessmentType,
+  Search,
+  SearchType,
+  SmsRecipientType,
+} from '@tyro/api';
 import { Link, useParams } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Box, Button, Fade, Typography } from '@mui/material';
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
@@ -24,7 +34,8 @@ import {
   useAssessmentSubjectGroups,
   ReturnTypeFromUseAssessmentSubjectGroups,
 } from '../../api/assessment-subject-groups';
-import { useAssessmentById } from '../../api/assessments';
+import { useAssessmentById, useAssessments } from '../../api/assessments';
+import { assessmentUrlPathBasedOnType } from '../../utils/get-assessment-subject-groups-link';
 
 const getColumnDefs = (
   isDesktop: boolean,
@@ -33,6 +44,7 @@ const getColumnDefs = (
     undefined,
     ('common' | 'assessments')[]
   >,
+  onBeforeNavigate: () => void,
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<ReturnTypeFromUseAssessmentSubjectGroups>['columnDefs'] => [
   {
@@ -144,6 +156,7 @@ const getColumnDefs = (
           className="ag-show-on-row-interaction"
           component={Link}
           to={`./subject-group/${data.subjectGroup.partyId}`}
+          onClick={onBeforeNavigate}
         >
           {t('assessments:actions.editResults')}
         </Button>
@@ -228,9 +241,59 @@ export default function ViewTermAssessment() {
     });
   };
 
+  const visibleDataRef =
+    useRef<() => ReturnTypeFromUseAssessmentSubjectGroups[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.SubjectGroup,
+    });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      assessmentData?.name,
+      visibleDataRef.current?.().map(({ subjectGroup }) => {
+        const subject = subjectGroup?.subjects?.[0];
+        const bgColorStyle = subject?.colour
+          ? { bgcolor: `${subject.colour}.500` }
+          : {};
+
+        return {
+          id: subjectGroup.partyId,
+          name: subjectGroup.name,
+          type: 'group',
+          avatarProps: {
+            sx: {
+              ...bgColorStyle,
+            },
+          },
+        };
+      })
+    );
+  }, [assessmentData]);
+
   const columnDefs = useMemo(
-    () => getColumnDefs(!!isDesktop, t, displayNames),
-    [t, displayNames]
+    () => getColumnDefs(!!isDesktop, t, onBeforeNavigateProfile, displayNames),
+    [t, onBeforeNavigateProfile, displayNames]
+  );
+
+  const { data: assessmentsData = [] } = useAssessments({
+    academicNameSpaceId: academicNameSpaceIdAsNumber ?? 0,
+  });
+
+  const defaultListData = useMemo(
+    () =>
+      assessmentsData.map<
+        BasicListNavigatorMenuItemParams & { type: AssessmentType }
+      >(({ id, name, assessmentType }) => ({
+        id,
+        name,
+        type: assessmentType,
+        caption: assessmentType
+          ? t(`assessments:assessmentTypes.${assessmentType}`)
+          : undefined,
+      })),
+    [assessmentsData]
   );
 
   return (
@@ -238,25 +301,47 @@ export default function ViewTermAssessment() {
       <PageContainer
         title={t('assessments:pageTitle.termAssessmentSubjectGroups')}
       >
-        <PageHeading
-          title={t('assessments:pageHeading.termAssessmentSubjectGroups', {
-            name: assessmentData?.name,
-          })}
-          breadcrumbs={{
-            links: [
-              {
-                name: t('assessments:pageHeading.assessments'),
-                href: '/assessments',
-              },
-              {
-                name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
-                  name: assessmentData?.name,
-                }),
-              },
-            ],
+        <ListNavigator<
+          BasicListNavigatorMenuItemParams & { type: AssessmentType }
+        >
+          type={ListNavigatorType.Assessment}
+          itemId={assessmentIdAsNumber}
+          estimateElementSize={52}
+          getRenderOption={BasicListNavigatorMenuItem}
+          defaultListData={defaultListData}
+          optionTextKey="name"
+          getNavigationUrl={({ currentLocation, currentItem, newItem }) => {
+            const currentTypePath =
+              assessmentUrlPathBasedOnType[currentItem?.type];
+            const newTypePath = assessmentUrlPathBasedOnType[newItem?.type];
+            return currentLocation.pathname
+              .replace(currentTypePath, newTypePath)
+              .replace(`${currentItem?.id}`, `${newItem?.id}`);
+          }}
+          pageHeadingProps={{
+            title: t('assessments:pageHeading.termAssessmentSubjectGroups', {
+              name: assessmentData?.name,
+            }),
+            breadcrumbs: {
+              links: [
+                {
+                  name: t('assessments:pageHeading.assessments'),
+                  href: '/assessments',
+                },
+                {
+                  name: t(
+                    'assessments:pageHeading.termAssessmentSubjectGroups',
+                    {
+                      name: assessmentData?.name,
+                    }
+                  ),
+                },
+              ],
+            },
           }}
         />
         <Table
+          visibleDataRef={visibleDataRef}
           rowData={assessmentSubjectGroupsData || []}
           columnDefs={columnDefs}
           getRowId={({ data }) => String(data?.subjectGroup.partyId)}

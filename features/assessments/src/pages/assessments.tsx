@@ -12,8 +12,11 @@ import {
   usePreferredNameLayout,
   PageContainer,
   commonActionMenuProps,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  BasicListNavigatorMenuItemParams,
 } from '@tyro/core';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   useAcademicNamespace,
   usePermissions,
@@ -38,6 +41,7 @@ const getColumnDefs = (
     undefined,
     ('assessments' | 'common')[]
   >,
+  onBeforeNavigate: () => void,
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseAssessments>['columnDefs'] => [
   {
@@ -48,6 +52,7 @@ const getColumnDefs = (
     }: ICellRendererParams<ReturnTypeFromUseAssessments>) =>
       data && (
         <RouterLink
+          onClick={onBeforeNavigate}
           to={getAssessmentSubjectGroupsLink(
             data.id,
             data.assessmentType,
@@ -190,7 +195,7 @@ const getColumnDefs = (
 export default function AssessmentsPage() {
   const { t } = useTranslation(['assessments', 'common']);
 
-  const { hasPermission, isTyroUser } = usePermissions();
+  const { hasPermission } = usePermissions();
   const { activeAcademicNamespace } = useAcademicNamespace();
   const { displayName } = usePreferredNameLayout();
 
@@ -205,9 +210,32 @@ export default function AssessmentsPage() {
   const canCreateAssessment = hasPermission(
     'ps:1:assessment:write_assessments'
   );
+
+  const visibleDataRef = useRef<() => ReturnTypeFromUseAssessments[]>(null);
+
+  const { storeList } = useListNavigatorSettings<
+    BasicListNavigatorMenuItemParams & { type: AssessmentType }
+  >({
+    type: ListNavigatorType.Assessment,
+  });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      t('assessments:pageHeading.assessments'),
+      visibleDataRef.current?.().map(({ id, name, assessmentType }) => ({
+        id,
+        name,
+        type: assessmentType,
+        caption: assessmentType
+          ? t(`assessments:assessmentTypes.${assessmentType}`)
+          : undefined,
+      }))
+    );
+  }, []);
+
   const columnDefs = useMemo(
-    () => getColumnDefs(t, displayName),
-    [t, displayName]
+    () => getColumnDefs(t, onBeforeNavigateProfile, displayName),
+    [t, onBeforeNavigateProfile, displayName]
   );
 
   return (
@@ -244,6 +272,7 @@ export default function AssessmentsPage() {
         />
       )}
       <Table
+        visibleDataRef={visibleDataRef}
         rowData={assessmentsData || []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.id)}

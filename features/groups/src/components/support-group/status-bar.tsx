@@ -36,6 +36,11 @@ export function SubjectGroupStatusBar({
     fontSize: '0.75rem',
   };
 
+  const subject = subjectGroupData?.subjects?.[0];
+  const bgColorStyle = subject?.colour
+    ? { bgcolor: `${subject.colour}.500` }
+    : {};
+
   return (
     <Box>
       <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
@@ -48,6 +53,7 @@ export function SubjectGroupStatusBar({
               <Avatar
                 src={subjectGroupData?.avatarUrl}
                 name={subjectGroupData?.name}
+                sx={{ borderRadius: 1, ...bgColorStyle }}
               />
             </Box>
 
@@ -59,7 +65,7 @@ export function SubjectGroupStatusBar({
                 {
                   label: t('common:subject'),
                   value: subjectGroupData?.subjects
-                    ?.map((subject) => subject?.name)
+                    ?.map(({ name }) => name)
                     .join(', '),
                 },
                 {

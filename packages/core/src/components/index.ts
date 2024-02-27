@@ -28,6 +28,7 @@ export * from './page-container';
 export * from './page-heading';
 export * from './placeholder-card';
 export * from './processing-data-placeholder';
+export * from './list-navigator';
 export * from './router-link';
 export * from './save-bar';
 export * from './scrollbar';
