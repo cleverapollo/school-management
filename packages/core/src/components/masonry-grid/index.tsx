@@ -1,6 +1,8 @@
-import { Box, Stack } from '@mui/material';
-import { Fragment, useMemo } from 'react';
+import { Box, Stack, Card, Typography } from '@mui/material';
+import { useMemo } from 'react';
 import { useMeasure } from 'react-use';
+import { useTranslation } from '@tyro/i18n';
+import { ErrorBoundary } from '../error-boundary';
 
 type MasonryGridBreakpoints = {
   default: number;
@@ -17,6 +19,38 @@ const defaultBreakpoints: MasonryGridBreakpoints = {
   default: 3,
   1140: 2,
   760: 1,
+};
+
+const FallbackWidgetRenderer = () => {
+  const { t } = useTranslation(['common']);
+  return (
+    <Card
+      variant="soft"
+      sx={{
+        flex: 1,
+      }}
+    >
+      <Card
+        sx={{
+          minHeight: 160,
+        }}
+      >
+        <Stack
+          sx={{
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Typography variant="body1" component="span" color="text.secondary">
+            {t('common:errorLoadingWidget')}
+          </Typography>
+        </Stack>
+      </Card>
+    </Card>
+  );
 };
 
 export function MasonryGrid({
@@ -79,7 +113,12 @@ export function MasonryGrid({
           {filteredGridItems
             .filter((_item, itemIndex) => itemIndex % numberOfColumns === index)
             .map((item, itemIndex) => (
-              <Fragment key={itemIndex}>{item}</Fragment>
+              <ErrorBoundary
+                key={itemIndex}
+                FallbackComponent={FallbackWidgetRenderer}
+              >
+                {item}
+              </ErrorBoundary>
             ))}
         </Box>
       ))}
