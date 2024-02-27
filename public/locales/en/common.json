@@ -372,5 +372,6 @@
     "SUPPORT_GROUP": "Support groups",
     "CUSTOM_GROUP": "Custom groups",
     "ASSESSMENT": "Assessments"
-  }
+  },
+  "errorLoadingWidget": "Error loading widget"
 }

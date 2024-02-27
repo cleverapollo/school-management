@@ -3,6 +3,7 @@ import { NotebookIcon } from '@tyro/icons';
 import { useTranslation } from '@tyro/i18n';
 import { getColorBasedOnIndex } from '@tyro/api';
 import dayjs from 'dayjs';
+import { LinkRender } from '@tyro/core';
 import { ReturnTypeFromUseNotes } from '../../../../api/note/list';
 
 type NTKNoteContainerProps = StackProps;
@@ -82,7 +83,9 @@ export function KTKNote({
           {title}
         </Typography>
       )}
-      <Typography variant="body1">{note}</Typography>
+      <Typography variant="body1">
+        <LinkRender text={note} />
+      </Typography>
       {tags.length > 0 && (
         <Stack direction="row" gap={1} mt={0.5} flexWrap="wrap">
           {tags.map((tag) => (
