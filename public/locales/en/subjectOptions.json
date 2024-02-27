@@ -66,5 +66,8 @@
   "scheduledStatus": "Solver scheduled. Results will appear shortly",
   "activeStatus": "Solver running. Stop to get the current best",
   "cantViewSettingsWhenSolverIsScheduledOrActive": "You can't view settings when the solver is scheduled or active",
-  "xOfyStudents": "{{x}}/{{y}} students"
+  "xOfyStudents": "{{x}}/{{y}} students",
+  "withPreferences": "With preferences",
+  "withReserves": "With reserves",
+  "needsSubjects": "Needs subjects"
 }

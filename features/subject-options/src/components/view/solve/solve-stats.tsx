@@ -119,19 +119,19 @@ export function SolveStats({ studentRows, optionsSolutions }: SolveStatsProps) {
       <Stack direction="row" p={2} spacing={3} alignItems="center">
         <PercentFigure
           value={totalWithPreferences}
-          label="With preferences"
+          label={t('subjectOptions:withPreferences')}
           total={totalStudents}
           color="success"
         />
         <PercentFigure
           value={totalWithReserveSubjects}
-          label="With reserves"
+          label={t('subjectOptions:withReserves')}
           total={totalStudents}
           color="warning"
         />
         <PercentFigure
           value={totalMissingOneSubject}
-          label="Needs subjects"
+          label={t('subjectOptions:needsSubjects')}
           total={totalStudents}
           color="error"
         />
