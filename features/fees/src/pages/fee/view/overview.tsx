@@ -13,16 +13,27 @@ import {
   usePreferredNameLayout,
   getNumber,
   ReturnTypeDisplayName,
-  ValueFormatterParams,
   ActionMenu,
   useDisclosure,
   ConfirmDialog,
 } from '@tyro/core';
 
 import { StudentTableAvatar } from '@tyro/people';
-import { BulkAction, getPersonProfileLink } from '@tyro/api';
+import {
+  BulkAction,
+  RecipientSearchType,
+  SmsRecipientType,
+  getPersonProfileLink,
+} from '@tyro/api';
 import { Box, Fade } from '@mui/material';
-import { DiscountIcon, RemoveDiscountIcon } from '@tyro/icons';
+import {
+  DiscountIcon,
+  MobileIcon,
+  RemoveDiscountIcon,
+  SendMailIcon,
+} from '@tyro/icons';
+import { SendSmsModal } from '@tyro/sms';
+import { useMailSettings } from '@tyro/mail';
 import { FeeStatusChip } from '../../../components/common/fee-status-chip';
 import {
   ReturnTypeFromUseFeeDebtors,
@@ -115,7 +126,7 @@ const getFeeOverviewColumns = (
 export default function StudentProfileClassesPage() {
   const { id } = useParams();
   const feeId = getNumber(id);
-  const { t } = useTranslation(['common', 'fees']);
+  const { t } = useTranslation(['common', 'fees', 'people', 'mail', 'sms']);
   const { displayName } = usePreferredNameLayout();
   const { formatCurrency } = useFormatNumber();
   const [selectedDebtorIds, setSelectedDebtorsIds] = useState<Set<number>>(
@@ -131,11 +142,17 @@ export default function StudentProfileClassesPage() {
     onOpen: onOpenDiscountConfirm,
     onClose: onCloseDiscountConfirm,
   } = useDisclosure();
+  const {
+    isOpen: isSendSmsOpen,
+    onOpen: onOpenSendSms,
+    onClose: onCloseSendSms,
+  } = useDisclosure();
 
   const { data: debtors } = useFeeDebtors({
     ids: [feeId ?? 0],
   });
   const { mutateAsync: bulkApplyDiscounts } = useBulkApplyDiscounts();
+  const { sendMailToParties } = useMailSettings();
 
   const selectedDebtors = useMemo(
     () => debtors?.filter((debtor) => selectedDebtorIds.has(debtor.id)) ?? [],
@@ -205,34 +222,68 @@ export default function StudentProfileClassesPage() {
             <Box>
               <ActionMenu
                 menuItems={[
-                  {
-                    label: doSomeSelectedDebtorsHaveDiscounts
-                      ? t('fees:replaceDiscount')
-                      : t('fees:addDiscount'),
-                    icon: <DiscountIcon />,
-                    disabled: haveSomeSelectedDebtorsPaidSomething,
-                    disabledTooltip: doSomeSelectedDebtorsHaveDiscounts
-                      ? t(
-                          'fees:youCanNotReplaceDiscountAsSomePeopleHaveAlreadyPaidFee'
-                        )
-                      : t(
-                          'fees:youCanNotAddDiscountAsSomePeopleHaveAlreadyPaidFee'
+                  [
+                    {
+                      label: t('people:sendSms'),
+                      icon: <MobileIcon />,
+                      onClick: onOpenSendSms,
+                      hasAccess: ({ isStaffUserWithPermission }) =>
+                        isStaffUserWithPermission(
+                          'ps:1:communications:send_sms'
                         ),
-                    onClick: onOpenAddBulkDiscountModal,
-                  },
-                  {
-                    label: t('fees:removeDiscount', {
-                      count: selectedDebtors.length,
-                    }),
-                    icon: <RemoveDiscountIcon />,
-                    hasAccess: () => doSomeSelectedDebtorsHaveDiscounts,
-                    disabled: haveSomeSelectedDebtorsPaidSomething,
-                    disabledTooltip: t(
-                      'fees:youCanNotRemoveDiscountAsSomePeopleHaveAlreadyPaidFee',
-                      { count: selectedDebtors.length }
-                    ),
-                    onClick: onOpenDiscountConfirm,
-                  },
+                    },
+                    {
+                      label: t('mail:mailContacts'),
+                      icon: <SendMailIcon />,
+                      hasAccess: ({ isStaffUserWithPermission }) =>
+                        isStaffUserWithPermission(
+                          'api:communications:read:search_recipients'
+                        ),
+                      onClick: () => {
+                        sendMailToParties(
+                          selectedDebtors.map(({ person }) => person.partyId),
+                          [
+                            {
+                              label: t('mail:contactsOfStudent', {
+                                count: selectedDebtors.length,
+                              }),
+                              type: RecipientSearchType.StudentContacts,
+                            },
+                          ]
+                        );
+                      },
+                    },
+                  ],
+                  [
+                    {
+                      label: doSomeSelectedDebtorsHaveDiscounts
+                        ? t('fees:replaceDiscount')
+                        : t('fees:addDiscount'),
+                      icon: <DiscountIcon />,
+                      disabled: haveSomeSelectedDebtorsPaidSomething,
+                      disabledTooltip: doSomeSelectedDebtorsHaveDiscounts
+                        ? t(
+                            'fees:youCanNotReplaceDiscountAsSomePeopleHaveAlreadyPaidFee'
+                          )
+                        : t(
+                            'fees:youCanNotAddDiscountAsSomePeopleHaveAlreadyPaidFee'
+                          ),
+                      onClick: onOpenAddBulkDiscountModal,
+                    },
+                    {
+                      label: t('fees:removeDiscount', {
+                        count: selectedDebtors.length,
+                      }),
+                      icon: <RemoveDiscountIcon />,
+                      hasAccess: () => doSomeSelectedDebtorsHaveDiscounts,
+                      disabled: haveSomeSelectedDebtorsPaidSomething,
+                      disabledTooltip: t(
+                        'fees:youCanNotRemoveDiscountAsSomePeopleHaveAlreadyPaidFee',
+                        { count: selectedDebtors.length }
+                      ),
+                      onClick: onOpenDiscountConfirm,
+                    },
+                  ],
                 ]}
               />
             </Box>
@@ -256,6 +307,28 @@ export default function StudentProfileClassesPage() {
         cancelText={t('common:no')}
         onConfirm={removeDiscounts}
         onClose={onCloseDiscountConfirm}
+      />
+
+      <SendSmsModal
+        isOpen={isSendSmsOpen}
+        onClose={onCloseSendSms}
+        recipients={selectedDebtors.map(({ person }) => {
+          const { partyId, avatarUrl } = person;
+          return {
+            id: partyId,
+            name: displayName(person),
+            type: 'individual',
+            avatarUrl,
+          };
+        })}
+        possibleRecipientTypes={[
+          {
+            label: t('sms:contactsOfStudent', {
+              count: selectedDebtors.length,
+            }),
+            type: SmsRecipientType.Student,
+          },
+        ]}
       />
     </>
   );
