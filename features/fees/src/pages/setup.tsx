@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { PageContainer } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import {
+  Alert,
   alpha,
   Box,
   Button,
@@ -10,7 +11,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { WalletWithMoneyIcon } from '@tyro/icons';
+import { LightBulbIcon, WalletWithMoneyIcon } from '@tyro/icons';
 import { useMeasure } from 'react-use';
 import { useStripeAccount } from '../api/stripe-accounts';
 
@@ -86,39 +87,78 @@ export default function SetupPage() {
                 </Typography>
               </Stack>
 
-              <Box
-                sx={{
-                  borderLeft: '3px solid',
-                  borderColor: 'green.400',
-                  bgcolor: 'green.100',
-                  borderRadius: 0.5,
-                  py: 2.5,
-                  px: 3,
-                }}
-              >
-                <Typography variant="body2" color="green.950" fontWeight={600}>
-                  {isSetupComplete
-                    ? t('fees:yourSchoolIsReadyDescription')
-                    : t('fees:createYourStripeAccountDescription')}
-                </Typography>
-              </Box>
-              <Typography variant="body2" fontWeight={600} textAlign="center">
-                {isSetupComplete
-                  ? t('fees:thankYouForSigningUpForStripe')
-                  : t('fees:clickSignUpToStripe')}
-              </Typography>
-              {!isSetupComplete && (
-                <Button
-                  variant="contained"
-                  component={Link}
-                  to={stripeAccount?.onboardingLink || ''}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {stripeAccount?.signUpStarted
-                    ? t('fees:stripeAccount.continueSetup')
-                    : t('fees:stripeAccount.getStarted')}
-                </Button>
+              {isSetupComplete ? (
+                <>
+                  <Box
+                    sx={{
+                      borderLeft: '3px solid',
+                      borderColor: 'green.400',
+                      bgcolor: 'green.100',
+                      borderRadius: 0.5,
+                      py: 2.5,
+                      px: 3,
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      color="green.950"
+                      fontWeight={600}
+                    >
+                      {t('fees:yourSchoolIsReadyDescription')}
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    fontWeight={600}
+                    textAlign="center"
+                  >
+                    {t('fees:thankYouForSigningUpForStripe')}
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <Box>
+                    <Typography variant="body2" fontWeight={600} mb={1.5}>
+                      {t('fees:createYourStripeAccountDescription')}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      fontWeight={600}
+                      alignSelf="flex-start"
+                    >
+                      {stripeAccount?.signUpStarted
+                        ? t('fees:clickContinueSetupToStripe')
+                        : t('fees:clickGetStartedToStripe')}
+                    </Typography>
+                  </Box>
+                  <Alert
+                    severity="error"
+                    icon={
+                      <LightBulbIcon
+                        fontSize="inherit"
+                        sx={{ color: 'blue.800' }}
+                      />
+                    }
+                    sx={{
+                      marginBottom: 3,
+                      backgroundColor: 'indigo.50',
+                      color: 'blue.800',
+                    }}
+                  >
+                    {t('fees:enterEmailFromPreviousSchoolProviderDescription')}
+                  </Alert>
+                  <Button
+                    variant="contained"
+                    component={Link}
+                    to={stripeAccount?.onboardingLink || ''}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {stripeAccount?.signUpStarted
+                      ? t('fees:stripeAccount.continueSetup')
+                      : t('fees:stripeAccount.getStarted')}
+                  </Button>
+                </>
               )}
             </Stack>
           </Card>
