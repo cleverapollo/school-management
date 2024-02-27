@@ -20,7 +20,7 @@ import {
 } from '@tyro/core';
 
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import {Box, Button, Chip, Fade} from '@mui/material';
+import { Box, Button, Chip, Fade } from '@mui/material';
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import {
   getPersonProfileLink,
@@ -28,7 +28,7 @@ import {
   Options_SaveStudentPreference,
   SmsRecipientType,
   usePermissions,
-  UsePermissionsReturn, SolutionStatus, OptionsSol_SolverOperation,
+  UsePermissionsReturn,
 } from '@tyro/api';
 import { useMailSettings } from '@tyro/mail';
 import { StudentTableAvatar } from '@tyro/people';
@@ -43,7 +43,7 @@ import {
 } from '../../api/options';
 import {
   useAutoGenerateStudentPreferences,
-  useSaveStudentPreferences
+  useSaveStudentPreferences,
 } from '../../api/save-student-preferences';
 
 type StudentRow = {
@@ -253,7 +253,8 @@ export default function StudentOptionsPreferencesPage() {
   const { data: optionsSetup } = useOptionsSetup(optionId);
   const { data: preferences } = useOptionsPreferences({ optionId });
   const { mutateAsync: savePreferences } = useSaveStudentPreferences();
-  const { mutateAsync: autoGenerateMut } = useAutoGenerateStudentPreferences();
+  const { mutateAsync: autoGenerateStudentPrefs } =
+    useAutoGenerateStudentPreferences();
 
   const studentRows = useMemo(
     () => getStudentRows(optionsSetup, preferences ?? []),
@@ -261,8 +262,7 @@ export default function StudentOptionsPreferencesPage() {
   );
 
   const autoGenerate = () => {
-    autoGenerateMut({
-
+    autoGenerateStudentPrefs({
       optionId,
     });
   };
@@ -348,13 +348,18 @@ export default function StudentOptionsPreferencesPage() {
           <>
             <Fade in={selectedStudents.length > 0} unmountOnExit>
               <Box>
-                <ActionMenu menuItems={actionMenuItems}/>
+                <ActionMenu menuItems={actionMenuItems} />
               </Box>
             </Fade>
-            { permissions.isTyroUser && (
-            <Button variant="contained" color="primary" onClick={autoGenerate}>
-              {t(`subjectOptions:autoAssignPref`)}
-            </Button> )}
+            {permissions.isTyroUser && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={autoGenerate}
+              >
+                {t(`subjectOptions:autoAssignPref`)}
+              </Button>
+            )}
           </>
         }
         onRowSelection={(students) =>

@@ -38,6 +38,7 @@ const optionsSolutions = graphql(/* GraphQL */ `
             optionId
             idx
           }
+          mustGet
           studentChoices {
             studentPartyId
             missed

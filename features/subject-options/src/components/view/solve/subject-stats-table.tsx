@@ -9,6 +9,7 @@ import {
   Tooltip,
   Chip,
   Card,
+  Stack,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { getColorBasedOnIndex } from '@tyro/api';
@@ -113,7 +114,7 @@ export function SubjectStatsTable({
                     }
                   }}
                   sx={{
-                    maxWidth: 80,
+                    width: 80,
                   }}
                 />
               </TableCell>
@@ -131,7 +132,7 @@ export function SubjectStatsTable({
                     }
                   }}
                   sx={{
-                    maxWidth: 80,
+                    width: 80,
                   }}
                 />
               </TableCell>
@@ -144,19 +145,21 @@ export function SubjectStatsTable({
               </TableCell>
               <TableCell>{row.missed}</TableCell>
               <TableCell>
-                {(blocksBasedOnSubjectId.get(row.subjectId) ?? []).map(
-                  (subjectBlock) => (
-                    <Tooltip key={subjectBlock.id} title={subjectBlock.name}>
-                      <Chip
-                        label={subjectBlock.numStudents ?? 0}
-                        color={getColorBasedOnIndex(subjectBlock.blockIdx)}
-                        size="small"
-                        sx={{ lineHeight: 1.5, minWidth: 24 }}
-                        variant="soft"
-                      />
-                    </Tooltip>
-                  )
-                )}
+                <Stack direction="row" spacing={0.5} useFlexGap flexWrap="wrap">
+                  {(blocksBasedOnSubjectId.get(row.subjectId) ?? []).map(
+                    (subjectBlock) => (
+                      <Tooltip key={subjectBlock.id} title={subjectBlock.name}>
+                        <Chip
+                          label={subjectBlock.numStudents ?? 0}
+                          color={getColorBasedOnIndex(subjectBlock.blockIdx)}
+                          size="small"
+                          sx={{ lineHeight: 1.5, minWidth: 24 }}
+                          variant="soft"
+                        />
+                      </Tooltip>
+                    )
+                  )}
+                </Stack>
               </TableCell>
             </TableRow>
           ))}

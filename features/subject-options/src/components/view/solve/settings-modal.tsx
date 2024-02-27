@@ -84,7 +84,7 @@ export function SolveSettingsModal({
       </DialogTitle>
       <DialogContent>
         <Stack direction="row" spacing={3} useFlexGap pb={2}>
-          <Stack spacing={2} minWidth="40%">
+          <Stack spacing={2} minWidth="40%" maxWidth="50%">
             {editableSolutionsCopy?.pools.map(({ poolIdx, blocks }, index) => (
               <Stack key={poolIdx} spacing={1}>
                 <Typography component="h3" variant="subtitle1">

@@ -4,6 +4,7 @@ import {
   Chip,
   CircularProgress,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import {
@@ -28,66 +29,16 @@ import {
 } from '@tyro/api';
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
+import { LoadingButton } from '@mui/lab';
 import {
   ReturnTypeFromUseOptionsSetup,
   useOptionsSetup,
 } from '../../api/options';
 import { SolveSettingsModal } from '../../components/view/solve/settings-modal';
-import {
-  ReturnTypeFromUseOptionsSolutions,
-  useOptionsSolutions,
-} from '../../api/options-solutions';
+import { useOptionsSolutions } from '../../api/options-solutions';
 import { useSolveOptions } from '../../api/solve';
-
-type OptionsAssignedValue =
-  ReturnTypeFromUseOptionsSolutions['pools'][number]['subjectSets'][number]['studentChoices'][number]['subjectSetChoices'][number];
-
-type StudentRow = {
-  student: NonNullable<ReturnTypeFromUseOptionsSetup['students']>[number];
-  missedPreferences: number;
-  optionsAssigned: Map<string, OptionsAssignedValue>;
-};
-
-const getStudentRows = (
-  optionsSetup: ReturnTypeFromUseOptionsSetup | undefined,
-  optionsSolutions: ReturnTypeFromUseOptionsSolutions | undefined
-): StudentRow[] => {
-  const studentsOptionsAssigned = new Map<
-    number,
-    Map<string, OptionsAssignedValue>
-  >();
-  const studentMissingPreferences = new Map<number, number>();
-
-  optionsSolutions?.pools?.forEach(({ poolIdx, subjectSets }) => {
-    subjectSets.forEach(({ id, studentChoices }) => {
-      studentChoices.forEach(
-        ({ studentPartyId, missed = 0, subjectSetChoices }) => {
-          studentMissingPreferences.set(
-            studentPartyId,
-            (studentMissingPreferences.get(studentPartyId) ?? 0) + missed
-          );
-
-          const currentStudentsOptionsAssigned = subjectSetChoices.reduce<
-            Map<string, OptionsAssignedValue>
-          >((acc, choice) => {
-            acc.set(`${poolIdx}-${id.idx}-${choice.choiceIdx}`, choice);
-            return acc;
-          }, new Map(studentsOptionsAssigned.get(studentPartyId) ?? []));
-          studentsOptionsAssigned.set(
-            studentPartyId,
-            currentStudentsOptionsAssigned
-          );
-        }
-      );
-    });
-  });
-
-  return (optionsSetup?.students ?? []).map((student) => ({
-    student,
-    missedPreferences: studentMissingPreferences.get(student.partyId) ?? 0,
-    optionsAssigned: studentsOptionsAssigned.get(student.partyId) ?? new Map(),
-  }));
-};
+import { SolveStats } from '../../components/view/solve/solve-stats';
+import { getStudentRows, StudentRow } from '../../utils/get-student-rows';
 
 const getStudentAssignmentColumns = (
   t: TFunction<
@@ -219,7 +170,8 @@ export default function StudentOptionsSolvePage() {
 
   const { data: optionsSetup } = useOptionsSetup(optionId);
   const { data: optionsSolutions } = useOptionsSolutions({ optionId });
-  const { mutateAsync: solveOptions } = useSolveOptions();
+  const { mutateAsync: solveOptions, isLoading: isRequestingSolve } =
+    useSolveOptions();
 
   const studentRows = useMemo(
     () => getStudentRows(optionsSetup, optionsSolutions),
@@ -241,42 +193,73 @@ export default function StudentOptionsSolvePage() {
     });
   };
 
+  const disableSolverSettingsButton =
+    optionsSolutions?.solverStatus !== SolutionStatus.NotSolving;
+
   return (
     <>
-      <Table
-        sx={{
-          '& .outside-get': {
-            backgroundColor: 'slate.100',
-          },
-          '& .border-left': {
-            borderLeft: '1px solid',
-            borderLeftColor: 'slate.200',
-          },
-        }}
-        rowData={studentRows}
-        columnDefs={studentAssignmentColumns}
-        getRowId={({ data }) => JSON.stringify(data?.student?.partyId)}
-        rightAdornment={
-          <Stack
-            direction="row"
-            justifyContent="flex-end"
-            alignItems="center"
-            spacing={2}
-          >
-            <SolverStatus status={optionsSolutions?.solverStatus} />
-            <Button onClick={onOpen} variant="soft" endIcon={<GearIcon />}>
-              {t('subjectOptions:solverSettings')}
-            </Button>
-            <Button variant="contained" color="primary" onClick={toggleSolver}>
-              {optionsSolutions?.solverStatus
-                ? t(
-                    `subjectOptions:solverButtonActions.${optionsSolutions.solverStatus}`
-                  )
-                : t(`subjectOptions:solverButtonActions.NOT_SOLVING`)}
-            </Button>
-          </Stack>
-        }
-      />
+      <Stack spacing={2}>
+        <SolveStats
+          studentRows={studentRows}
+          optionsSolutions={optionsSolutions}
+        />
+        <Table
+          sx={{
+            '& .outside-get': {
+              backgroundColor: 'slate.100',
+            },
+            '& .border-left': {
+              borderLeft: '1px solid',
+              borderLeftColor: 'slate.200',
+            },
+          }}
+          rowData={studentRows}
+          columnDefs={studentAssignmentColumns}
+          getRowId={({ data }) => JSON.stringify(data?.student?.partyId)}
+          rightAdornment={
+            <Stack
+              direction="row"
+              justifyContent="flex-end"
+              alignItems="center"
+              spacing={2}
+            >
+              <SolverStatus status={optionsSolutions?.solverStatus} />
+              <Tooltip
+                title={
+                  disableSolverSettingsButton
+                    ? t(
+                        'subjectOptions:cantViewSettingsWhenSolverIsScheduledOrActive'
+                      )
+                    : undefined
+                }
+              >
+                <span>
+                  <Button
+                    onClick={onOpen}
+                    variant="soft"
+                    disabled={disableSolverSettingsButton}
+                    endIcon={<GearIcon />}
+                  >
+                    {t('subjectOptions:solverSettings')}
+                  </Button>
+                </span>
+              </Tooltip>
+              <LoadingButton
+                variant="contained"
+                color="primary"
+                loading={isRequestingSolve}
+                onClick={toggleSolver}
+              >
+                {optionsSolutions?.solverStatus
+                  ? t(
+                      `subjectOptions:solverButtonActions.${optionsSolutions.solverStatus}`
+                    )
+                  : t(`subjectOptions:solverButtonActions.NOT_SOLVING`)}
+              </LoadingButton>
+            </Stack>
+          }
+        />
+      </Stack>
       <SolveSettingsModal
         optionsSolutions={optionsSolutions}
         isOpen={isOpen}
