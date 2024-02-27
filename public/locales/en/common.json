@@ -360,5 +360,6 @@
     "day": "{{day}}d",
     "hour": "{{hour}}h",
     "minute": "{{minute}}m"
-  }
+  },
+  "errorLoadingWidget": "Error loading widget"
 }
