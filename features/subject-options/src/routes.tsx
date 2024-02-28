@@ -123,7 +123,8 @@ export const getRoutes: NavObjectFunction = (t) => [
                 type: NavObjectType.NonMenuLink,
                 path: 'solve',
                 element: <StudentOptionsSolvePage />,
-                hasAccess: ({ isTyroUser }) => isTyroUser,
+                hasAccess: ({ hasPermission }) =>
+                  hasPermission('ps:1:options:options_beta_test'),
                 loader: ({ params }) => {
                   const id = getNumber(params.id);
 
