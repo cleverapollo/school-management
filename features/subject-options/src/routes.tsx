@@ -9,6 +9,7 @@ import { BookOpenWithTextIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getOptionsSetup, getOptionsSetupList } from './api/options';
 import { getOptionsPreferences } from './api/options-preferences';
+import { getOptionsSolutions } from './api/options-solutions';
 
 const SubjectOptions = lazyWithRetry(() => import('./pages/index'));
 const CreateSubjectOptions = lazyWithRetry(() => import('./pages/create'));
@@ -118,11 +119,25 @@ export const getRoutes: NavObjectFunction = (t) => [
                   ]);
                 },
               },
-              // {
-              //   type: NavObjectType.NonMenuLink,
-              //   path: 'solve',
-              //   element: <StudentOptionsSolvePage />,
-              // },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'solve',
+                element: <StudentOptionsSolvePage />,
+                hasAccess: ({ hasPermission }) =>
+                  hasPermission('ps:1:options:options_beta_test'),
+                loader: ({ params }) => {
+                  const id = getNumber(params.id);
+
+                  if (!id) {
+                    throw404Error();
+                  }
+
+                  return Promise.all([
+                    getOptionsSetup(id),
+                    getOptionsSolutions({ optionId: id }),
+                  ]);
+                },
+              },
             ],
           },
         ],

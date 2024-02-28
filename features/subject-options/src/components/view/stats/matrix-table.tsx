@@ -6,7 +6,8 @@ import {
   Table,
   ValueGetterParams,
 } from '@tyro/core';
-import { Theme, useTheme } from '@mui/material';
+import { alpha, Theme, useTheme } from '@mui/material';
+import { Colour } from '@tyro/api';
 import { ReturnTypeFromUseOptionsSetup } from '../../../api/options';
 import { ReturnTypeFromUseOptionsPreferences } from '../../../api/options-preferences';
 
@@ -15,7 +16,7 @@ interface OptionsMatrixTableProps {
   studentChoices: ReturnTypeFromUseOptionsPreferences[];
 }
 
-const subjectColorShade = 200;
+const availableColors = [...Object.values(Colour), 'slate'] as const;
 
 function getMatrixData(
   subjectSets: ReturnTypeFromUseOptionsSetup['subjectSets'] | undefined,
@@ -107,7 +108,7 @@ const getMatrixTableColumns = (
     cellStyle: ({ data }: CellClassParams<MatrixDataRow>) => ({
       backgroundColor:
         data?.subject.id === subject.id
-          ? theme.palette[data?.subject?.colour ?? 'slate'][subjectColorShade]
+          ? alpha(theme.palette[data?.subject?.colour ?? 'slate'].main, 0.16)
           : 'transparent',
       justifyContent: 'center',
     }),
@@ -135,57 +136,13 @@ export function OptionsMatrixTable({
   return (
     <Table
       sx={{
-        '& .bg-slate': {
-          backgroundColor: `slate.${subjectColorShade}`,
-        },
-        '& .bg-amber': {
-          backgroundColor: `amber.${subjectColorShade}`,
-        },
-        '& .bg-blue': {
-          backgroundColor: `blue.${subjectColorShade}`,
-        },
-        '& .bg-cyan': {
-          backgroundColor: `cyan.${subjectColorShade}`,
-        },
-        '& .bg-emerald': {
-          backgroundColor: `emerald.${subjectColorShade}`,
-        },
-        '& .bg-fuchsia': {
-          backgroundColor: `fuchsia.${subjectColorShade}`,
-        },
-        '& .bg-green': {
-          backgroundColor: `green.${subjectColorShade}`,
-        },
-        '& .bg-lime': {
-          backgroundColor: `lime.${subjectColorShade}`,
-        },
-        '& .bg-orange': {
-          backgroundColor: `orange.${subjectColorShade}`,
-        },
-        '& .bg-pink': {
-          backgroundColor: `pink.${subjectColorShade}`,
-        },
-        '& .bg-purple': {
-          backgroundColor: `purple.${subjectColorShade}`,
-        },
-        '& .bg-red': {
-          backgroundColor: `red.${subjectColorShade}`,
-        },
-        '& .bg-rose': {
-          backgroundColor: `rose.${subjectColorShade}`,
-        },
-        '& .bg-sky': {
-          backgroundColor: `sky.${subjectColorShade}`,
-        },
-        '& .bg-teal': {
-          backgroundColor: `teal.${subjectColorShade}`,
-        },
-        '& .bg-violet': {
-          backgroundColor: `violet.${subjectColorShade}`,
-        },
-        '& .bg-yellow': {
-          backgroundColor: `yellow.${subjectColorShade}`,
-        },
+        ...availableColors.reduce((acc, color) => {
+          acc[`& .bg-${color}`] = {
+            color: theme.palette[color][theme.isLight ? 'dark' : 'light'],
+            backgroundColor: alpha(theme.palette[color].main, 0.16),
+          };
+          return acc;
+        }, {} as Record<string, unknown>),
         '& .ag-header-container .ag-header-cell .ag-header-cell-label': {
           justifyContent: 'center',
         },

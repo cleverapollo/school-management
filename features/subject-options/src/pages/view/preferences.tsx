@@ -20,7 +20,7 @@ import {
 } from '@tyro/core';
 
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { Box, Chip, Fade } from '@mui/material';
+import { Box, Button, Chip, Fade } from '@mui/material';
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import {
   getPersonProfileLink,
@@ -41,7 +41,10 @@ import {
   ReturnTypeFromUseOptionsSetup,
   useOptionsSetup,
 } from '../../api/options';
-import { useSaveStudentPreferences } from '../../api/save-student-preferences';
+import {
+  useAutoGenerateStudentPreferences,
+  useSaveStudentPreferences,
+} from '../../api/save-student-preferences';
 
 type StudentRow = {
   student: NonNullable<ReturnTypeFromUseOptionsSetup['students']>[number];
@@ -250,11 +253,19 @@ export default function StudentOptionsPreferencesPage() {
   const { data: optionsSetup } = useOptionsSetup(optionId);
   const { data: preferences } = useOptionsPreferences({ optionId });
   const { mutateAsync: savePreferences } = useSaveStudentPreferences();
+  const { mutateAsync: autoGenerateStudentPrefs } =
+    useAutoGenerateStudentPreferences();
 
   const studentRows = useMemo(
     () => getStudentRows(optionsSetup, preferences ?? []),
     [optionsSetup, preferences]
   );
+
+  const autoGenerate = () => {
+    autoGenerateStudentPrefs({
+      optionId,
+    });
+  };
 
   const studentPreferenceColumns = useMemo(
     () =>
@@ -334,11 +345,22 @@ export default function StudentOptionsPreferencesPage() {
         rowSelection="multiple"
         getRowId={({ data }) => JSON.stringify(data?.student?.partyId)}
         rightAdornment={
-          <Fade in={selectedStudents.length > 0} unmountOnExit>
-            <Box>
-              <ActionMenu menuItems={actionMenuItems} />
-            </Box>
-          </Fade>
+          <>
+            <Fade in={selectedStudents.length > 0} unmountOnExit>
+              <Box>
+                <ActionMenu menuItems={actionMenuItems} />
+              </Box>
+            </Fade>
+            {permissions.isTyroUser && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={autoGenerate}
+              >
+                {t(`subjectOptions:autoAssignPref`)}
+              </Button>
+            )}
+          </>
         }
         onRowSelection={(students) =>
           setSelectedStudents(

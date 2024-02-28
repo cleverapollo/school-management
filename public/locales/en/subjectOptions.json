@@ -6,6 +6,7 @@
   "subjectSetup": "Subject setup",
   "atLeastOneSubjectPoolRequired": "At least one subject pool is required",
   "poolN": "Pool {{number}}",
+  "blockN": "Block {{number}}",
   "subjectSetN": "Subject set {{number}}",
   "addPool": "Add pool",
   "addSubjectSet": "Add subject set",
@@ -42,15 +43,32 @@
   "maxInClass": "Max in class",
   "noOfClasses": "No. of classes",
   "classSizes": "Class sizes",
-  "prefsMissed": "Prefs. missed",
+  "prefTotal": "Pref. total",
+  "spacesShort": "Spaces short",
+  "missed": "Missed",
   "poolXSubjectSetYBlocks": "Pool {{x}} - {{y}} blocks",
   "optionsNameMustBeUnique": "Options name must be unique",
   "cloneOptions": "Clone options",
   "optionsSolverStartedSuccessfully": "Options solver has started successfully",
   "optionsSolverStoppedSuccessfully": "Options solver has stopped successfully.",
-  "stopSolver": "Stop solver",
+  "autoAssignPref": "Auto assign preferences",
+  "solverButtonActions": {
+    "NOT_SOLVING": "Solve",
+    "SOLVING_ACTIVE": "Stop solver",
+    "SOLVING_SCHEDULED": "Cancel solver"
+  },
+  "subjectStats": "Subject stats",
   "confirmSaveDialog": {
     "title": "Want to continue?",
     "descriptionPreText": "Making these changes will effect the following data:"
-  }
+  },
+  "dragNDropToOrganiseGroups": "Drag and drop to organise subject groups",
+  "notSolvingStatus": "Solver finished",
+  "scheduledStatus": "Solver scheduled. Results will appear shortly.",
+  "activeStatus": "Solver running. Stop to get the current best.",
+  "cantViewSettingsWhenSolverIsScheduledOrActive": "You can't view settings when the solver is scheduled or active",
+  "xOfyStudents": "{{x}}/{{y}} students",
+  "withPreferences": "With preferences",
+  "withReserves": "With reserves",
+  "needsSubjects": "Needs subjects"
 }

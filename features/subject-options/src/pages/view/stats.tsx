@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { getNumber } from '@tyro/core';
+import { getNumber, useBreakpointValue } from '@tyro/core';
 import groupBy from 'lodash/groupBy';
 import { useParams } from 'react-router-dom';
-import { Typography, Stack } from '@mui/material';
+import { Typography, Stack, Card } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
 import { useOptionsSetup } from '../../api/options';
 import { useOptionsPreferences } from '../../api/options-preferences';
@@ -12,6 +12,10 @@ import { OptionsSubjectBreakdownTable } from '../../components/view/stats/subjec
 export default function StudentOptionsStatsPage() {
   const { id } = useParams();
   const optionId = getNumber(id) ?? 0;
+  const direction = useBreakpointValue<'column' | 'row'>({
+    base: 'column',
+    md: 'row',
+  });
   const { t } = useTranslation(['subjectOptions']);
 
   const { data: optionsSetup } = useOptionsSetup(optionId);
@@ -23,41 +27,57 @@ export default function StudentOptionsStatsPage() {
   );
 
   return (
-    <Stack direction="row" spacing={4} useFlexGap>
+    <Stack direction={direction} spacing={4} useFlexGap>
       <Stack spacing={2} sx={{ flex: 1 }} useFlexGap>
         {Object.entries(subjectSetsGroupedByPool).map(
           ([poolIdx, subjectSets], _i, entriesArray) => (
-            <Stack spacing={1} useFlexGap>
-              <Typography variant="subtitle1">
-                {entriesArray.length > 1
-                  ? t('subjectOptions:subjectCombinationStatsForPoolX', {
-                      x: poolIdx,
-                    })
-                  : t('subjectOptions:subjectCombinationStats')}
-              </Typography>
+            <Card key={poolIdx} variant="soft">
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                pl={1}
+                mb={1}
+              >
+                <Typography variant="h6" component="span">
+                  {entriesArray.length > 1
+                    ? t('subjectOptions:subjectCombinationStatsForPoolX', {
+                        x: poolIdx,
+                      })
+                    : t('subjectOptions:subjectCombinationStats')}
+                </Typography>
+              </Stack>
               <OptionsMatrixTable
                 subjectSets={subjectSets ?? []}
                 studentChoices={preferences ?? []}
               />
-            </Stack>
+            </Card>
           )
         )}
       </Stack>
       <Stack spacing={2} sx={{ flex: 1 }} useFlexGap>
         {optionsSetup?.subjectSets.map((subjectSet) => (
-          <Stack spacing={1} useFlexGap>
-            <Typography variant="subtitle1">
-              {optionsSetup?.subjectSets.length > 1
-                ? t('subjectOptions:subjectDemandStatsForSubjectSet', {
-                    subjectSetName: subjectSet.name,
-                  })
-                : t('subjectOptions:subjectDemandStats')}
-            </Typography>
+          <Card key={subjectSet.id.idx} variant="soft">
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              pl={1}
+              mb={1}
+            >
+              <Typography variant="h6" component="span">
+                {optionsSetup?.subjectSets.length > 1
+                  ? t('subjectOptions:subjectDemandStatsForSubjectSet', {
+                      subjectSetName: subjectSet.name,
+                    })
+                  : t('subjectOptions:subjectDemandStats')}
+              </Typography>
+            </Stack>
             <OptionsSubjectBreakdownTable
               subjectSet={subjectSet}
               studentChoices={preferences ?? []}
             />
-          </Stack>
+          </Card>
         ))}
       </Stack>
     </Stack>

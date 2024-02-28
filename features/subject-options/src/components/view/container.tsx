@@ -17,7 +17,7 @@ export default function OptionsViewContainer() {
   const { name } = options[0] ?? {};
 
   return (
-    <PageContainer title={name}>
+    <PageContainer title={name} maxWidth={false} sx={{ maxWidth: 1980 }}>
       <PageHeading
         title={name}
         breadcrumbs={{
@@ -42,10 +42,12 @@ export default function OptionsViewContainer() {
             label: t('subjectOptions:stats'),
             value: 'stats',
           },
-          // {
-          //   label: t('common:solve'),
-          //   value: 'solve',
-          // },
+          {
+            label: t('common:solve'),
+            value: 'solve',
+            hasAccess: ({ hasPermission }) =>
+              hasPermission('ps:1:options:options_beta_test'),
+          },
         ]}
       />
     </PageContainer>

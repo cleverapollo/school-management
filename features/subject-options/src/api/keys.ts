@@ -2,6 +2,7 @@ import {
   Options_OptionFilter,
   Options_PreferencesFilter,
   SolutionsFilter,
+  Options_AvailableGroupsFilter,
 } from '@tyro/api';
 
 export const optionsKeys = {
@@ -20,4 +21,8 @@ export const optionsKeys = {
     [...optionsKeys.all, 'studentAssignment', filter] as const,
   solutions: (filter: SolutionsFilter) =>
     [...optionsKeys.all, 'solutions', filter] as const,
+  availableEnrollmentGroups: (filter: Options_AvailableGroupsFilter) =>
+    [...optionsKeys.all, 'availableEnrollmentGroups', filter] as const,
+  enrollmentGroupsStudents: (filter: Options_AvailableGroupsFilter) =>
+    [...optionsKeys.all, 'enrollmentGroupsStudents', filter] as const,
 };
