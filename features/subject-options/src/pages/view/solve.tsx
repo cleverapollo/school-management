@@ -19,7 +19,7 @@ import {
   ValueGetterParams,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { GearIcon } from '@tyro/icons';
+import { CheckmarkIcon, ClockIcon, GearIcon } from '@tyro/icons';
 import { StudentTableAvatar } from '@tyro/people';
 import {
   getPersonProfileLink,
@@ -139,22 +139,43 @@ const getStudentAssignmentColumns = (
   })) ?? []),
 ];
 
-function SolverStatus({ status }: { status: SolutionStatus | undefined }) {
+function SolverStatus({
+  hasSubjectSets,
+  status,
+}: {
+  hasSubjectSets: boolean;
+  status: SolutionStatus | undefined;
+}) {
   const { t } = useTranslation(['subjectOptions']);
-  if (!status || status === SolutionStatus.NotSolving) return null;
+  if (!status || (status === SolutionStatus.NotSolving && !hasSubjectSets))
+    return null;
+
+  if (status === SolutionStatus.NotSolving) {
+    return (
+      <Stack direction="row" spacing={0.5} alignItems="center">
+        <CheckmarkIcon sx={{ width: 20, height: 20, color: 'success.main' }} />
+        <Typography variant="subtitle2" color="text.secondary">
+          {t('subjectOptions:notSolvingStatus')}
+        </Typography>
+      </Stack>
+    );
+  }
 
   if (status === SolutionStatus.SolvingScheduled) {
     return (
-      <Typography variant="caption" color="text.secondary">
-        {t('subjectOptions:scheduledStatus')}
-      </Typography>
+      <Stack direction="row" spacing={0.5} alignItems="center">
+        <ClockIcon sx={{ width: 20, height: 20, color: 'slate.400' }} />
+        <Typography variant="subtitle2" color="text.secondary">
+          {t('subjectOptions:scheduledStatus')}
+        </Typography>
+      </Stack>
     );
   }
 
   return (
-    <Stack direction="row" spacing={1} alignItems="center" color="slate.400">
+    <Stack direction="row" spacing={1} alignItems="center" color="primary.main">
       <CircularProgress size={18} color="inherit" thickness={4} />
-      <Typography variant="caption" color="text.secondary" fontWeight="medium">
+      <Typography variant="subtitle2" color="text.secondary">
         {t('subjectOptions:activeStatus')}
       </Typography>
     </Stack>
@@ -177,6 +198,17 @@ export default function StudentOptionsSolvePage() {
     () => getStudentRows(optionsSetup, optionsSolutions),
     [optionsSetup, optionsSolutions]
   );
+  const hasSubjectSets = useMemo(
+    () =>
+      !!optionsSolutions?.pools.some((pool) =>
+        pool.blocks.some((block) =>
+          block.subjectGroups.some(
+            (subjectSet) => typeof subjectSet.blockIdx === 'number'
+          )
+        )
+      ),
+    [optionsSetup]
+  );
 
   const studentAssignmentColumns = useMemo(
     () => getStudentAssignmentColumns(t, displayName, optionsSetup),
@@ -198,68 +230,69 @@ export default function StudentOptionsSolvePage() {
 
   return (
     <>
-      <Stack spacing={2}>
-        <SolveStats
-          studentRows={studentRows}
-          optionsSolutions={optionsSolutions}
-        />
-        <Table
-          sx={{
-            '& .outside-get': {
-              backgroundColor: 'slate.100',
-            },
-            '& .border-left': {
-              borderLeft: '1px solid',
-              borderLeftColor: 'slate.200',
-            },
-          }}
-          rowData={studentRows}
-          columnDefs={studentAssignmentColumns}
-          getRowId={({ data }) => JSON.stringify(data?.student?.partyId)}
-          rightAdornment={
-            <Stack
-              direction="row"
-              justifyContent="flex-end"
-              alignItems="center"
-              spacing={2}
-            >
-              <SolverStatus status={optionsSolutions?.solverStatus} />
-              <Tooltip
-                title={
-                  disableSolverSettingsButton
-                    ? t(
-                        'subjectOptions:cantViewSettingsWhenSolverIsScheduledOrActive'
-                      )
-                    : undefined
-                }
-              >
-                <span>
-                  <Button
-                    onClick={onOpen}
-                    variant="soft"
-                    disabled={disableSolverSettingsButton}
-                    endIcon={<GearIcon />}
-                  >
-                    {t('subjectOptions:solverSettings')}
-                  </Button>
-                </span>
-              </Tooltip>
-              <LoadingButton
-                variant="contained"
-                color="primary"
-                loading={isRequestingSolve}
-                onClick={toggleSolver}
-              >
-                {optionsSolutions?.solverStatus
+      <SolveStats
+        studentRows={studentRows}
+        optionsSolutions={optionsSolutions}
+      />
+      <Table
+        sx={{
+          '& .outside-get': {
+            backgroundColor: 'slate.100',
+          },
+          '& .border-left': {
+            borderLeft: '1px solid',
+            borderLeftColor: 'slate.200',
+          },
+        }}
+        rowData={studentRows}
+        columnDefs={studentAssignmentColumns}
+        getRowId={({ data }) => JSON.stringify(data?.student?.partyId)}
+        rightAdornment={
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            alignItems="center"
+            spacing={2}
+          >
+            <SolverStatus
+              hasSubjectSets={hasSubjectSets}
+              status={optionsSolutions?.solverStatus}
+            />
+            <Tooltip
+              title={
+                disableSolverSettingsButton
                   ? t(
-                      `subjectOptions:solverButtonActions.${optionsSolutions.solverStatus}`
+                      'subjectOptions:cantViewSettingsWhenSolverIsScheduledOrActive'
                     )
-                  : t(`subjectOptions:solverButtonActions.NOT_SOLVING`)}
-              </LoadingButton>
-            </Stack>
-          }
-        />
-      </Stack>
+                  : undefined
+              }
+            >
+              <span>
+                <Button
+                  onClick={onOpen}
+                  variant="soft"
+                  disabled={disableSolverSettingsButton}
+                  endIcon={<GearIcon />}
+                >
+                  {t('subjectOptions:solverSettings')}
+                </Button>
+              </span>
+            </Tooltip>
+            <LoadingButton
+              variant="contained"
+              color="primary"
+              loading={isRequestingSolve}
+              onClick={toggleSolver}
+            >
+              {optionsSolutions?.solverStatus
+                ? t(
+                    `subjectOptions:solverButtonActions.${optionsSolutions.solverStatus}`
+                  )
+                : t(`subjectOptions:solverButtonActions.NOT_SOLVING`)}
+            </LoadingButton>
+          </Stack>
+        }
+      />
       <SolveSettingsModal
         optionsSolutions={optionsSolutions}
         isOpen={isOpen}

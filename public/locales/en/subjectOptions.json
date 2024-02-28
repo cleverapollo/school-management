@@ -63,8 +63,9 @@
     "descriptionPreText": "Making these changes will effect the following data:"
   },
   "dragNDropToOrganiseGroups": "Drag and drop to organise subject groups",
-  "scheduledStatus": "Solver scheduled. Results will appear shortly",
-  "activeStatus": "Solver running. Stop to get the current best",
+  "notSolvingStatus": "Solver finished",
+  "scheduledStatus": "Solver scheduled. Results will appear shortly.",
+  "activeStatus": "Solver running. Stop to get the current best.",
   "cantViewSettingsWhenSolverIsScheduledOrActive": "You can't view settings when the solver is scheduled or active",
   "xOfyStudents": "{{x}}/{{y}} students",
   "withPreferences": "With preferences",
