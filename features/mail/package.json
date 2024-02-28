@@ -8,7 +8,7 @@
     "@mui/material": "^5.15.0",
     "@mui/system": "^5.15.0",
     "@tanstack/react-query": "^4.29.7",
-    "@tanstack/react-virtual": "^3.0.1",
+    "@tanstack/react-virtual": "3.0.4",
     "@tiptap/extension-bubble-menu": "^2.2.3",
     "@tiptap/extension-link": "^2.2.3",
     "@tiptap/extension-placeholder": "^2.1.8",

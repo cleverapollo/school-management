@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   TFunction,
   useFormatNumber,
@@ -13,10 +13,12 @@ import {
   usePreferredNameLayout,
   getNumber,
   ReturnTypeDisplayName,
-  ValueFormatterParams,
   ActionMenu,
   useDisclosure,
   ConfirmDialog,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 
 import { StudentTableAvatar } from '@tyro/people';
@@ -32,9 +34,11 @@ import { BulkAddIndividualDiscountModal } from '../../../components/fees/form/bu
 import { ReturnTypeFromUseDiscounts } from '../../../api/discounts';
 import { useBulkApplyDiscounts } from '../../../api/bulk-apply-discounts';
 import { getDiscountName } from '../../../utils/get-discount-name';
+import { useFees } from '../../../api/fees';
 
 const getFeeOverviewColumns = (
   t: TFunction<('common' | 'fees')[], undefined, ('common' | 'fees')[]>,
+  onBeforeNavigate: () => void,
   displayName: ReturnTypeDisplayName,
   formatCurrency: ReturnTypeFromUseFormatNumber['formatCurrency']
 ): GridOptions<ReturnTypeFromUseFeeDebtors>['columnDefs'] => [
@@ -51,6 +55,7 @@ const getFeeOverviewColumns = (
           isPriorityStudent={false}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.person)}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -135,6 +140,9 @@ export default function StudentProfileClassesPage() {
   const { data: debtors } = useFeeDebtors({
     ids: [feeId ?? 0],
   });
+
+  const { data: feesData } = useFees({ ids: [feeId ?? 0] });
+
   const { mutateAsync: bulkApplyDiscounts } = useBulkApplyDiscounts();
 
   const selectedDebtors = useMemo(
@@ -176,9 +184,37 @@ export default function StudentProfileClassesPage() {
       }
     );
 
+  const visibleDataRef = useRef<() => ReturnTypeFromUseFeeDebtors[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      feesData?.[0]?.name,
+      visibleDataRef.current?.().map(({ person, classGroup }) => ({
+        id: person.partyId,
+        type: 'person',
+        name: displayName(person),
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
+        caption: classGroup?.name,
+      }))
+    );
+  }, [feesData]);
+
   const columns = useMemo(
-    () => getFeeOverviewColumns(t, displayName, formatCurrency),
-    [t, displayName, formatCurrency]
+    () =>
+      getFeeOverviewColumns(
+        t,
+        onBeforeNavigateProfile,
+        displayName,
+        formatCurrency
+      ),
+    [t, onBeforeNavigateProfile, displayName, formatCurrency]
   );
 
   const doSomeSelectedDebtorsHaveDiscounts = selectedDebtors.some(
@@ -191,6 +227,7 @@ export default function StudentProfileClassesPage() {
   return (
     <>
       <Table
+        visibleDataRef={visibleDataRef}
         rowData={debtors ?? []}
         columnDefs={columns}
         rowSelection="multiple"

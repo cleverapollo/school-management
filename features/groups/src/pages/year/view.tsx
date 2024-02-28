@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Box, Fade } from '@mui/material';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
@@ -9,11 +9,15 @@ import {
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
-  PageHeading,
   ReturnTypeDisplayNames,
   useDisclosure,
   ActionMenu,
   PageContainer,
+  useListNavigatorSettings,
+  ListNavigator,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
+  PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import {
@@ -23,7 +27,7 @@ import {
 } from '@tyro/api';
 import { MobileIcon } from '@tyro/icons';
 import { StudentTableAvatar } from '@tyro/people';
-import { useYearGroupById } from '../../api/year-groups';
+import { useYearGroupById, useYearGroups } from '../../api/year-groups';
 
 type MembersReturnTypeFromUseYearGroupsById = NonNullable<
   NonNullable<ReturnType<typeof useYearGroupById>['data']>['students']
@@ -31,6 +35,7 @@ type MembersReturnTypeFromUseYearGroupsById = NonNullable<
 
 const getYearGroupColumns = (
   t: TFunction<('common' | 'groups')[], undefined, ('common' | 'groups')[]>,
+  onBeforeNavigate: () => void,
   displayName: ReturnTypeDisplayName,
   displayNames: ReturnTypeDisplayNames
 ): GridOptions<MembersReturnTypeFromUseYearGroupsById>['columnDefs'] => [
@@ -50,6 +55,7 @@ const getYearGroupColumns = (
           isPriorityStudent={!!data?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.person)}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -103,32 +109,82 @@ export default function ViewYearGroupPage() {
     // },
   ];
 
+  const visibleDataRef =
+    useRef<() => MembersReturnTypeFromUseYearGroupsById[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
+
+  const groupName = groupData?.name || '';
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      groupName,
+      visibleDataRef.current?.().map(({ person, classGroup }) => ({
+        id: person.partyId,
+        type: 'person',
+        name: displayName(person),
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
+        caption: classGroup?.name,
+      }))
+    );
+  }, [groupName]);
+
   const yearGroupColumns = useMemo(
-    () => getYearGroupColumns(t, displayName, displayNames),
-    [t, displayName, displayNames]
+    () =>
+      getYearGroupColumns(
+        t,
+        onBeforeNavigateProfile,
+        displayName,
+        displayNames
+      ),
+    [t, onBeforeNavigateProfile, displayName, displayNames]
   );
-  const title = t('groups:namedMemberList', {
-    groupName: groupData?.name ?? '',
-  });
+
+  const title = t('groups:namedMemberList', { groupName });
+
+  const { data: yearGroupData = [] } = useYearGroups();
+
+  const defaultListData = useMemo(
+    () =>
+      yearGroupData.map<PartyListNavigatorMenuItemParams>((year) => ({
+        id: year.yearGroupEnrollmentPartyId,
+        type: 'group',
+        name: year.name,
+      })),
+    [yearGroupData]
+  );
 
   return (
     <>
       <PageContainer title={title}>
-        <PageHeading
-          title={title}
-          breadcrumbs={{
-            links: [
-              {
-                name: t('groups:yearGroups'),
-                href: './..',
-              },
-              {
-                name: groupData?.name ?? '',
-              },
-            ],
+        <ListNavigator<PartyListNavigatorMenuItemParams>
+          type={ListNavigatorType.YearGroup}
+          itemId={groupIdAsNumber}
+          optionTextKey="name"
+          getRenderOption={PartyListNavigatorMenuItem}
+          defaultListData={defaultListData}
+          pageHeadingProps={{
+            title,
+            breadcrumbs: {
+              links: [
+                {
+                  name: t('groups:yearGroups'),
+                  href: './..',
+                },
+                {
+                  name: groupData?.name ?? '',
+                },
+              ],
+            },
           }}
         />
         <Table
+          visibleDataRef={visibleDataRef}
           rowData={groupData?.students ?? []}
           columnDefs={yearGroupColumns}
           getRowId={({ data }) => String(data?.partyId)}

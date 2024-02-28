@@ -48,7 +48,11 @@ export function ClassGroupStatusBar({ groupId }: ClassGroupOverviewBarProps) {
         >
           <Stack direction="row" alignItems="center" spacing={1}>
             <Box p={1}>
-              <Avatar src={classGroup?.avatarUrl} name={classGroup?.name} />
+              <Avatar
+                src={classGroup?.avatarUrl}
+                name={classGroup?.name}
+                sx={{ borderRadius: 1 }}
+              />
             </Box>
 
             <Stack>

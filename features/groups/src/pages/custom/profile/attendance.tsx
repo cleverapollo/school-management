@@ -12,6 +12,7 @@ export default function CustomGroupAttendancePage() {
 
   return (
     <GroupAttendance
+      groupName={customGroupData?.name}
       partyId={customGroupData?.partyId ?? 0}
       students={customGroupData?.students || []}
     />

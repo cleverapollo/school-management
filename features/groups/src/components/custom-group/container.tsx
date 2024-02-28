@@ -1,9 +1,17 @@
 import { useParams } from 'react-router-dom';
-import { useNumber, Page, PageHeading, TabPageContainer } from '@tyro/core';
+import {
+  useNumber,
+  TabPageContainer,
+  PageContainer,
+  ListNavigator,
+  ListNavigatorType,
+  PartyListNavigatorMenuItem,
+  PartyListNavigatorMenuItemParams,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { Container } from '@mui/material';
+import { useMemo } from 'react';
 import { CustomGroupStatusBar } from './status-bar';
-import { useCustomGroupDefinition } from '../../api';
+import { useCustomGroupDefinition, useCustomGroups } from '../../api';
 
 export default function SupportGroupContainer() {
   const { t } = useTranslation(['groups', 'common']);
@@ -11,26 +19,34 @@ export default function SupportGroupContainer() {
   const { groupId } = useParams();
   const partyId = useNumber(groupId) ?? 0;
 
+  const { data: groupsListData = [] } = useCustomGroups();
   const { data: customGroupData } = useCustomGroupDefinition({ partyId });
 
   const customGroupName = t('groups:subjectGroupsProfile', {
     name: customGroupData?.name,
   });
 
+  const defaultListData = useMemo(
+    () =>
+      (groupsListData || []).map<PartyListNavigatorMenuItemParams>((group) => ({
+        id: group.partyId,
+        name: group.name,
+        type: 'group',
+      })),
+    [groupsListData]
+  );
+
   return (
-    <Page title={customGroupName}>
-      <Container
-        maxWidth="xl"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-          pb: 3,
-        }}
-      >
-        <PageHeading
-          title={customGroupName}
-          breadcrumbs={{
+    <PageContainer title={customGroupName}>
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.CustomGroup}
+        itemId={partyId}
+        optionTextKey="name"
+        getRenderOption={PartyListNavigatorMenuItem}
+        defaultListData={defaultListData}
+        pageHeadingProps={{
+          title: customGroupName,
+          breadcrumbs: {
             links: [
               {
                 name: t('groups:customGroups'),
@@ -40,30 +56,30 @@ export default function SupportGroupContainer() {
                 name: customGroupName,
               },
             ],
-          }}
-        />
-        <CustomGroupStatusBar partyId={partyId} />
-        <TabPageContainer
-          links={[
-            {
-              value: 'students',
-              label: t('common:students'),
-            },
-            {
-              value: 'staff',
-              label: t('common:staff'),
-            },
-            {
-              value: 'attendance',
-              label: t('common:attendance'),
-            },
-            {
-              value: 'timetable',
-              label: t('common:timetable'),
-            },
-          ]}
-        />
-      </Container>
-    </Page>
+          },
+        }}
+      />
+      <CustomGroupStatusBar partyId={partyId} />
+      <TabPageContainer
+        links={[
+          {
+            value: 'students',
+            label: t('common:students'),
+          },
+          {
+            value: 'staff',
+            label: t('common:staff'),
+          },
+          {
+            value: 'attendance',
+            label: t('common:attendance'),
+          },
+          {
+            value: 'timetable',
+            label: t('common:timetable'),
+          },
+        ]}
+      />
+    </PageContainer>
   );
 }

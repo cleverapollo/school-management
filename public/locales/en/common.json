@@ -360,5 +360,18 @@
     "day": "{{day}}d",
     "hour": "{{hour}}h",
     "minute": "{{minute}}m"
-  }
+  },
+  "profileNavigation": {
+    "breadcrumbPage": "{{name}} page",
+    "STUDENT": "Students",
+    "CONTACT": "Contacts",
+    "STAFF": "Staff",
+    "YEAR_GROUP": "Year groups",
+    "CLASS_GROUP": "Class groups",
+    "SUBJECT_GROUP": "Subject groups",
+    "SUPPORT_GROUP": "Support groups",
+    "CUSTOM_GROUP": "Custom groups",
+    "ASSESSMENT": "Assessments"
+  },
+  "errorLoadingWidget": "Error loading widget"
 }
