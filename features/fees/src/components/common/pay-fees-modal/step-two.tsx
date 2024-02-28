@@ -254,7 +254,7 @@ export function PayFeesStepTwo() {
 
   if (!paymentsToPayAndMethod) return null;
 
-  return paymentsToPayAndMethod.paymentMethod === PaymentMethod.Cash ? (
+  return paymentsToPayAndMethod.paymentMethod !== PaymentMethod.Card ? (
     <CashCheckoutForm paymentInput={paymentInput} />
   ) : (
     <Elements stripe={stripePromise} options={options}>
