@@ -36,6 +36,8 @@ import {
   useUser,
   getPersonProfileLink,
   StudentAssessmentExclusionInput,
+  usePermissions,
+  UsePermissionsReturn,
 } from '@tyro/api';
 import set from 'lodash/set';
 import { StudentTableAvatar } from '@tyro/people';
@@ -64,8 +66,11 @@ type ColumnDefs = NonNullable<
   GridOptions<ReturnTypeFromUseAssessmentResults>['columnDefs']
 >;
 
+const editAssessmentPermission = 'ps:1:assessment:write_assessment_result';
+
 function getCommentFields(
   assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
+  permissions: UsePermissionsReturn,
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined,
   t: TFunction<
     ('common' | 'assessments')[],
@@ -101,7 +106,7 @@ function getCommentFields(
           {
             colId: 'commentType',
             headerName: t('assessments:labels.commentType'),
-            editable: true,
+            editable: permissions.hasPermission(editAssessmentPermission),
             cellEditorSelector: CommentTypeCellEditor(t),
             valueGetter: ({
               data,
@@ -139,7 +144,7 @@ function getCommentFields(
     {
       field: 'teacherComment',
       headerName: t('common:comment'),
-      editable: true,
+      editable: permissions.hasPermission(editAssessmentPermission),
       autoHeight: true,
       wrapText: true,
       width: 350,
@@ -243,6 +248,7 @@ const getColumnDefs = (
     undefined,
     ('common' | 'assessments')[]
   >,
+  permissions: UsePermissionsReturn,
   onBeforeNavigateProfile: () => void,
   displayName: ReturnTypeDisplayName,
   toast: ReturnOfUseToast['toast'],
@@ -274,7 +280,7 @@ const getColumnDefs = (
   {
     field: 'examinable',
     headerName: t('assessments:examinable'),
-    editable: true,
+    editable: permissions.hasPermission(editAssessmentPermission),
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     cellRenderer: ({
@@ -300,7 +306,7 @@ const getColumnDefs = (
   {
     field: 'studentStudyLevel',
     headerName: t('common:level'),
-    editable: true,
+    editable: permissions.hasPermission(editAssessmentPermission),
     valueSetter: (
       params: ValueSetterParams<ReturnTypeFromUseAssessmentResults>
     ) => {
@@ -321,7 +327,8 @@ const getColumnDefs = (
   {
     field: 'result',
     headerName: t('common:result'),
-    editable: ({ data }) => !!data?.examinable,
+    editable: ({ data }) =>
+      !!data?.examinable && permissions.hasPermission(editAssessmentPermission),
     valueFormatter: ({ value }) =>
       typeof value === 'number' ? `${value}%` : '',
     valueSetter: (
@@ -349,7 +356,7 @@ const getColumnDefs = (
   {
     field: 'targetResult',
     headerName: t('assessments:targetResult'),
-    editable: true,
+    editable: permissions.hasPermission(editAssessmentPermission),
     hide: !assessmentData?.captureTarget,
     suppressColumnsToolPanel: !assessmentData?.captureTarget,
     valueFormatter: ({ value }) =>
@@ -378,8 +385,8 @@ const getColumnDefs = (
     hide: !assessmentData?.captureTarget,
     suppressColumnsToolPanel: !assessmentData?.captureTarget,
   },
-  ...getCommentFields(assessmentData, commentBanks, t, toast),
-  ...getExtraFields(assessmentData?.extraFields, commentBanks),
+  ...getCommentFields(assessmentData, permissions, commentBanks, t, toast),
+  ...getExtraFields(assessmentData?.extraFields, permissions, commentBanks),
 ];
 
 export default function EditTermAssessmentResults() {
@@ -391,6 +398,7 @@ export default function EditTermAssessmentResults() {
   const subjectGroupIdAsNumber = useNumber(subjectGroupId);
   const { t } = useTranslation(['assessments', 'common']);
   const { displayName } = usePreferredNameLayout();
+  const permissions = usePermissions();
   const assessmentResultsFilter = {
     assessmentId: assessmentIdAsNumber ?? 0,
     subjectGroupIds: [subjectGroupIdAsNumber ?? 0],
@@ -472,6 +480,7 @@ export default function EditTermAssessmentResults() {
     () =>
       getColumnDefs(
         t,
+        permissions,
         onBeforeNavigateProfile,
         displayName,
         toast,
@@ -481,6 +490,7 @@ export default function EditTermAssessmentResults() {
       ),
     [
       t,
+      permissions,
       onBeforeNavigateProfile,
       displayName,
       toast,

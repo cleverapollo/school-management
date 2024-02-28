@@ -1,5 +1,5 @@
 import { GridOptions, TableSelect } from '@tyro/core';
-import { Comment, ExtraFieldType } from '@tyro/api';
+import { Comment, ExtraFieldType, UsePermissionsReturn } from '@tyro/api';
 import set from 'lodash/set';
 import {
   ReturnTypeFromUseAssessmentById,
@@ -13,6 +13,7 @@ type ColumnDefs = NonNullable<
 
 export function getExtraFields(
   extraFields: ReturnTypeFromUseAssessmentById['extraFields'],
+  permissions: UsePermissionsReturn,
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined
 ): ColumnDefs {
   return (
@@ -23,7 +24,9 @@ export function getExtraFields(
 
       const commonFields = {
         headerName: extraField?.name ?? '',
-        editable: true,
+        editable: permissions.hasPermission(
+          'ps:1:assessment:write_assessment_result'
+        ),
       };
 
       switch (extraField?.extraFieldType) {
