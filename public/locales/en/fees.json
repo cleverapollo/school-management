@@ -30,7 +30,9 @@
   "paymentMethod": "Payment method",
   "paymentMethods": {
     "CARD": "Card",
-    "CASH": "Cash"
+    "CASH": "Cash",
+    "CHEQUE": "Cheque",
+    "BANK_TRANSFER": "Bank transfer"
   },
   "feeNameForStudent": "{{feeName}}<br/><2>for {{studentName}}</2>",
   "amountToPayExceedsTheAmountThatsDue": "Amount to pay exceeds the amount that's due",
