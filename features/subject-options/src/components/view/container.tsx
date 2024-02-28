@@ -45,7 +45,8 @@ export default function OptionsViewContainer() {
           {
             label: t('common:solve'),
             value: 'solve',
-            hasAccess: ({ isTyroUser }) => isTyroUser,
+            hasAccess: ({ hasPermission }) =>
+              hasPermission('ps:1:options:options_beta_test'),
           },
         ]}
       />
