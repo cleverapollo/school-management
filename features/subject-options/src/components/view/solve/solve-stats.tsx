@@ -11,6 +11,7 @@ import {
 import { useMemo } from 'react';
 import { useTranslation } from '@tyro/i18n';
 import { getColorBasedOnIndex } from '@tyro/api';
+import { PinIcon } from '@tyro/icons';
 import { StudentRow } from '../../../utils/get-student-rows';
 import { ReturnTypeFromUseOptionsSolutions } from '../../../api/options-solutions';
 
@@ -142,7 +143,7 @@ export function SolveStats({ studentRows, optionsSolutions }: SolveStatsProps) {
           </Typography>
           {subjectGroups.length > 0 ? (
             <Stack spacing={1} direction="row" useFlexGap flexWrap="wrap">
-              {subjectGroups.map(({ id, blockIdx, name }) => {
+              {subjectGroups.map(({ id, blockIdx, name, pinned }) => {
                 const blockColor = getColorBasedOnIndex(blockIdx);
                 return (
                   <Chip
@@ -151,6 +152,21 @@ export function SolveStats({ studentRows, optionsSolutions }: SolveStatsProps) {
                     label={name}
                     color={blockColor}
                     size="small"
+                    sx={({ palette }) => ({
+                      '& .MuiChip-deleteIcon': {
+                        color: `${blockColor}.700`,
+                        pointerEvents: 'none',
+
+                        '&:hover': {
+                          color: `${blockColor}.700`,
+                        },
+                      },
+                      '& path:first-of-type': {
+                        fill: palette[blockColor][700],
+                      },
+                    })}
+                    onDelete={pinned ? () => {} : undefined}
+                    deleteIcon={<PinIcon />}
                   />
                 );
               })}

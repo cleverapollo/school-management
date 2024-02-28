@@ -72,6 +72,8 @@ const getStudentAssignmentColumns = (
     headerName: t('subjectOptions:missed'),
     suppressMenu: true,
     pinned: 'left',
+    sort: 'desc',
+    sortIndex: 0,
   },
   ...(optionsSetup?.subjectSets?.map((subjectSet) => ({
     colId: JSON.stringify(subjectSet.id),
