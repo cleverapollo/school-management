@@ -19,7 +19,12 @@ import {
   ValueGetterParams,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { CheckmarkIcon, ClockIcon, GearIcon } from '@tyro/icons';
+import {
+  CheckmarkIcon,
+  ClockIcon,
+  ErrorCircleIcon,
+  GearIcon,
+} from '@tyro/icons';
 import { StudentTableAvatar } from '@tyro/people';
 import {
   getPersonProfileLink,
@@ -150,6 +155,8 @@ const getStudentAssignmentColumns = (
               );
             }
 
+            if (!subject?.shortCode) return '-';
+
             return (
               <Box component="span" color="text.secondary">
                 {subject.shortCode}
@@ -185,6 +192,17 @@ function SolverStatus({
         <CheckmarkIcon sx={{ width: 20, height: 20, color: 'success.main' }} />
         <Typography variant="subtitle2" color="text.secondary">
           {t('subjectOptions:notSolvingStatus')}
+        </Typography>
+      </Stack>
+    );
+  }
+
+  if (status === SolutionStatus.Error) {
+    return (
+      <Stack direction="row" spacing={0.5} alignItems="center">
+        <ErrorCircleIcon sx={{ width: 20, height: 20, color: 'error.main' }} />
+        <Typography variant="subtitle2" color="text.secondary">
+          {t('subjectOptions:solverErrorStatus')}
         </Typography>
       </Stack>
     );
@@ -313,11 +331,11 @@ export default function StudentOptionsSolvePage() {
               loading={isRequestingSolve}
               onClick={toggleSolver}
             >
-              {optionsSolutions?.solverStatus
-                ? t(
-                    `subjectOptions:solverButtonActions.${optionsSolutions.solverStatus}`
-                  )
-                : t(`subjectOptions:solverButtonActions.NOT_SOLVING`)}
+              {t(
+                `subjectOptions:solverButtonActions.${
+                  optionsSolutions?.solverStatus ?? 'NOT_SOLVING'
+                }`
+              )}
             </LoadingButton>
           </Stack>
         }

@@ -54,6 +54,7 @@
   "optionsSolverStoppedSuccessfully": "Options solver has stopped successfully.",
   "autoAssignPref": "Auto assign preferences",
   "solverButtonActions": {
+    "ERROR": "Solve",
     "NOT_SOLVING": "Solve",
     "SOLVING_ACTIVE": "Stop solver",
     "SOLVING_SCHEDULED": "Cancel solver"
@@ -72,5 +73,6 @@
   "subjectsAllocated": "Subjects allocated",
   "preferencesFulfilled": "Preferences fulfilled",
   "reservesUsed": "Reserves used",
-  "subjectBlocks": "Subject blocks"
+  "subjectBlocks": "Subject blocks",
+  "solverErrorStatus": "Error while solving. Please contact support"
 }

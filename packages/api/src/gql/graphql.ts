@@ -4269,10 +4269,10 @@ export type Options_Choice = {
   __typename?: 'Options_Choice';
   blockIdx?: Maybe<Scalars['Int']>;
   choiceIdx: Scalars['Int'];
-  subject: Subject;
+  subject?: Maybe<Subject>;
   subjectGroupId?: Maybe<Scalars['Int']>;
   subjectGroupName?: Maybe<Scalars['String']>;
-  subjectId: Scalars['Int'];
+  subjectId?: Maybe<Scalars['Int']>;
 };
 
 export type Options_ChoiceId = {
@@ -7563,6 +7563,7 @@ export type SmsTopUpResponse = {
 };
 
 export enum SolutionStatus {
+  Error = 'ERROR',
   NotSolving = 'NOT_SOLVING',
   SolvingActive = 'SOLVING_ACTIVE',
   SolvingScheduled = 'SOLVING_SCHEDULED'
@@ -10975,7 +10976,7 @@ export type Options_SolutionsQueryVariables = Exact<{
 }>;
 
 
-export type Options_SolutionsQuery = { __typename?: 'Query', options_solutions: { __typename?: 'Options_Solution', optionId: number, solverStatus: SolutionStatus, pools: Array<{ __typename?: 'Options_SolutionPool', poolIdx: number, blocks: Array<{ __typename?: 'Options_Block', blockIdx: number, subjectGroups: Array<{ __typename?: 'Options_SubjectGroup', id: number, poolIdx: number, blockIdx: number, name: string, subjectId: number, numStudents: number, pinned: boolean, subject: { __typename?: 'Subject', name: string, shortCode: string, colour?: Colour | null } }> }>, subjectSets: Array<{ __typename?: 'Options_SolutionSubjectSet', mustGet: number, id: { __typename?: 'Options_OptionsId', optionId: number, idx: number }, studentChoices: Array<{ __typename?: 'Options_StudentChoices', studentPartyId: number, subjectsAllocated: number, reservedUsed: number, subjectSetChoices: Array<{ __typename?: 'Options_Choice', choiceIdx: number, blockIdx?: number | null, subjectId: number, subjectGroupName?: string | null, subject: { __typename?: 'Subject', name: string, shortCode: string, colour?: Colour | null } }> }> }>, subjects: Array<{ __typename?: 'Options_SolutionSubject', poolIdx: number, subjectId: number, maxSize: number, numClasses: number, numPreferences: number, missed: number, subject: { __typename?: 'Subject', name: string, shortCode: string, colour?: Colour | null } }> }> } };
+export type Options_SolutionsQuery = { __typename?: 'Query', options_solutions: { __typename?: 'Options_Solution', optionId: number, solverStatus: SolutionStatus, pools: Array<{ __typename?: 'Options_SolutionPool', poolIdx: number, blocks: Array<{ __typename?: 'Options_Block', blockIdx: number, subjectGroups: Array<{ __typename?: 'Options_SubjectGroup', id: number, poolIdx: number, blockIdx: number, name: string, subjectId: number, numStudents: number, pinned: boolean, subject: { __typename?: 'Subject', name: string, shortCode: string, colour?: Colour | null } }> }>, subjectSets: Array<{ __typename?: 'Options_SolutionSubjectSet', mustGet: number, id: { __typename?: 'Options_OptionsId', optionId: number, idx: number }, studentChoices: Array<{ __typename?: 'Options_StudentChoices', studentPartyId: number, subjectsAllocated: number, reservedUsed: number, subjectSetChoices: Array<{ __typename?: 'Options_Choice', choiceIdx: number, blockIdx?: number | null, subjectId?: number | null, subjectGroupName?: string | null, subject?: { __typename?: 'Subject', name: string, shortCode: string, colour?: Colour | null } | null }> }> }>, subjects: Array<{ __typename?: 'Options_SolutionSubject', poolIdx: number, subjectId: number, maxSize: number, numClasses: number, numPreferences: number, missed: number, subject: { __typename?: 'Subject', name: string, shortCode: string, colour?: Colour | null } }> }> } };
 
 export type Options_OptionsQueryVariables = Exact<{
   filter?: InputMaybe<Options_OptionFilter>;
