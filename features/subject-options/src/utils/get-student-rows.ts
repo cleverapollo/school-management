@@ -7,11 +7,13 @@ type OptionsAssignedValue =
 
 export type StudentRow = {
   student: NonNullable<ReturnTypeFromUseOptionsSetup['students']>[number];
-  missedPreferences: number;
   optionsAssigned: Map<string, OptionsAssignedValue>;
   hasPreferences: boolean;
   hasReservedSubject: boolean;
   missingOneSubject: boolean;
+  subjectsAllocated: number;
+  reservesUsed: number;
+  totalNeededSubjects: number;
 };
 
 export const getStudentRows = (
@@ -22,54 +24,65 @@ export const getStudentRows = (
     number,
     Map<string, OptionsAssignedValue>
   >();
-  const studentMissingPreferences = new Map<number, number>();
   const additionalStudentMeta: Record<
     number,
     {
+      subjectsAllocated: number;
+      reservesUsed: number;
       hasReservedSubject?: boolean;
       missingOneSubject?: boolean;
     }
   > = {};
 
+  const totalNeededSubjects =
+    optionsSetup?.subjectSets.reduce(
+      (acc, subjectSet) => acc + subjectSet.mustGet,
+      0
+    ) ?? 0;
+
   optionsSolutions?.pools?.forEach(({ poolIdx, subjectSets }) => {
     subjectSets.forEach(({ id, studentChoices, mustGet }) => {
       studentChoices.forEach(
-        ({ studentPartyId, missed, subjectSetChoices }) => {
-          studentMissingPreferences.set(
-            studentPartyId,
-            (studentMissingPreferences.get(studentPartyId) ?? 0) + missed
+        ({
+          studentPartyId,
+          subjectsAllocated,
+          reservedUsed,
+          subjectSetChoices,
+        }) => {
+          set(
+            additionalStudentMeta,
+            `${studentPartyId}.subjectsAllocated`,
+            subjectsAllocated +
+              (additionalStudentMeta[studentPartyId]?.subjectsAllocated ?? 0)
+          );
+          set(
+            additionalStudentMeta,
+            `${studentPartyId}.reservesUsed`,
+            reservedUsed +
+              (additionalStudentMeta[studentPartyId]?.reservesUsed ?? 0)
           );
 
-          let numberOfAssignedSubjects = 0;
-          const currentStudentsOptionsAssigned = subjectSetChoices.reduce<
-            Map<string, OptionsAssignedValue>
-          >((acc, choice) => {
-            if (choice.choiceIdx >= mustGet) {
-              set(
-                additionalStudentMeta,
-                `${studentPartyId}.hasReservedSubject`,
-                true
-              );
-            }
-
-            if (
-              typeof choice.blockIdx === 'number' &&
-              choice.subjectGroupName
-            ) {
-              numberOfAssignedSubjects += 1;
-            }
-
-            acc.set(`${poolIdx}-${id.idx}-${choice.choiceIdx}`, choice);
-            return acc;
-          }, new Map(studentsOptionsAssigned.get(studentPartyId) ?? []));
-
-          if (numberOfAssignedSubjects < mustGet) {
+          if (subjectsAllocated < mustGet) {
             set(
               additionalStudentMeta,
               `${studentPartyId}.missingOneSubject`,
               true
             );
           }
+
+          if (reservedUsed > 0) {
+            set(
+              additionalStudentMeta,
+              `${studentPartyId}.hasReservedSubject`,
+              true
+            );
+          }
+          const currentStudentsOptionsAssigned = subjectSetChoices.reduce<
+            Map<string, OptionsAssignedValue>
+          >((acc, choice) => {
+            acc.set(`${poolIdx}-${id.idx}-${choice.choiceIdx}`, choice);
+            return acc;
+          }, new Map(studentsOptionsAssigned.get(studentPartyId) ?? []));
 
           studentsOptionsAssigned.set(
             studentPartyId,
@@ -80,13 +93,18 @@ export const getStudentRows = (
     });
   });
 
-  return (optionsSetup?.students ?? []).map((student) => ({
-    student,
-    missedPreferences: studentMissingPreferences.get(student.partyId) ?? 0,
-    hasPreferences: studentMissingPreferences.get(student.partyId) === 0,
-    hasReservedSubject: false,
-    missingOneSubject: false,
-    optionsAssigned: studentsOptionsAssigned.get(student.partyId) ?? new Map(),
-    ...additionalStudentMeta[student.partyId],
-  }));
+  return (optionsSetup?.students ?? []).map((student) => {
+    const studentsMeta = additionalStudentMeta[student.partyId];
+    return {
+      student,
+      hasPreferences:
+        !studentsMeta?.missingOneSubject && !studentsMeta?.hasReservedSubject,
+      hasReservedSubject: false,
+      missingOneSubject: false,
+      totalNeededSubjects,
+      optionsAssigned:
+        studentsOptionsAssigned.get(student.partyId) ?? new Map(),
+      ...studentsMeta,
+    };
+  });
 };

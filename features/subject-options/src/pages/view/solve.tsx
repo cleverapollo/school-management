@@ -68,12 +68,35 @@ const getStudentAssignmentColumns = (
     suppressMenu: true,
   },
   {
-    field: 'missedPreferences',
-    headerName: t('subjectOptions:missed'),
+    field: 'subjectsAllocated',
+    headerName: t('subjectOptions:subjectsAllocated'),
+    suppressMenu: true,
+    pinned: 'left',
+    sort: 'asc',
+    sortIndex: 0,
+    cellRenderer: ({
+      value,
+      data,
+    }: ICellRendererParams<StudentRow, StudentRow['subjectsAllocated']>) => {
+      const isComplete = value === data?.totalNeededSubjects;
+      return (
+        <Chip
+          size="small"
+          variant="soft"
+          label={`${value ?? 0}/${data?.totalNeededSubjects ?? 0}`}
+          color={isComplete ? 'success' : 'slate'}
+          icon={isComplete ? <CheckmarkIcon /> : undefined}
+        />
+      );
+    },
+  },
+  {
+    field: 'reservesUsed',
+    headerName: t('subjectOptions:reservesUsed'),
     suppressMenu: true,
     pinned: 'left',
     sort: 'desc',
-    sortIndex: 0,
+    sortIndex: 1,
   },
   ...(optionsSetup?.subjectSets?.map((subjectSet) => ({
     colId: JSON.stringify(subjectSet.id),
