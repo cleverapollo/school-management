@@ -101,9 +101,9 @@ export function SolveStats({ studentRows, optionsSolutions }: SolveStatsProps) {
       studentRows?.filter((student) => student.hasReservedSubject).length ?? 0,
     [studentRows]
   );
-  const totalMissingOneSubject = useMemo(
+  const totalHaveAllAssignedSubjectSlots = useMemo(
     () =>
-      studentRows?.filter((student) => student.missingOneSubject).length ?? 0,
+      studentRows?.filter((student) => !student.missingOneSubject).length ?? 0,
     [studentRows]
   );
 
@@ -119,27 +119,27 @@ export function SolveStats({ studentRows, optionsSolutions }: SolveStatsProps) {
     <Card>
       <Stack direction="row" p={2} spacing={3} alignItems="center">
         <PercentFigure
-          value={totalWithPreferences}
-          label={t('subjectOptions:withPreferences')}
+          value={totalHaveAllAssignedSubjectSlots}
+          label={t('subjectOptions:subjectsAllocated')}
           total={totalStudents}
           color="success"
         />
         <PercentFigure
+          value={totalWithPreferences}
+          label={t('subjectOptions:preferencesFulfilled')}
+          total={totalStudents}
+          color="info"
+        />
+        <PercentFigure
           value={totalWithReserveSubjects}
-          label={t('subjectOptions:withReserves')}
+          label={t('subjectOptions:reservesUsed')}
           total={totalStudents}
           color="warning"
         />
-        <PercentFigure
-          value={totalMissingOneSubject}
-          label={t('subjectOptions:needsSubjects')}
-          total={totalStudents}
-          color="error"
-        />
         <Divider orientation="vertical" flexItem />
-        <Stack>
+        <Stack flex={1}>
           <Typography variant="subtitle2">
-            {t('common:subjectGroups')}
+            {t('subjectOptions:subjectBlocks')}
           </Typography>
           {subjectGroups.length > 0 ? (
             <Stack spacing={1} direction="row" useFlexGap flexWrap="wrap">

@@ -84,12 +84,16 @@ const getStudentAssignmentColumns = (
         const colId = `${subjectSet.poolIdx ?? 0}-${
           subjectSet.id.idx
         }-${preferenceIdx}`;
-        const isOutsideWhatTheyGet = preferenceIdx > subjectSet.mustGet - 1;
+        const isOutsideWhatTheyGet = preferenceIdx >= subjectSet.mustGet;
         const showLeftBorder = preferenceIdx === 0 && subjectSet.id.idx !== 1;
 
         return {
           field: `optionsAssigned.${colId}`,
-          headerName: t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
+          headerName: isOutsideWhatTheyGet
+            ? t('subjectOptions:reserveX', {
+                x: preferenceIdx - subjectSet.mustGet + 1,
+              })
+            : t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
           suppressMenu: true,
           sortable: false,
           cellClass: [
