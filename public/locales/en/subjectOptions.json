@@ -74,5 +74,6 @@
   "preferencesFulfilled": "Preferences fulfilled",
   "reservesUsed": "Reserves used",
   "subjectBlocks": "Subject blocks",
-  "solverErrorStatus": "Error while solving. Please contact support"
+  "solverErrorStatus": "Error while solving. Please contact support",
+  "solverInput": "Solver input"
 }

@@ -4457,6 +4457,11 @@ export type Options_Solve = {
   problemId?: Maybe<Scalars['String']>;
 };
 
+export type Options_SolverInput = {
+  __typename?: 'Options_SolverInput';
+  input: Scalars['Object'];
+};
+
 export type Options_StudentChoice = {
   __typename?: 'Options_StudentChoice';
   adminSelectedSubjectId?: Maybe<Scalars['Int']>;
@@ -5302,6 +5307,7 @@ export type Query = {
   options_options: Array<Options_Option>;
   options_preferences: Array<Options_StudentPreference>;
   options_solutions: Options_Solution;
+  options_solverInput: Options_SolverInput;
   permissions?: Maybe<Array<Maybe<Permission>>>;
   ppod_PPODCredentials?: Maybe<PpodCredentials>;
   ppod_syncRequests: Array<SyncRequest>;
@@ -5762,6 +5768,11 @@ export type QueryOptions_PreferencesArgs = {
 
 export type QueryOptions_SolutionsArgs = {
   filter?: InputMaybe<SolutionsFilter>;
+};
+
+
+export type QueryOptions_SolverInputArgs = {
+  filter?: InputMaybe<SolverInputFilter>;
 };
 
 
@@ -7528,6 +7539,7 @@ export enum SmsRecipientType {
   Contact = 'CONTACT',
   GeneralGroupContact = 'GENERAL_GROUP_CONTACT',
   GeneralGroupStaff = 'GENERAL_GROUP_STAFF',
+  Person = 'PERSON',
   Staff = 'STAFF',
   Student = 'STUDENT',
   StudentTeachers = 'STUDENT_TEACHERS',
@@ -7570,6 +7582,10 @@ export enum SolutionStatus {
 }
 
 export type SolutionsFilter = {
+  optionId: Scalars['Int'];
+};
+
+export type SolverInputFilter = {
   optionId: Scalars['Int'];
 };
 
@@ -11048,6 +11064,13 @@ export type OptionsSol_SubjectStatsQueryVariables = Exact<{
 
 export type OptionsSol_SubjectStatsQuery = { __typename?: 'Query', optionsSol_subjectStats: Array<{ __typename?: 'OptionsSol_Subject', subjectId: number, maxSize: number, preferencesTotal: number, preferencesGotten: number, subject: { __typename?: 'Subject', name: string, shortCode: string, colour?: Colour | null }, teachingGroups: Array<{ __typename?: 'OptionsSol_SubjectGroup', id: number, poolIdx: number, blockIdx: number, name: string, numStudents: number }> }> };
 
+export type Options_SolverInputQueryVariables = Exact<{
+  filter?: InputMaybe<SolverInputFilter>;
+}>;
+
+
+export type Options_SolverInputQuery = { __typename?: 'Query', options_solverInput: { __typename?: 'Options_SolverInput', input: any } };
+
 export type Swm_ApplySubstitutionsMutationVariables = Exact<{
   input: Swm_InsertSubstitution;
 }>;
@@ -11537,6 +11560,7 @@ export const OptionsSol_FillInOptionsDocument = {"kind":"Document","definitions"
 export const OptionsSol_SolveDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"optionsSol_solve"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"OptionsSol_Solve"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionsSol_solve"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"problemId"}}]}}]}}]} as unknown as DocumentNode<OptionsSol_SolveMutation, OptionsSol_SolveMutationVariables>;
 export const OptionsSol_BlocksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"optionsSol_blocks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_OptionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionsSol_blocks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectSet"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blocks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"blockIdx"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjectGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolIdx"}},{"kind":"Field","name":{"kind":"Name","value":"blockIdx"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"subjectId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"shortCode"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}},{"kind":"Field","name":{"kind":"Name","value":"numStudents"}},{"kind":"Field","name":{"kind":"Name","value":"pinned"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"subjectSet"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionId"}},{"kind":"Field","name":{"kind":"Name","value":"idx"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"poolIdx"}}]}}]}}]}}]}}]} as unknown as DocumentNode<OptionsSol_BlocksQuery, OptionsSol_BlocksQueryVariables>;
 export const OptionsSol_SubjectStatsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"optionsSol_subjectStats"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Options_OptionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"optionsSol_subjectStats"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subjectId"}},{"kind":"Field","name":{"kind":"Name","value":"subject"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"shortCode"}},{"kind":"Field","name":{"kind":"Name","value":"colour"}}]}},{"kind":"Field","name":{"kind":"Name","value":"maxSize"}},{"kind":"Field","name":{"kind":"Name","value":"preferencesTotal"}},{"kind":"Field","name":{"kind":"Name","value":"preferencesGotten"}},{"kind":"Field","name":{"kind":"Name","value":"teachingGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"poolIdx"}},{"kind":"Field","name":{"kind":"Name","value":"blockIdx"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"numStudents"}}]}}]}}]}}]} as unknown as DocumentNode<OptionsSol_SubjectStatsQuery, OptionsSol_SubjectStatsQueryVariables>;
+export const Options_SolverInputDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"options_solverInput"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SolverInputFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"options_solverInput"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"input"}}]}}]}}]} as unknown as DocumentNode<Options_SolverInputQuery, Options_SolverInputQueryVariables>;
 export const Swm_ApplySubstitutionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_applySubstitutions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_InsertSubstitution"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_applySubstitutions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Swm_ApplySubstitutionsMutation, Swm_ApplySubstitutionsMutationVariables>;
 export const Swm_DeleteSubstitutionsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_deleteSubstitutions"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_DeleteSubstitution"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_deleteSubstitutions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Swm_DeleteSubstitutionsMutation, Swm_DeleteSubstitutionsMutationVariables>;
 export const Swm_AbsenceTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"swm_absenceTypes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_StaffAbsenceTypeFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_absenceTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"descriptionTextId"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"availableForRequests"}}]}}]}}]} as unknown as DocumentNode<Swm_AbsenceTypesQuery, Swm_AbsenceTypesQueryVariables>;

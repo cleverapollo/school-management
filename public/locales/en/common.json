@@ -373,5 +373,7 @@
     "CUSTOM_GROUP": "Custom groups",
     "ASSESSMENT": "Assessments"
   },
-  "errorLoadingWidget": "Error loading widget"
+  "errorLoadingWidget": "Error loading widget",
+  "copiedToClipboard": "Copied to clipboard.",
+  "issueCopyingToClipboard": "Issue copying to clipboard."
 }

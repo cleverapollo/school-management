@@ -20,6 +20,7 @@ import {
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
+  BulbArrowIcon,
   CheckmarkIcon,
   ClockIcon,
   ErrorCircleIcon,
@@ -31,6 +32,7 @@ import {
   OptionsSol_SolverOperation,
   getColorBasedOnIndex,
   SolutionStatus,
+  usePermissions,
 } from '@tyro/api';
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
@@ -44,6 +46,7 @@ import { useOptionsSolutions } from '../../api/options-solutions';
 import { useSolveOptions } from '../../api/solve';
 import { SolveStats } from '../../components/view/solve/solve-stats';
 import { getStudentRows, StudentRow } from '../../utils/get-student-rows';
+import { SolverInputModal } from '../../components/view/solve/input-modal';
 
 const getStudentAssignmentColumns = (
   t: TFunction<
@@ -232,9 +235,15 @@ function SolverStatus({
 export default function StudentOptionsSolvePage() {
   const { id } = useParams();
   const optionId = getNumber(id) ?? 0;
+  const { isTyroUser } = usePermissions();
   const { t } = useTranslation(['common', 'subjectOptions']);
   const { displayName } = usePreferredNameLayout();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isSolverInputOpen,
+    onOpen: onOpenSolverInput,
+    onClose: onCloseSolverInput,
+  } = useDisclosure();
 
   const { data: optionsSetup } = useOptionsSetup(optionId);
   const { data: optionsSolutions } = useOptionsSolutions({ optionId });
@@ -299,7 +308,7 @@ export default function StudentOptionsSolvePage() {
             direction="row"
             justifyContent="flex-end"
             alignItems="center"
-            spacing={2}
+            spacing={1}
           >
             <SolverStatus
               hasSubjectSets={hasSubjectSets}
@@ -337,6 +346,17 @@ export default function StudentOptionsSolvePage() {
                 }`
               )}
             </LoadingButton>
+            {isTyroUser && (
+              <Tooltip title={t('subjectOptions:solverInput')}>
+                <Button
+                  variant="outlined"
+                  sx={{ minWidth: 'auto', maxWidth: 36 }}
+                  onClick={onOpenSolverInput}
+                >
+                  <BulbArrowIcon />
+                </Button>
+              </Tooltip>
+            )}
           </Stack>
         }
       />
@@ -344,6 +364,11 @@ export default function StudentOptionsSolvePage() {
         optionsSolutions={optionsSolutions}
         isOpen={isOpen}
         onClose={onClose}
+      />
+      <SolverInputModal
+        isOpen={isSolverInputOpen}
+        onClose={onCloseSolverInput}
+        optionId={optionId}
       />
     </>
   );
