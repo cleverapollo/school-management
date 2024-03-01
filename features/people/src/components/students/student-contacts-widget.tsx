@@ -29,7 +29,7 @@ import {
   PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { SearchType, SmsRecipientType } from '@tyro/api';
+import { SearchType, SmsRecipientType, usePermissions } from '@tyro/api';
 import { useMailSettings } from '@tyro/mail';
 
 import { useStudentsContacts } from '../../api/student/overview';
@@ -61,6 +61,7 @@ export function StudentContactsWidget({
   const [[contactIndex, direction], setContactIndex] = useState([0, 0]);
   const { t } = useTranslation(['common', 'people', 'mail', 'sms']);
   const { displayName } = usePreferredNameLayout();
+  const { isStaffUserWithPermission } = usePermissions();
   const [contactToSendSmsTo, setContactToSendSmsTo] =
     useState<RecipientsForSmsModal>([]);
   const { composeEmail } = useMailSettings();
@@ -139,6 +140,14 @@ export function StudentContactsWidget({
     );
     navigate(`/people/contacts/${selectedContact?.partyId ?? 0}`);
   };
+
+  const canSendSms =
+    isStaffUserWithPermission('ps:1:communications:send_sms') &&
+    selectedContact?.includeInSms;
+
+  const canSendMail = isStaffUserWithPermission(
+    'ps:1:communications:write_mail'
+  );
 
   return (
     <>
@@ -269,52 +278,60 @@ export function StudentContactsWidget({
                     </Box>
                   </Stack>
                 </Stack>
-                <Stack direction="row" spacing={1} sx={{ mt: 2, mb: 3 }}>
-                  <Tooltip
-                    describeChild
-                    title={
-                      !selectedContact?.includeInSms &&
-                      t('sms:recipientNotIncludedInSms', { count: 1 })
-                    }
-                  >
-                    <Box display="flex" flex="1">
-                      <Button
-                        variant="soft"
-                        sx={{ flex: 1 }}
-                        disabled={!selectedContact?.includeInSms}
-                        onClick={() =>
-                          setContactToSendSmsTo([
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{ mt: 2, mb: canSendSms || canSendMail ? 3 : 0 }}
+                >
+                  {canSendSms && (
+                    <Tooltip
+                      describeChild
+                      title={
+                        !selectedContact?.includeInSms &&
+                        t('sms:recipientNotIncludedInSms', { count: 1 })
+                      }
+                    >
+                      <Box display="flex" flex="1">
+                        <Button
+                          variant="soft"
+                          sx={{ flex: 1 }}
+                          disabled={!selectedContact?.includeInSms}
+                          onClick={() =>
+                            setContactToSendSmsTo([
+                              {
+                                id: selectedContact?.partyId ?? 0,
+                                name: displayName(selectedContact?.person),
+                                type: 'individual',
+                                avatarUrl: selectedContact?.person?.avatarUrl,
+                              },
+                            ])
+                          }
+                        >
+                          SMS
+                        </Button>
+                      </Box>
+                    </Tooltip>
+                  )}
+                  {canSendMail && (
+                    <Button
+                      variant="contained"
+                      sx={{ flex: 1 }}
+                      onClick={() =>
+                        composeEmail({
+                          toRecipients: [
                             {
-                              id: selectedContact?.partyId ?? 0,
-                              name: displayName(selectedContact?.person),
-                              type: 'individual',
+                              partyId: selectedContact?.partyId ?? 0,
+                              text: displayName(selectedContact?.person),
+                              type: SearchType.Contact,
                               avatarUrl: selectedContact?.person?.avatarUrl,
                             },
-                          ])
-                        }
-                      >
-                        SMS
-                      </Button>
-                    </Box>
-                  </Tooltip>
-                  <Button
-                    variant="contained"
-                    sx={{ flex: 1 }}
-                    onClick={() =>
-                      composeEmail({
-                        toRecipients: [
-                          {
-                            partyId: selectedContact?.partyId ?? 0,
-                            text: displayName(selectedContact?.person),
-                            type: SearchType.Contact,
-                            avatarUrl: selectedContact?.person?.avatarUrl,
-                          },
-                        ],
-                      })
-                    }
-                  >
-                    {t('mail:sendMail')}
-                  </Button>
+                          ],
+                        })
+                      }
+                    >
+                      {t('mail:sendMail')}
+                    </Button>
+                  )}
                 </Stack>
                 <Box
                   component="dl"
