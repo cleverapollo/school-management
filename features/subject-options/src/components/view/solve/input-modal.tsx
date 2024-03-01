@@ -56,6 +56,7 @@ export function SolverInputModal({
             minHeight: 200,
             flex: 1,
             overflow: 'auto',
+            position: 'relative',
           }}
         >
           <LoadingPlaceholderContainer isLoading={isLoading}>
