@@ -33,6 +33,7 @@
   "areYouSureYouWantToDelete": "Are you sure you want to delete \"{{optionsName}}\"? This action can't be undone.",
   "preferences": "Preferences",
   "prefX": "Pref. {{x}}",
+  "reserveX": "Reserve {{x}}",
   "stats": "Stats",
   "subjectCombinationStats": "Subject combination stats",
   "subjectCombinationStatsForPoolX": "Subject combination stats (Pool {{x}})",
@@ -53,6 +54,7 @@
   "optionsSolverStoppedSuccessfully": "Options solver has stopped successfully.",
   "autoAssignPref": "Auto assign preferences",
   "solverButtonActions": {
+    "ERROR": "Solve",
     "NOT_SOLVING": "Solve",
     "SOLVING_ACTIVE": "Stop solver",
     "SOLVING_SCHEDULED": "Cancel solver"
@@ -68,7 +70,10 @@
   "activeStatus": "Solver running. Stop to get the current best.",
   "cantViewSettingsWhenSolverIsScheduledOrActive": "You can't view settings when the solver is scheduled or active",
   "xOfyStudents": "{{x}}/{{y}} students",
-  "withPreferences": "With preferences",
-  "withReserves": "With reserves",
-  "needsSubjects": "Needs subjects"
+  "subjectsAllocated": "Subjects allocated",
+  "preferencesFulfilled": "Preferences fulfilled",
+  "reservesUsed": "Reserves used",
+  "subjectBlocks": "Subject blocks",
+  "solverErrorStatus": "Error while solving. Please contact support",
+  "solverInput": "Solver input"
 }

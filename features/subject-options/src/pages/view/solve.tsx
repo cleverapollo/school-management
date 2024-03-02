@@ -19,13 +19,20 @@ import {
   ValueGetterParams,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { CheckmarkIcon, ClockIcon, GearIcon } from '@tyro/icons';
+import {
+  BulbArrowIcon,
+  CheckmarkIcon,
+  ClockIcon,
+  ErrorCircleIcon,
+  GearIcon,
+} from '@tyro/icons';
 import { StudentTableAvatar } from '@tyro/people';
 import {
   getPersonProfileLink,
   OptionsSol_SolverOperation,
   getColorBasedOnIndex,
   SolutionStatus,
+  usePermissions,
 } from '@tyro/api';
 import { useParams } from 'react-router-dom';
 import { useMemo } from 'react';
@@ -39,6 +46,7 @@ import { useOptionsSolutions } from '../../api/options-solutions';
 import { useSolveOptions } from '../../api/solve';
 import { SolveStats } from '../../components/view/solve/solve-stats';
 import { getStudentRows, StudentRow } from '../../utils/get-student-rows';
+import { SolverInputModal } from '../../components/view/solve/input-modal';
 
 const getStudentAssignmentColumns = (
   t: TFunction<
@@ -68,12 +76,35 @@ const getStudentAssignmentColumns = (
     suppressMenu: true,
   },
   {
-    field: 'missedPreferences',
-    headerName: t('subjectOptions:missed'),
+    field: 'subjectsAllocated',
+    headerName: t('subjectOptions:subjectsAllocated'),
+    suppressMenu: true,
+    pinned: 'left',
+    sort: 'asc',
+    sortIndex: 0,
+    cellRenderer: ({
+      value,
+      data,
+    }: ICellRendererParams<StudentRow, StudentRow['subjectsAllocated']>) => {
+      const isComplete = value === data?.totalNeededSubjects;
+      return (
+        <Chip
+          size="small"
+          variant="soft"
+          label={`${value ?? 0}/${data?.totalNeededSubjects ?? 0}`}
+          color={isComplete ? 'success' : 'slate'}
+          icon={isComplete ? <CheckmarkIcon /> : undefined}
+        />
+      );
+    },
+  },
+  {
+    field: 'reservesUsed',
+    headerName: t('subjectOptions:reservesUsed'),
     suppressMenu: true,
     pinned: 'left',
     sort: 'desc',
-    sortIndex: 0,
+    sortIndex: 1,
   },
   ...(optionsSetup?.subjectSets?.map((subjectSet) => ({
     colId: JSON.stringify(subjectSet.id),
@@ -84,12 +115,16 @@ const getStudentAssignmentColumns = (
         const colId = `${subjectSet.poolIdx ?? 0}-${
           subjectSet.id.idx
         }-${preferenceIdx}`;
-        const isOutsideWhatTheyGet = preferenceIdx > subjectSet.mustGet - 1;
+        const isOutsideWhatTheyGet = preferenceIdx >= subjectSet.mustGet;
         const showLeftBorder = preferenceIdx === 0 && subjectSet.id.idx !== 1;
 
         return {
           field: `optionsAssigned.${colId}`,
-          headerName: t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
+          headerName: isOutsideWhatTheyGet
+            ? t('subjectOptions:reserveX', {
+                x: preferenceIdx - subjectSet.mustGet + 1,
+              })
+            : t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
           suppressMenu: true,
           sortable: false,
           cellClass: [
@@ -122,6 +157,8 @@ const getStudentAssignmentColumns = (
                 />
               );
             }
+
+            if (!subject?.shortCode) return '-';
 
             return (
               <Box component="span" color="text.secondary">
@@ -163,6 +200,17 @@ function SolverStatus({
     );
   }
 
+  if (status === SolutionStatus.Error) {
+    return (
+      <Stack direction="row" spacing={0.5} alignItems="center">
+        <ErrorCircleIcon sx={{ width: 20, height: 20, color: 'error.main' }} />
+        <Typography variant="subtitle2" color="text.secondary">
+          {t('subjectOptions:solverErrorStatus')}
+        </Typography>
+      </Stack>
+    );
+  }
+
   if (status === SolutionStatus.SolvingScheduled) {
     return (
       <Stack direction="row" spacing={0.5} alignItems="center">
@@ -187,9 +235,15 @@ function SolverStatus({
 export default function StudentOptionsSolvePage() {
   const { id } = useParams();
   const optionId = getNumber(id) ?? 0;
+  const { isTyroUser } = usePermissions();
   const { t } = useTranslation(['common', 'subjectOptions']);
   const { displayName } = usePreferredNameLayout();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isSolverInputOpen,
+    onOpen: onOpenSolverInput,
+    onClose: onCloseSolverInput,
+  } = useDisclosure();
 
   const { data: optionsSetup } = useOptionsSetup(optionId);
   const { data: optionsSolutions } = useOptionsSolutions({ optionId });
@@ -254,7 +308,7 @@ export default function StudentOptionsSolvePage() {
             direction="row"
             justifyContent="flex-end"
             alignItems="center"
-            spacing={2}
+            spacing={1}
           >
             <SolverStatus
               hasSubjectSets={hasSubjectSets}
@@ -286,12 +340,23 @@ export default function StudentOptionsSolvePage() {
               loading={isRequestingSolve}
               onClick={toggleSolver}
             >
-              {optionsSolutions?.solverStatus
-                ? t(
-                    `subjectOptions:solverButtonActions.${optionsSolutions.solverStatus}`
-                  )
-                : t(`subjectOptions:solverButtonActions.NOT_SOLVING`)}
+              {t(
+                `subjectOptions:solverButtonActions.${
+                  optionsSolutions?.solverStatus ?? 'NOT_SOLVING'
+                }`
+              )}
             </LoadingButton>
+            {isTyroUser && (
+              <Tooltip title={t('subjectOptions:solverInput')}>
+                <Button
+                  variant="outlined"
+                  sx={{ minWidth: 'auto', maxWidth: 36 }}
+                  onClick={onOpenSolverInput}
+                >
+                  <BulbArrowIcon />
+                </Button>
+              </Tooltip>
+            )}
           </Stack>
         }
       />
@@ -299,6 +364,11 @@ export default function StudentOptionsSolvePage() {
         optionsSolutions={optionsSolutions}
         isOpen={isOpen}
         onClose={onClose}
+      />
+      <SolverInputModal
+        isOpen={isSolverInputOpen}
+        onClose={onCloseSolverInput}
+        optionId={optionId}
       />
     </>
   );

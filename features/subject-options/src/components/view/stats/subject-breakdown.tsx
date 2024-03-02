@@ -103,7 +103,7 @@ const getBreakdownTableColumns = (
       const preferenceIdx = i + (subjectSet?.mustGet ?? 0);
       return {
         colId: `pref-${preferenceIdx}`,
-        headerName: t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
+        headerName: t('subjectOptions:reserveX', { x: i + 1 }),
         valueGetter: ({ data }: ValueGetterParams<SubjectBreakdownRow>) =>
           data?.prefBreakdown?.get(preferenceIdx) ?? 0,
         width: 64,

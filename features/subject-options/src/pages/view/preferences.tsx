@@ -123,7 +123,7 @@ const getStudentPreferenceColumns = (
     children: Array.from(Array(subjectSet.canChoose)).map(
       (_, preferenceIdx) => {
         const colId = `${subjectSet.id.idx}-${preferenceIdx}`;
-        const isOutsideWhatTheyGet = preferenceIdx > subjectSet.mustGet - 1;
+        const isOutsideWhatTheyGet = preferenceIdx >= subjectSet.mustGet;
         const showLeftBorder = preferenceIdx === 0 && subjectSet.id.idx !== 1;
         const options = subjectSet.subjects.sort((a, b) =>
           a.name.localeCompare(b.name)
@@ -131,7 +131,11 @@ const getStudentPreferenceColumns = (
 
         return {
           field: `choices.${colId}`,
-          headerName: t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
+          headerName: isOutsideWhatTheyGet
+            ? t('subjectOptions:reserveX', {
+                x: preferenceIdx - subjectSet.mustGet + 1,
+              })
+            : t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
           cellClass: [
             'ag-editable-cell',
             isOutsideWhatTheyGet && 'outside-get',

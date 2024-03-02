@@ -41,7 +41,8 @@ const optionsSolutions = graphql(/* GraphQL */ `
           mustGet
           studentChoices {
             studentPartyId
-            missed
+            subjectsAllocated
+            reservedUsed
             subjectSetChoices {
               choiceIdx
               blockIdx
