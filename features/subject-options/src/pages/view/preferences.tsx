@@ -391,7 +391,7 @@ export default function StudentOptionsPreferencesPage() {
             label: t('sms:contactsOfStudent', {
               count: selectedStudents.length,
             }),
-            type: SmsRecipientType.SubjectGroupStaff,
+            type: SmsRecipientType.Student,
           },
         ]}
       />
