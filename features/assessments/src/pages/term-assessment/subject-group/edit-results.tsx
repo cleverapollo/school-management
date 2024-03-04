@@ -2,7 +2,6 @@ import {
   BulkEditedRows,
   GridOptions,
   ICellRendererParams,
-  PageHeading,
   ReturnTypeDisplayName,
   Table,
   TableSelect,
@@ -18,10 +17,15 @@ import {
   ReturnOfUseToast,
   TableSwitch,
   TableBooleanValue,
+  ListNavigator,
+  ListNavigatorType,
+  useListNavigatorSettings,
+  PartyListNavigatorMenuItemParams,
+  PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import {
   UseQueryReturnType,
   CommentType,
@@ -46,6 +50,7 @@ import { checkAndSetGrades } from '../../../utils/check-and-set-grades';
 import { CommentTypeCellEditor } from '../../../components/common/comment-type-cell-editor';
 import { getExtraFields } from '../../../utils/get-extra-fields';
 import { updateStudentAssessmentExclusion } from '../../../api/student-assessment-exclusion';
+import { useAssessmentSubjectGroups } from '../../../api/assessment-subject-groups';
 
 export type ReturnTypeFromUseAssessmentById = UseQueryReturnType<
   typeof useAssessmentById
@@ -238,6 +243,7 @@ const getColumnDefs = (
     undefined,
     ('common' | 'assessments')[]
   >,
+  onBeforeNavigateProfile: () => void,
   displayName: ReturnTypeDisplayName,
   toast: ReturnOfUseToast['toast'],
   assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
@@ -257,6 +263,7 @@ const getColumnDefs = (
           isPriorityStudent={!!data?.student?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.student?.person)}
+          onBeforeNavigate={onBeforeNavigateProfile}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -436,10 +443,36 @@ export default function EditTermAssessmentResults() {
 
   const subjectGroupName = subjectGroup?.name ?? '';
 
+  const visibleDataRef =
+    useRef<() => ReturnTypeFromUseAssessmentResults[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      subjectGroupName,
+      visibleDataRef
+        .current?.()
+        .map(({ student: { person }, studentPartyId, studentClassGroup }) => ({
+          id: studentPartyId,
+          type: 'person',
+          name: displayName(person),
+          firstName: person.firstName,
+          lastName: person.lastName,
+          avatarUrl: person.avatarUrl,
+          caption: studentClassGroup,
+        }))
+    );
+  }, [subjectGroupName]);
+
   const columnDefs = useMemo(
     () =>
       getColumnDefs(
         t,
+        onBeforeNavigateProfile,
         displayName,
         toast,
         assessmentData,
@@ -448,6 +481,7 @@ export default function EditTermAssessmentResults() {
       ),
     [
       t,
+      onBeforeNavigateProfile,
       displayName,
       toast,
       assessmentData,
@@ -560,35 +594,75 @@ export default function EditTermAssessmentResults() {
     return updateAssessmentResult(results);
   };
 
+  const { data: assessmentSubjectGroupsData = [] } = useAssessmentSubjectGroups(
+    academicNamespaceIdAsNumber ?? 0,
+    {
+      assessmentId: assessmentIdAsNumber,
+    }
+  );
+
+  const defaultListData = useMemo(
+    () =>
+      assessmentSubjectGroupsData.map<PartyListNavigatorMenuItemParams>(
+        ({ subjectGroup: group }) => {
+          const subject = group?.subjects?.[0];
+          const bgColorStyle = subject?.colour
+            ? { bgcolor: `${subject.colour}.500` }
+            : {};
+
+          return {
+            id: group.partyId,
+            name: group.name,
+            type: 'group',
+            avatarProps: {
+              sx: {
+                ...bgColorStyle,
+              },
+            },
+          };
+        }
+      ),
+    [assessmentSubjectGroupsData]
+  );
+
   return (
     <PageContainer
       title={t('assessments:pageHeading.editResultsFor', {
         name: subjectGroupName,
       })}
     >
-      <PageHeading
-        title={t('assessments:pageHeading.editResultsFor', {
-          name: subjectGroupName,
-        })}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('assessments:pageHeading.assessments'),
-              href: '/assessments',
-            },
-            {
-              name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
-                name: assessmentData?.name,
-              }),
-              href: './../..',
-            },
-            {
-              name: t('assessments:actions.editResults'),
-            },
-          ],
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.SubjectGroup}
+        itemId={subjectGroupIdAsNumber}
+        optionTextKey="name"
+        defaultListData={defaultListData}
+        getRenderOption={PartyListNavigatorMenuItem}
+        pageHeadingProps={{
+          title: t('assessments:pageHeading.editResultsFor', {
+            name: subjectGroupName,
+          }),
+          breadcrumbs: {
+            links: [
+              {
+                name: t('assessments:pageHeading.assessments'),
+                href: '/assessments',
+              },
+              {
+                name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
+                  name: assessmentData?.name,
+                }),
+                href: './../..',
+              },
+              {
+                name: t('assessments:actions.editResults'),
+              },
+            ],
+          },
         }}
       />
       <Table
+        key={subjectGroupIdAsNumber}
+        visibleDataRef={visibleDataRef}
         rowData={studentResults ?? []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.studentPartyId)}

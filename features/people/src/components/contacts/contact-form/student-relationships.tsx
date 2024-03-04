@@ -300,7 +300,6 @@ export const StudentRelationships = <
                           : contactSettings[index]?.some(
                               ({ checked }) => checked
                             ),
-                        color: 'primary',
                         onChange: (_event, checked) =>
                           updateEnableAll(index, checked),
                       }}

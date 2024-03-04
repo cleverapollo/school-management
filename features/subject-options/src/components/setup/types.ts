@@ -1,5 +1,5 @@
 import { Options_SaveSubjectSet } from '@tyro/api';
-import { ReturnTypeFromUseYearGroupListsByFilter } from '@tyro/groups';
+import { ReturnTypeFromUseOptionsEnrollmentGroupsStudents } from '../../api/options-enrolment-groups';
 
 type SubjectSet = Omit<
   Options_SaveSubjectSet,
@@ -17,13 +17,8 @@ type Pools = {
 
 export interface SubjectOptionsFormState {
   name: string;
-  academicYearId: number;
-  selectedStudentYearGroups: { partyId: number; name: string }[];
   yearGroupId: number;
   classGroups: number[];
   pools: Pools[];
-  selectedStudents: Pick<
-    ReturnTypeFromUseYearGroupListsByFilter[number]['students'][number],
-    'partyId' | 'person' | 'classGroup'
-  >[];
+  selectedStudents: ReturnTypeFromUseOptionsEnrollmentGroupsStudents[];
 }

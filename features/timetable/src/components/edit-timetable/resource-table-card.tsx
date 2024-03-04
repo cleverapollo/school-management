@@ -123,10 +123,10 @@ function GroupCard({
   const partyGroup = lesson?.partyGroup;
 
   const subject =
-    partyGroup.__typename === 'SubjectGroup' ? partyGroup.subjects[0] : null;
+    partyGroup?.__typename === 'SubjectGroup' ? partyGroup?.subjects[0] : null;
   const name = getResourceName(lesson);
   const subjectGroupName =
-    partyGroup.__typename === 'SubjectGroup' ? partyGroup.name : null;
+    partyGroup?.__typename === 'SubjectGroup' ? partyGroup.name : null;
   const room = lesson.room?.name;
   const [teacher, ...additionalTeachers] = lesson.teachers;
 

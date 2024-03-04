@@ -11,10 +11,13 @@ import {
   TableSwitch,
   BulkEditedRows,
   useToast,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 
 import { Box, Fade } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   UseQueryReturnType,
   Core_UpdateStudentContactRelationshipInput,
@@ -28,6 +31,7 @@ import { RelationshipTypeCellEditor } from '../../../components/contacts/relatio
 import { PriorityTypeCellEditor } from '../../../components/contacts/priority-cell-editor';
 import { useUpdateStudentContactRelationships } from '../../../api/student/update-student-contact-relationships';
 import { StudentTableAvatar } from '../../../components/common/student-table-avatar';
+import { useContactPersonal } from '../../../api/contact/personal';
 
 type ContactStudentsRelationships = NonNullable<
   UseQueryReturnType<typeof useContactStudents>['relationships']
@@ -35,6 +39,7 @@ type ContactStudentsRelationships = NonNullable<
 
 const getContactStudentsColumns = (
   t: TFunction<('people' | 'common')[]>,
+  onBeforeNavigate: () => void,
   displayName: ReturnTypeDisplayName
 ): GridOptions<ContactStudentsRelationships>['columnDefs'] => [
   {
@@ -54,6 +59,7 @@ const getContactStudentsColumns = (
           isPriorityStudent={!!data?.student?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.student?.person)}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -184,13 +190,42 @@ export default function ContactProfileStudentsPage() {
   >([]);
   const [isShowAlertUnlink, setIsShowAlertUnlink] = useState<boolean>(false);
   const { data: contactStudentsData } = useContactStudents(contactPartyId);
+  const { data: contactData } = useContactPersonal(contactPartyId);
 
   const { mutateAsync: updateRelationshipsAsyncMutation } =
     useUpdateStudentContactRelationships();
 
+  const visibleDataRef = useRef<() => ContactStudentsRelationships[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      displayName(contactData?.person),
+      visibleDataRef.current?.().flatMap((data) =>
+        data
+          ? [
+              {
+                id: data?.studentPartyId,
+                type: 'person',
+                name: displayName(data?.student.person),
+                firstName: data?.student.person.firstName,
+                lastName: data?.student.person.lastName,
+                avatarUrl: data?.student.person.avatarUrl,
+                caption: data?.student.classGroup?.name,
+              },
+            ]
+          : []
+      )
+    );
+  }, [contactData]);
+
   const contactStudentColumns = useMemo(
-    () => getContactStudentsColumns(t, displayName),
-    [t, displayName]
+    () => getContactStudentsColumns(t, onBeforeNavigateProfile, displayName),
+    [t, onBeforeNavigateProfile, displayName]
   );
 
   const actionMenuItems = useMemo(
@@ -259,6 +294,7 @@ export default function ContactProfileStudentsPage() {
   return (
     <>
       <Table
+        visibleDataRef={visibleDataRef}
         rowData={contactStudentsData?.relationships ?? []}
         columnDefs={contactStudentColumns}
         getRowId={({ data }) => String(data?.studentPartyId)}

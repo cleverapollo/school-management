@@ -5151,15 +5151,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-virtual@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@tanstack/react-virtual@npm:3.0.1"
+"@tanstack/react-virtual@npm:3.0.4":
+  version: 3.0.4
+  resolution: "@tanstack/react-virtual@npm:3.0.4"
   dependencies:
     "@tanstack/virtual-core": 3.0.0
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 11534a23100de14a7e0a95da667381181e60a24e29a71246aeed174f8d5f6e176216de6639e6e1f403722ae30d8b92b21ed75ea131529b1417fb81f433468ef0
+  checksum: d01ea51d8a130c8f2cf87941d312a8d7929e19334bbe85a3ab125b935742cf58ee76d71f590cbd5c50b4fbdbbd6a7b8e58f7c0538c43aa4d5ccab20914246b28
   languageName: node
   linkType: hard
 
@@ -5243,6 +5243,18 @@ __metadata:
     "@tiptap/core": ^2.0.0
     "@tiptap/pm": ^2.0.0
   checksum: d976e35098883c2f1019f62b96077d317d296d42b1451b2b70c79adf7d8db6c8899f6e33c8796ddf3ad30b6d5b4733c32bc6712eadd11f5b7ddaf3fd08497fbf
+  languageName: node
+  linkType: hard
+
+"@tiptap/extension-bubble-menu@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "@tiptap/extension-bubble-menu@npm:2.2.3"
+  dependencies:
+    tippy.js: ^6.3.7
+  peerDependencies:
+    "@tiptap/core": ^2.0.0
+    "@tiptap/pm": ^2.0.0
+  checksum: 91f337a9a6bf5f42afa0c969bee9566d9babdd3372a0f00d92a1033df144bb7e130aa8046fe96d74624ab115030fd06c0aa52bb48f7d6ef2bbc2ea7f127cf0fe
   languageName: node
   linkType: hard
 
@@ -5362,15 +5374,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tiptap/extension-link@npm:^2.1.10":
-  version: 2.1.13
-  resolution: "@tiptap/extension-link@npm:2.1.13"
+"@tiptap/extension-link@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "@tiptap/extension-link@npm:2.2.3"
   dependencies:
     linkifyjs: ^4.1.0
   peerDependencies:
     "@tiptap/core": ^2.0.0
     "@tiptap/pm": ^2.0.0
-  checksum: 0d48258c558098aac60a43b9b208d10c80d021b63f87599342e5ba8b1845c4ea2ad3234ace3d441bb63c15d5277a76a4f7a560e4a8fb319aa0ed816f97c1328d
+  checksum: 66b64ff79d00cd3eb09f34366cd6763c0025cc1f3362a88f43ad12c2739208066d53b8f8b3304108a804fa31bb9da478e6e1503ef6ea9e6db1e90b7de9ccafa6
   languageName: node
   linkType: hard
 
@@ -6577,7 +6589,7 @@ __metadata:
     "@mui/lab": ^5.0.0-alpha.156
     "@mui/material": ^5.15.0
     "@mui/x-date-pickers": ^6.18.5
-    "@tanstack/react-virtual": ^3.0.1
+    "@tanstack/react-virtual": 3.0.4
     "@testing-library/react": ^14.1.2
     "@tyro/api": "*"
     "@tyro/configs": "*"
@@ -6586,6 +6598,7 @@ __metadata:
     "@tyro/settings": "*"
     apexcharts: ^3.37.1
     dayjs: ^1.11.7
+    dompurify: ^3.0.5
     framer-motion: ^9.0.1
     lodash: ^4.17.21
     notistack: ^2.0.5
@@ -6595,6 +6608,7 @@ __metadata:
     react-beautiful-dnd: ^13.1.1
     react-dom: ^18.2.0
     react-dropzone: ^14.2.3
+    react-error-boundary: ^4.0.12
     react-hook-form: ^7.43.9
     react-router: ^6.6.2
     react-router-dom: ^6.6.2
@@ -6620,7 +6634,9 @@ __metadata:
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/mail": "*"
     "@tyro/people": "*"
+    "@tyro/sms": "*"
     dayjs: ^1.11.7
     lodash: ^4.17.21
     react: ^18.2.0
@@ -6719,8 +6735,9 @@ __metadata:
     "@mui/material": ^5.15.0
     "@mui/system": ^5.15.0
     "@tanstack/react-query": ^4.29.7
-    "@tanstack/react-virtual": ^3.0.1
-    "@tiptap/extension-link": ^2.1.10
+    "@tanstack/react-virtual": 3.0.4
+    "@tiptap/extension-bubble-menu": ^2.2.3
+    "@tiptap/extension-link": ^2.2.3
     "@tiptap/extension-placeholder": ^2.1.8
     "@tiptap/extension-underline": ^2.1.8
     "@tiptap/pm": ^2.1.8
@@ -6754,7 +6771,7 @@ __metadata:
     "@mui/system": ^5.15.0
     "@mui/x-date-pickers": ^6.18.5
     "@tanstack/react-query": ^4.29.7
-    "@tanstack/react-virtual": ^3.0.1
+    "@tanstack/react-virtual": 3.0.4
     "@tyro/api": "*"
     "@tyro/assessments": "*"
     "@tyro/attendance": "*"
@@ -6905,7 +6922,7 @@ __metadata:
     "@mui/material": ^5.15.0
     "@mui/system": ^5.15.0
     "@tanstack/react-query": ^4.29.7
-    "@tanstack/react-virtual": ^3.0.1
+    "@tanstack/react-virtual": 3.0.4
     "@tyro/api": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
@@ -15182,6 +15199,17 @@ __metadata:
   peerDependencies:
     react: ">= 16.8 || 18.0.0"
   checksum: 174b744d5ca898cf3d84ec1aeb6cef5211c446697e45dc8ece8287a03d291f8d07253206d5a1247ef156fd385d65e7de666d4d5c2986020b8543b8f2434e8b40
+  languageName: node
+  linkType: hard
+
+"react-error-boundary@npm:^4.0.12":
+  version: 4.0.12
+  resolution: "react-error-boundary@npm:4.0.12"
+  dependencies:
+    "@babel/runtime": ^7.12.5
+  peerDependencies:
+    react: ">=16.13.1"
+  checksum: c4a14c2b609037baba394d8871fb021a7c16fb1abfd8d23b2d2aa331bdcc420e5cff4b3d48f2f2ac7fa64ac90c322d0bcf358d706995b30df5a8d5fcb0c27b1e
   languageName: node
   linkType: hard
 

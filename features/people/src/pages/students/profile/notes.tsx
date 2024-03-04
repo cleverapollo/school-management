@@ -11,6 +11,7 @@ import {
   usePreferredNameLayout,
   TableBooleanValue,
   commonActionMenuProps,
+  LinkRender,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { Box, Button, Chip, Stack } from '@mui/material';
@@ -44,6 +45,11 @@ const getStudentNoteColumns = (
     autoHeight: true,
     wrapText: true,
     width: 400,
+    cellRenderer: ({
+      data,
+    }: ICellRendererParams<ReturnTypeFromUseNotes, any>) => (
+      <LinkRender text={data?.note} />
+    ),
     cellStyle: {
       lineHeight: 2,
       paddingTop: 12,

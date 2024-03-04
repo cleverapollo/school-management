@@ -110,7 +110,7 @@ export function useStudentsContacts(
     enabled,
     select: useCallback(({ core_students }: Core_Student_ContactsQuery) => {
       const [contact] = core_students;
-      if (!Array.isArray(contact.contacts)) return [];
+      if (!Array.isArray(contact?.contacts)) return [];
 
       return contact.contacts.map(({ relationships, ...restData }) => ({
         ...restData,

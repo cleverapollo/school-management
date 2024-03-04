@@ -56,7 +56,8 @@
     "numberedList": "Numbered list ({{shortcut}})",
     "bulletedList": "Bulleted list ({{shortcut}})",
     "indentLess": "Indent less ({{shortcut}})",
-    "indentMore": "Indent more ({{shortcut}})"
+    "indentMore": "Indent more ({{shortcut}})",
+    "insertLink": "Insert link"
   },
   "errorMessages": {
     "labelRequired": "Label name is required",
@@ -69,6 +70,7 @@
     "Starred": "Starred",
     "Trash": "Bin"
   },
+  "goToLink": "Go to link",
   "labels": "Labels",
   "editLabel": "Edit label",
   "newLabel": "New label",
@@ -100,5 +102,12 @@
     "expand": "Expand"
   },
   "youDoNotHavePermissionToComposeNewMail": "You do not have permission to compose a new mail",
-  "mailContacts": "Mail contacts"
+  "validationMessages": {
+    "invalidLink": "This is an invalid link. Make sure it starts with http:// or https://"
+  },
+  "mailContacts": "Mail contacts",
+  "editLink": "Edit link",
+  "textToDisplay": "Text to display",
+  "urlToLinkTo": "URL to link to",
+  "copyUrlRecommendation": "If you are unsure of the URL, we recommended going to that page in your browser and copy it from the address bar."
 }

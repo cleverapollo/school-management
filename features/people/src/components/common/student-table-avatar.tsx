@@ -17,6 +17,7 @@ type TableAvatarProps = {
   AvatarProps?: CoreAvatarProps;
   avatarBackgroundColor?: string;
   size?: number;
+  onBeforeNavigate?: () => void;
 };
 
 export function StudentTableAvatar({
@@ -27,6 +28,7 @@ export function StudentTableAvatar({
   AvatarProps,
   avatarBackgroundColor,
   size,
+  onBeforeNavigate,
 }: TableAvatarProps) {
   const { displayName } = usePreferredNameLayout();
   const name = displayName(person);
@@ -51,7 +53,7 @@ export function StudentTableAvatar({
         AvatarProps={{ ...AvatarProps, person }}
       />
       {to ? (
-        <RouterLink sx={{ fontWeight: 600 }} to={to}>
+        <RouterLink sx={{ fontWeight: 600 }} onClick={onBeforeNavigate} to={to}>
           {name}
         </RouterLink>
       ) : (

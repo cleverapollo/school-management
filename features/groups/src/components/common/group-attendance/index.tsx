@@ -12,14 +12,23 @@ import {
   IconButton,
 } from '@mui/material';
 import { useTranslation } from '@tyro/i18n';
+import { useNavigate } from 'react-router-dom';
 
 import { AttendanceToggle } from '@tyro/attendance';
 
 import { ChevronLeftIcon, ChevronRightIcon, EditIcon } from '@tyro/icons';
-import { usePreferredNameLayout, EditState, useToast } from '@tyro/core';
+import {
+  usePreferredNameLayout,
+  EditState,
+  useToast,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
+  RouterLink,
+} from '@tyro/core';
 import { useEffect, useState } from 'react';
 import { StudentAvatar } from '@tyro/people';
-import { AttendanceCodeType } from '@tyro/api';
+import { AttendanceCodeType, getPersonProfileLink } from '@tyro/api';
 import { useHandleLessonAttendance, GroupStudent } from '../../../hooks';
 import { AdditionalLessonsModal } from './additional-lessons-modal';
 import { SaveBar } from './save-bar';
@@ -28,6 +37,7 @@ type AttendanceProps = {
   partyId: number;
   eventStartTime?: string | null;
   students: GroupStudent[];
+  groupName?: string;
 };
 
 const previousAttendanceCodeColor = {
@@ -42,9 +52,11 @@ export const GroupAttendance = ({
   partyId,
   eventStartTime,
   students,
+  groupName = '',
 }: AttendanceProps) => {
   const { toast } = useToast();
 
+  const navigate = useNavigate();
   const { t } = useTranslation(['common', 'groups', 'attendance']);
   const { displayName } = usePreferredNameLayout();
 
@@ -113,6 +125,26 @@ export const GroupAttendance = ({
         toast(t('common:snackbarMessages.updateSuccess'));
       },
     });
+  };
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
+
+  const goToStudentProfile = () => {
+    storeList(
+      groupName,
+      students.map(({ person, classGroup }) => ({
+        id: person.partyId,
+        type: 'person',
+        name: displayName(person),
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
+        caption: classGroup?.name,
+      }))
+    );
   };
 
   const isLoading = isLessonLoading || isSaveAttendanceLoading;
@@ -226,9 +258,13 @@ export const GroupAttendance = ({
                           person={student?.person}
                         />
                         <Stack direction="column">
-                          <Typography variant="body2" fontWeight={600}>
+                          <RouterLink
+                            fontWeight={600}
+                            to={getPersonProfileLink(student.person) || ''}
+                            onClick={goToStudentProfile}
+                          >
                             {displayName(student?.person)}
-                          </Typography>
+                          </RouterLink>
                           <Typography
                             variant="body2"
                             color={

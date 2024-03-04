@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Box, Container, Fade, Typography } from '@mui/material';
 import {
   GridOptions,
@@ -6,11 +6,13 @@ import {
   Page,
   Table,
   usePreferredNameLayout,
-  ReturnTypeDisplayName,
-  ReturnTypeDisplayNames,
+  preferredNameLayoutUtils,
   useDisclosure,
   ActionMenu,
   useDebouncedValue,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
@@ -49,144 +51,148 @@ const getStudentColumns = (
     undefined,
     ('common' | 'people')[]
   >,
-  displayName: ReturnTypeDisplayName,
-  displayNames: ReturnTypeDisplayNames,
+  onBeforeNavigate: () => void,
   isStaffUser: boolean
-): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => [
-  {
-    field: 'person',
-    headerName: translate('common:name'),
-    valueGetter: ({ data }) => displayName(data?.person),
-    cellRenderer: ({
-      data,
-    }: ICellRendererParams<ReturnTypeFromUseStudents, any>) =>
-      data ? (
-        <StudentTableAvatar
-          person={data?.person}
-          isPriorityStudent={!!data?.extensions?.priority}
-          hasSupportPlan={false}
-          to={getPersonProfileLink(data?.person)}
-        />
-      ) : null,
-    cellClass: 'cell-value-visible',
-    sort: 'asc',
-    headerCheckboxSelection: isStaffUser,
-    headerCheckboxSelectionFilteredOnly: isStaffUser,
-    checkboxSelection: isStaffUser ? ({ data }) => Boolean(data) : undefined,
-    lockVisible: true,
-    filter: true,
-  },
-  {
-    field: 'classGroup.name',
-    headerName: translate('people:class'),
-    enableRowGroup: true,
-    filter: true,
-  },
-  {
-    field: 'yearGroups',
-    headerName: translate('common:year'),
-    enableRowGroup: true,
-    valueGetter: ({ data }) => {
-      if (data && data.yearGroups.length > 0) {
-        return data.yearGroups[0].name;
-      }
+): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => {
+  const { displayName, displayNames } = preferredNameLayoutUtils();
+
+  return [
+    {
+      field: 'person',
+      headerName: translate('common:name'),
+      valueGetter: ({ data }) => displayName(data?.person),
+      cellRenderer: ({
+        data,
+      }: ICellRendererParams<ReturnTypeFromUseStudents, any>) =>
+        data?.person ? (
+          <StudentTableAvatar
+            person={data?.person}
+            isPriorityStudent={!!data?.extensions?.priority}
+            hasSupportPlan={false}
+            to={getPersonProfileLink(data?.person)}
+            onBeforeNavigate={onBeforeNavigate}
+          />
+        ) : null,
+      cellClass: 'cell-value-visible',
+      sort: 'asc',
+      headerCheckboxSelection: isStaffUser,
+      headerCheckboxSelectionFilteredOnly: isStaffUser,
+      checkboxSelection: isStaffUser ? ({ data }) => Boolean(data) : undefined,
+      lockVisible: true,
+      filter: true,
     },
-    filter: true,
-  },
-  {
-    field: 'tutors',
-    headerName: translate('common:tutor'),
-    enableRowGroup: true,
-    valueGetter: ({ data }) => displayNames(data?.tutors),
-  },
-  {
-    field: 'yearGroupLeads',
-    headerName: translate('common:yearhead'),
-    enableRowGroup: true,
-    valueGetter: ({ data }) => displayNames(data?.yearGroupLeads),
-    filter: true,
-  },
-  {
-    field: 'programmeStages',
-    headerName: translate('common:programme'),
-    enableRowGroup: true,
-    valueGetter: ({ data }) => {
-      if (data?.programmeStages && data.programmeStages.length > 0) {
-        return data.programmeStages[0]?.programme?.name;
-      }
+    {
+      field: 'classGroup.name',
+      headerName: translate('people:class'),
+      enableRowGroup: true,
+      filter: true,
     },
-    filter: true,
-  },
-  {
-    field: 'studentIrePP.examNumber',
-    headerName: translate('people:personal.enrolmentHistory.examNumber'),
-    editable: true,
-    hide: true,
-  },
-  {
-    field: 'personalInformation.preferredFirstName',
-    headerName: translate('common:preferredFirstName'),
-    editable: true,
-    hide: true,
-  },
-  {
-    field: 'personalInformation.primaryPhoneNumber.number',
-    headerName: translate('common:phone'),
-    editable: true,
-    hide: true,
-    cellEditor: 'agNumericCellEditor',
-    valueSetter: ({ data, newValue }) => {
-      set(
-        data ?? {},
-        'personalInformation.primaryPhoneNumber.number',
-        newValue
-      );
-      return true;
+    {
+      field: 'yearGroups',
+      headerName: translate('common:year'),
+      enableRowGroup: true,
+      valueGetter: ({ data }) => {
+        if (data && data.yearGroups.length > 0) {
+          return data.yearGroups[0].name;
+        }
+      },
+      filter: true,
     },
-  },
-  {
-    field: 'personalInformation.primaryEmail.email',
-    headerName: translate('common:email'),
-    editable: true,
-    hide: true,
-    cellEditor: 'agEmailCellEditor',
-    valueSetter: ({ data, newValue }) => {
-      set(data ?? {}, 'personalInformation.primaryEmail.email', newValue);
-      return true;
+    {
+      field: 'tutors',
+      headerName: translate('common:tutor'),
+      enableRowGroup: true,
+      valueGetter: ({ data }) => displayNames(data?.tutors),
     },
-  },
-  {
-    field: 'personalInformation.dateOfBirth',
-    headerName: translate('people:dateOfBirth'),
-    hide: true,
-    valueGetter: ({ data }) =>
-      data?.personalInformation?.dateOfBirth
-        ? dayjs(data.personalInformation.dateOfBirth).format('L')
-        : undefined,
-  },
-  {
-    field: 'studentIrePP.previousSchoolName',
-    headerName: translate(
-      'people:personal.enrolmentHistory.previousSchoolName'
-    ),
-    hide: true,
-  },
-  {
-    field: 'partyId',
-    headerName: translate('common:tyroId'),
-    hide: true,
-  },
-  {
-    field: 'studentIrePP.dpin',
-    headerName: translate('people:personal.about.departmentId'),
-    enableRowGroup: true,
-    hide: true,
-  },
-];
+    {
+      field: 'yearGroupLeads',
+      headerName: translate('common:yearhead'),
+      enableRowGroup: true,
+      valueGetter: ({ data }) => displayNames(data?.yearGroupLeads),
+      filter: true,
+    },
+    {
+      field: 'programmeStages',
+      headerName: translate('common:programme'),
+      enableRowGroup: true,
+      valueGetter: ({ data }) => {
+        if (data?.programmeStages && data.programmeStages.length > 0) {
+          return data.programmeStages[0]?.programme?.name;
+        }
+      },
+      filter: true,
+    },
+    {
+      field: 'studentIrePP.examNumber',
+      headerName: translate('people:personal.enrolmentHistory.examNumber'),
+      editable: true,
+      hide: true,
+    },
+    {
+      field: 'personalInformation.preferredFirstName',
+      headerName: translate('common:preferredFirstName'),
+      editable: true,
+      hide: true,
+    },
+    {
+      field: 'personalInformation.primaryPhoneNumber.number',
+      headerName: translate('common:phone'),
+      editable: true,
+      hide: true,
+      cellEditor: 'agNumericCellEditor',
+      valueSetter: ({ data, newValue }) => {
+        set(
+          data ?? {},
+          'personalInformation.primaryPhoneNumber.number',
+          newValue
+        );
+        return true;
+      },
+    },
+    {
+      field: 'personalInformation.primaryEmail.email',
+      headerName: translate('common:email'),
+      editable: true,
+      hide: true,
+      cellEditor: 'agEmailCellEditor',
+      valueSetter: ({ data, newValue }) => {
+        set(data ?? {}, 'personalInformation.primaryEmail.email', newValue);
+        return true;
+      },
+    },
+    {
+      field: 'personalInformation.dateOfBirth',
+      headerName: translate('people:dateOfBirth'),
+      hide: true,
+      valueGetter: ({ data }) =>
+        data?.personalInformation?.dateOfBirth
+          ? dayjs(data.personalInformation.dateOfBirth).format('L')
+          : undefined,
+    },
+    {
+      field: 'studentIrePP.previousSchoolName',
+      headerName: translate(
+        'people:personal.enrolmentHistory.previousSchoolName'
+      ),
+      hide: true,
+    },
+    {
+      field: 'partyId',
+      headerName: translate('common:tyroId'),
+      hide: true,
+    },
+    {
+      field: 'studentIrePP.dpin',
+      headerName: translate('people:personal.about.departmentId'),
+      enableRowGroup: true,
+      hide: true,
+    },
+  ];
+};
 
 export default function StudentsListPage() {
   const { t } = useTranslation(['common', 'people', 'sms', 'mail']);
-  const { displayName, displayNames } = usePreferredNameLayout();
+  const { displayName } = usePreferredNameLayout();
   const { isStaffUser } = usePermissions();
   const [selectedStudents, setSelectedStudents] = useState<
     ReturnTypeFromUseStudents[]
@@ -233,9 +239,40 @@ export default function StudentsListPage() {
     onClose: onCloseChangeYearGroup,
   } = useDisclosure();
 
+  const visibleDataRef = useRef<() => ReturnTypeFromUseStudents[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      t('common:students'),
+      visibleDataRef.current?.().map(({ person, yearGroups, classGroup }) => {
+        const caption = [
+          ...yearGroups.map((group) => group.name),
+          classGroup?.name,
+        ]
+          .filter(Boolean)
+          .join(', ');
+
+        return {
+          id: person.partyId,
+          type: 'person',
+          name: displayName(person),
+          firstName: person.firstName,
+          lastName: person.lastName,
+          avatarUrl: person.avatarUrl,
+          caption,
+        };
+      }) ?? []
+    );
+  }, [displayName]);
+
   const studentColumns = useMemo(
-    () => getStudentColumns(t, displayName, displayNames, isStaffUser),
-    [t, displayName, displayNames, isStaffUser]
+    () => getStudentColumns(t, onBeforeNavigateProfile, isStaffUser),
+    [t, onBeforeNavigateProfile, isStaffUser]
   );
 
   return (
@@ -246,6 +283,7 @@ export default function StudentsListPage() {
             {t('common:students')}
           </Typography>
           <Table
+            visibleDataRef={visibleDataRef}
             rowData={students ?? []}
             columnDefs={studentColumns}
             rowSelection={isStaffUser ? 'multiple' : undefined}

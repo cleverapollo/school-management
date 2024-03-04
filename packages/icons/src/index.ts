@@ -23,6 +23,7 @@ export * from './book-open-with-text';
 export * from './books-apple';
 export * from './brush-circle';
 export * from './building-graduate-hat';
+export * from './bulb-arrow';
 export * from './bullet-list';
 export * from './calendar-22';
 export * from './calendar-31';

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useParams } from 'react-router';
 import { TFunction, useTranslation } from '@tyro/i18n';
 
@@ -9,6 +9,9 @@ import {
   ICellRendererParams,
   usePreferredNameLayout,
   ReturnTypeDisplayName,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { StudentTableAvatar } from '@tyro/people';
 import { getPersonProfileLink } from '@tyro/api';
@@ -22,6 +25,7 @@ type CustomGroupStudent =
 
 const getColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
+  onBeforeNavigate: () => void,
   displayName: ReturnTypeDisplayName
 ): GridOptions<CustomGroupStudent>['columnDefs'] => [
   {
@@ -36,6 +40,7 @@ const getColumns = (
           isPriorityStudent={!!data?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.person)}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -57,10 +62,36 @@ export default function CustomGroupStudentsPage() {
 
   const { data: customGroupData } = useCustomGroupDefinition({ partyId });
 
-  const columns = useMemo(() => getColumns(t, displayName), [t, displayName]);
+  const visibleDataRef = useRef<() => CustomGroupStudent[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      customGroupData?.name,
+      visibleDataRef.current?.().map(({ person, classGroup }) => ({
+        id: person.partyId,
+        type: 'person',
+        name: displayName(person),
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
+        caption: classGroup?.name,
+      }))
+    );
+  }, [customGroupData]);
+
+  const columns = useMemo(
+    () => getColumns(t, onBeforeNavigateProfile, displayName),
+    [t, onBeforeNavigateProfile, displayName]
+  );
 
   return (
     <Table
+      visibleDataRef={visibleDataRef}
       rowData={customGroupData?.students ?? []}
       columnDefs={columns}
       getRowId={({ data }) => String(data?.person?.partyId)}
