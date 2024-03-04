@@ -19,13 +19,20 @@ import {
 } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import { TFunction, useTranslation } from '@tyro/i18n';
-import { useAcademicNamespace, AttendanceCodeType } from '@tyro/api';
+import {
+  useAcademicNamespace,
+  AttendanceCodeType,
+  CalendarCodeType,
+} from '@tyro/api';
 import { ToggleButtonCalendarIcon, ToggleButtonTableIcon } from '@tyro/icons';
 import { getColourBasedOnAttendanceType } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { useStudentCalendarAttendance } from '@tyro/attendance';
-import { AcademicCalendar } from './calendar';
+import {
+  ReturnTypeFromUseStudentCalendarAttendance,
+  useStudentCalendarAttendance,
+} from '@tyro/attendance';
+import { AcademicCalendar, AcademicCalendarProps } from './calendar';
 import { AttendanceTableView } from './attendance-table-view';
 
 export type ExtendedAttendanceCodeType =
@@ -82,23 +89,26 @@ export const MonthOverview = () => {
       to: endDate || formattedCurrentDate,
     });
 
-  const attendanceCounts = calendarAttendance?.attendances ?? [];
-  const totalAttendanceDays = attendanceCounts.length;
+  const filteredAttendance = useMemo(
+    () =>
+      (calendarAttendance?.attendances.filter(
+        (attendance) => attendance.status !== CalendarCodeType.Holiday
+      ) ?? []) as unknown as AcademicCalendarProps['calendarAttendance'],
+    [calendarAttendance]
+  );
+  const totalAttendanceDays = filteredAttendance.length;
 
   const partialsByCodeType = useMemo(
     () =>
-      (calendarAttendance?.attendances ?? []).reduce(
-        (acc, { partiallyTaken, status }) => {
-          if (partiallyTaken) {
-            const currentCount = acc.get(status);
-            acc.set(status, 1 + (currentCount ?? 0));
-          }
+      filteredAttendance.reduce((acc, { partiallyTaken, status }) => {
+        if (partiallyTaken) {
+          const currentCount = acc.get(status);
+          acc.set(status, 1 + (currentCount ?? 0));
+        }
 
-          return acc;
-        },
-        new Map<ExtendedAttendanceCodeType, number>()
-      ),
-    [calendarAttendance]
+        return acc;
+      }, new Map<ExtendedAttendanceCodeType, number>()),
+    [filteredAttendance]
   );
 
   const getCodeCount = useCallback(
@@ -387,7 +397,7 @@ export const MonthOverview = () => {
               >
                 <AcademicCalendar
                   studentPartyId={id ?? ''}
-                  calendarAttendance={calendarAttendance}
+                  calendarAttendance={filteredAttendance}
                   activeAcademicNamespace={activeAcademicNamespace}
                   currentTabValue={currentTabValue}
                   isPartialAbsenceEnabled={showPartialAbsence}
