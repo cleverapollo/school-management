@@ -20,7 +20,7 @@ import {
 } from '@tyro/core';
 
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { Box, Button, Chip, Fade } from '@mui/material';
+import { Box, Button, Chip, Fade, Stack } from '@mui/material';
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import {
   getPersonProfileLink,
@@ -349,7 +349,12 @@ export default function StudentOptionsPreferencesPage() {
         rowSelection="multiple"
         getRowId={({ data }) => JSON.stringify(data?.student?.partyId)}
         rightAdornment={
-          <>
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            alignItems="center"
+            spacing={1}
+          >
             <Fade in={selectedStudents.length > 0} unmountOnExit>
               <Box>
                 <ActionMenu menuItems={actionMenuItems} />
@@ -364,7 +369,7 @@ export default function StudentOptionsPreferencesPage() {
                 {t(`subjectOptions:autoAssignPref`)}
               </Button>
             )}
-          </>
+          </Stack>
         }
         onRowSelection={(students) =>
           setSelectedStudents(
