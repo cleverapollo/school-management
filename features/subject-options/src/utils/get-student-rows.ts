@@ -98,9 +98,10 @@ export const getStudentRows = (
     return {
       student,
       hasPreferences:
-        !studentsMeta?.missingOneSubject && !studentsMeta?.hasReservedSubject,
+        studentsMeta?.missingOneSubject === false &&
+        studentsMeta?.hasReservedSubject === false,
       hasReservedSubject: false,
-      missingOneSubject: false,
+      missingOneSubject: true,
       totalNeededSubjects,
       optionsAssigned:
         studentsOptionsAssigned.get(student.partyId) ?? new Map(),
