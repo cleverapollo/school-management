@@ -10,7 +10,7 @@ export const useMembersByPermissionType = () => {
   const { data: studentsData = [], isLoading: isStudentsLoading } =
     useStudentsForSelect({});
   const { data: contactsData = [], isLoading: isContactsLoading } =
-    useContactsForSelect();
+    useContactsForSelect({});
   const { data: staffData = [], isLoading: isStaffLoading } = useStaffForSelect(
     {}
   );

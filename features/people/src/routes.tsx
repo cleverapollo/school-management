@@ -437,7 +437,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'contacts',
             title: t('navigation:management.people.contacts'),
-            loader: () => getContacts(),
+            loader: () => getContacts({}),
             hasAccess: (permissions) =>
               permissions.isStaffUserWithPermission(
                 'ps:1:people:view_contact_list'
