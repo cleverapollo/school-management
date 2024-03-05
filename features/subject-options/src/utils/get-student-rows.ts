@@ -74,7 +74,7 @@ export const getStudentRows = (
             set(
               additionalStudentMeta,
               `${studentPartyId}.hasReservedSubject`,
-              reservedUsed > 0
+              true
             );
           }
           const currentStudentsOptionsAssigned = subjectSetChoices.reduce<
