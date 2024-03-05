@@ -24,7 +24,7 @@ function getSubjectBreakdownData(
 
   studentChoices.forEach(({ choices }) => {
     choices.forEach(({ subject, id }) => {
-      const subjectIndex = subjectIndexesById.get(subject.id);
+      const subjectIndex = subjectIndexesById.get(subject?.id);
       if (subjectIndex !== undefined) {
         const { preferenceIdx } = id;
         const currentCount =
