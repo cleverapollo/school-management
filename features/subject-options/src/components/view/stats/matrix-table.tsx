@@ -39,8 +39,10 @@ function getMatrixData(
 
     studentChoices.forEach(({ choices }) => {
       const choiceIds = choices
-        .filter(({ id: { subjectSetIdx, preferenceIdx } }) =>
-          choiceIdsToInclude.includes(`${subjectSetIdx}-${preferenceIdx}`)
+        .filter(
+          ({ id: { subjectSetIdx, preferenceIdx }, subject }) =>
+            choiceIdsToInclude.includes(`${subjectSetIdx}-${preferenceIdx}`) &&
+            subject?.id !== undefined
         )
         .map(({ subject }) => subject.id);
 
