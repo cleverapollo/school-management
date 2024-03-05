@@ -22,7 +22,7 @@ export default function ContactProfileContainer() {
   const idNumber = useNumber(id);
 
   const { data: contactData } = useContactPersonal(idNumber);
-  const { data: contactsListData = [] } = useContactsForSelect();
+  const { data: contactsListData = [] } = useContactsForSelect({});
 
   const { displayName } = usePreferredNameLayout();
 

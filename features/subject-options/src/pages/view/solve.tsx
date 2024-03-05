@@ -101,6 +101,7 @@ const getStudentAssignmentColumns = (
   {
     field: 'reservesUsed',
     headerName: t('subjectOptions:reservesUsed'),
+    valueGetter: ({ data }) => data?.reservesUsed ?? 0,
     suppressMenu: true,
     pinned: 'left',
     sort: 'desc',

@@ -74,7 +74,7 @@ export const getStudentRows = (
             set(
               additionalStudentMeta,
               `${studentPartyId}.hasReservedSubject`,
-              true
+              reservedUsed > 0
             );
           }
           const currentStudentsOptionsAssigned = subjectSetChoices.reduce<
@@ -95,13 +95,15 @@ export const getStudentRows = (
 
   return (optionsSetup?.students ?? []).map((student) => {
     const studentsMeta = additionalStudentMeta[student.partyId];
+    const madeChoices = !!studentsMeta;
     return {
       student,
       hasPreferences:
-        studentsMeta?.missingOneSubject === false &&
-        studentsMeta?.hasReservedSubject === false,
+        madeChoices &&
+        !studentsMeta?.missingOneSubject &&
+        !studentsMeta?.hasReservedSubject,
       hasReservedSubject: false,
-      missingOneSubject: true,
+      missingOneSubject: !madeChoices,
       totalNeededSubjects,
       optionsAssigned:
         studentsOptionsAssigned.get(student.partyId) ?? new Map(),
