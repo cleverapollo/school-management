@@ -6,7 +6,6 @@ import {
   ReturnTypeDisplayName,
   Table,
   useDebouncedValue,
-  useDisclosure,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { TFunction, useFormatNumber, useTranslation } from '@tyro/i18n';
