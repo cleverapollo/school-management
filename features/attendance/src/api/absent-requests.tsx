@@ -9,6 +9,7 @@ import {
   ParentalAttendanceRequestFilter,
   SaveParentalAttendanceRequest,
   WithdrawParentalAttendanceRequest,
+  ParentalAttendanceRequestStatus,
 } from '@tyro/api';
 import { attendanceKeys } from './keys';
 
@@ -92,6 +93,33 @@ const withdrawAbsentRequest = graphql(/* GraphQL */ `
     }
   }
 `);
+
+const pendingAbsentRequestCount = graphql(/* GraphQL */ `
+  query pendingAbsentRequestCount($filter: ParentalAttendanceRequestFilter) {
+    attendance_parentalAttendanceRequests(filter: $filter) {
+      id
+    }
+  }
+`);
+
+const pendingAbsentRequestCountQuery = () => ({
+  queryKey: attendanceKeys.all,
+  queryFn: async () => {
+    const { attendance_parentalAttendanceRequests: pendingAbsentRequest } =
+      await gqlClient.request(pendingAbsentRequestCount, {
+        filter: { status: ParentalAttendanceRequestStatus.Pending },
+      });
+
+    return pendingAbsentRequest.length;
+  },
+});
+
+export function usePendingAbsentRequestCount() {
+  return useQuery({
+    ...pendingAbsentRequestCountQuery(),
+    refetchInterval: 1000 * 60 * 2,
+  });
+}
 
 const absentRequestsQuery = (filter: ParentalAttendanceRequestFilter) => ({
   queryKey: attendanceKeys.absentRequests(filter),
