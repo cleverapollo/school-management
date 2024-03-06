@@ -4,14 +4,15 @@ import { YearGroupsAutocompleteProps } from '../components/common/list-manager/y
 
 export type ClassListSettingsContextValue = {
   showGender: boolean;
-  setSelectedBlock: (
+  removeContainerMargin?: boolean;
+  setSelectedBlock?: (
     data: NonNullable<ReturnTypeOfUseBlockList>[number] | null
   ) => void;
-  setSelectedYearGroup: (
+  setSelectedYearGroup?: (
     data: NonNullable<YearGroupsAutocompleteProps>['value'] | null
   ) => void;
-  selectedYearGroup: YearGroupsAutocompleteProps['value'] | null;
-  selectedBlock: NonNullable<ReturnTypeOfUseBlockList>[number] | null;
+  selectedYearGroup?: YearGroupsAutocompleteProps['value'] | null;
+  selectedBlock?: NonNullable<ReturnTypeOfUseBlockList>[number] | null;
 };
 
 const ClassListSettingsContext = createContext<

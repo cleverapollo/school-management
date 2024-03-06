@@ -42,14 +42,14 @@ export default function ClassListManagerClasses() {
     if (isDirty) {
       setConfirmDialogSettings({
         proceed: () => {
-          setSelectedYearGroup(year);
+          setSelectedYearGroup?.(year);
         },
         reset: () => {
           setConfirmDialogSettings(null);
         },
       });
     } else {
-      setSelectedYearGroup(year);
+      setSelectedYearGroup?.(year);
     }
   };
 
@@ -87,7 +87,7 @@ export default function ClassListManagerClasses() {
     <>
       <Stack spacing={3}>
         <YearGroupsAutocomplete
-          value={selectedYearGroup}
+          value={selectedYearGroup ?? null}
           onChange={requestSetSelectedYearGroup}
           sx={{ maxWidth: spacing(54), flex: 1, px: containerMargin }}
         />

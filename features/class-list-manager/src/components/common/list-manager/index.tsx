@@ -2,6 +2,7 @@ import { Box, Stack, useTheme } from '@mui/material';
 import { useBreakpointValue } from '@tyro/core';
 import { useEffect } from 'react';
 import { DragDropContext } from 'react-beautiful-dnd';
+import { useClassListSettings } from '../../../store/class-list-settings';
 import { useContainerMargin } from '../../../hooks/use-container-margin';
 import { BulkEditSaveBar } from './bulk-edit-save-bar';
 import { GroupColumn } from './group-column';
@@ -40,6 +41,7 @@ export function ListManagerInner({
 }: Pick<ListManagerProps, 'onIsDirtyChange'>) {
   const containerMargin = useContainerMargin();
   const { state, onDragStart, onDragEnd, editedState } = useListManagerState();
+  const { removeContainerMargin } = useClassListSettings();
 
   useEffect(() => {
     onIsDirtyChange?.(editedState.isEditing);
@@ -58,9 +60,7 @@ export function ListManagerInner({
               direction="row"
               spacing={1.5}
               alignItems="flex-start"
-              sx={{
-                px: containerMargin,
-              }}
+              sx={removeContainerMargin ? {} : { px: containerMargin }}
             >
               {state.map((group) =>
                 group.id === 'unassigned' ? (

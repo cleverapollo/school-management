@@ -6947,6 +6947,7 @@ __metadata:
     "@mui/system": ^5.15.0
     "@tanstack/react-query": ^4.29.7
     "@tyro/api": "*"
+    "@tyro/class-list-manager": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/groups": "*"
@@ -6958,6 +6959,7 @@ __metadata:
     "@tyro/sms": "*"
     dayjs: ^1.11.7
     lodash: ^4.17.21
+    nanoid: ^4.0.2
     react: ^18.2.0
     react-beautiful-dnd: ^13.1.1
     react-dom: ^18.2.0

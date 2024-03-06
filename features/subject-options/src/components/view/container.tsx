@@ -48,6 +48,12 @@ export default function OptionsViewContainer() {
             hasAccess: ({ hasPermission }) =>
               hasPermission('ps:1:options:options_beta_test'),
           },
+          {
+            label: t('subjectOptions:classLists'),
+            value: 'class-lists',
+            hasAccess: ({ hasPermission }) =>
+              hasPermission('ps:1:options:options_beta_test'),
+          },
         ]}
       />
     </PageContainer>
