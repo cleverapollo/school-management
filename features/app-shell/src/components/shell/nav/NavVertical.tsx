@@ -3,7 +3,8 @@ import { useLocation } from 'react-router-dom';
 // @mui
 import { Box, Stack, Drawer } from '@mui/material';
 // hooks
-import { useResponsive, Scrollbar } from '@tyro/core';
+import { useResponsive, Scrollbar, Avatar } from '@tyro/core';
+import { useUser } from '@tyro/api';
 import { NAV } from './config';
 // components
 import { Logo } from '../../logo';
@@ -26,6 +27,7 @@ export default function NavVertical({
   onCollapse,
 }: NavVerticalProps) {
   const { pathname } = useLocation();
+  const { activeProfile } = useUser();
 
   const isDesktop = useResponsive('up', 'lg');
 
@@ -58,7 +60,15 @@ export default function NavVertical({
             flexShrink: 0,
           }}
         >
-          <Logo />
+          {activeProfile?.tenant?.imgUrl ? (
+            <Avatar
+              name={activeProfile.tenant?.name}
+              src={activeProfile.tenant.imgUrl}
+              size={78}
+            />
+          ) : (
+            <Logo />
+          )}
         </Stack>
 
         <NavSectionVertical data={navConfig} />

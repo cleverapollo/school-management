@@ -1,4 +1,6 @@
 import { Stack, Box } from '@mui/material';
+import { useUser } from '@tyro/api';
+import { Avatar } from '@tyro/core';
 import { NAV } from './config';
 import { NavSectionMini } from './nav-section';
 import { NavigationConfig } from '../../../hooks/use-navigation-config';
@@ -11,6 +13,8 @@ interface NavMiniProps {
 }
 
 export default function NavMini({ onExpand, navConfig }: NavMiniProps) {
+  const { activeProfile } = useUser();
+
   return (
     <Box
       component="nav"
@@ -36,7 +40,19 @@ export default function NavMini({ onExpand, navConfig }: NavMiniProps) {
           },
         }}
       >
-        <Logo sx={{ mx: 'auto', my: 2, width: 50 }} />
+        {activeProfile?.tenant?.imgUrl ? (
+          <Avatar
+            name={activeProfile.tenant?.name}
+            src={activeProfile.tenant.imgUrl}
+            size={50}
+            sx={{
+              mx: 'auto',
+              my: 2,
+            }}
+          />
+        ) : (
+          <Logo sx={{ mx: 'auto', my: 2, width: 50 }} />
+        )}
 
         <NavSectionMini data={navConfig} />
       </Stack>
