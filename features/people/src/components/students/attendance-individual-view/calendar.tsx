@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Box, Stack } from '@mui/material';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -16,62 +16,54 @@ import { AttendanceDataType } from './index';
 
 dayjs.extend(isToday);
 
-type MonthCalendarProps = {
-  month: string;
-  calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
-  handleAddAttendance: (arg0: string) => void;
-  currentTabValue: AttendanceDataType['currentTabValue'];
-  hasPermissionReadAndWriteAttendanceStudentCalendarView: boolean;
-  startDate: dayjs.Dayjs;
-  isPartialAbsenceEnabled: boolean;
-};
-
 type CustomDayProps = {
   handleAddAttendance: (arg0: string) => void;
-  calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
+  calendarAttendanceMap: Map<
+    string,
+    Omit<
+      ReturnTypeFromUseStudentCalendarAttendance['attendances'][number],
+      'status'
+    > & {
+      status: AttendanceCodeType;
+    }
+  >;
   currentTabValue: AttendanceDataType['currentTabValue'];
   hasPermissionReadAndWriteAttendanceStudentCalendarView: boolean;
   startDate: dayjs.Dayjs;
   isPartialAbsenceEnabled: boolean;
 } & PickersDayProps<Dayjs>;
 
-const weekends = [0, 6];
+type MonthCalendarProps = {
+  month: string;
+  calendarAttendanceMap: CustomDayProps['calendarAttendanceMap'];
+  handleAddAttendance: (arg0: string) => void;
+  currentTabValue: AttendanceDataType['currentTabValue'];
+  hasPermissionReadAndWriteAttendanceStudentCalendarView: boolean;
+  startDate: dayjs.Dayjs;
+  isPartialAbsenceEnabled: boolean;
+};
 
-type GetCalendarColorsFn = (
-  attendanceCode: AttendanceCodeType,
-  dayOfWeek: number,
-  currentTabValue: AttendanceDataType['currentTabValue'],
-  dayToCheck: string,
-  startDate: dayjs.Dayjs,
-  isPartialAbsenceEnabled: boolean,
-  isPartialAbsence?: boolean
-) => ReturnType<typeof getColourBasedOnAttendanceType>['filled'];
-
-const defaultColors: ReturnType<typeof getCalendarColors> = {
+const defaultColors = {
   bgColor: 'transparent',
   color: 'slate.500',
   hoverBg: 'transparent',
-};
+} as const;
 
-const getCalendarColors: GetCalendarColorsFn = (
-  attendanceCode,
-  dayOfWeek,
+const getCalendarColors = ({
   currentTabValue,
-  dayToCheck,
-  startDate,
+  dayAttendance,
   isPartialAbsenceEnabled,
-  isPartialAbsence
-) => {
-  const isAfterCurrentDay = dayjs().isBefore(dayToCheck);
-  const isBeforeCurrentDay = dayjs(dayToCheck).isBefore(startDate);
-
-  if (
-    weekends.includes(dayOfWeek) ||
-    isBeforeCurrentDay ||
-    (isAfterCurrentDay && attendanceCode === AttendanceCodeType.NotTaken)
-  ) {
+}: {
+  currentTabValue: AttendanceDataType['currentTabValue'];
+  dayAttendance: ReturnType<MonthCalendarProps['calendarAttendanceMap']['get']>;
+  isPartialAbsenceEnabled: boolean;
+}) => {
+  if (!dayAttendance || dayjs(dayAttendance.date).isAfter(dayjs())) {
     return defaultColors;
   }
+
+  const attendanceCode = dayAttendance.status;
+  const isPartialAbsence = dayAttendance.partiallyTaken;
 
   if (
     ['ALL', 'PARTIAL_ABSENCE'].includes(currentTabValue) &&
@@ -93,7 +85,7 @@ function CustomDay(props: CustomDayProps) {
     day,
     onDaySelect,
     handleAddAttendance,
-    calendarAttendance,
+    calendarAttendanceMap,
     currentTabValue,
     hasPermissionReadAndWriteAttendanceStudentCalendarView,
     startDate,
@@ -102,29 +94,22 @@ function CustomDay(props: CustomDayProps) {
   } = props;
 
   const dayToCheck = dayjs(day).format('YYYY-MM-DD');
-  const dayOfWeek = dayjs(dayToCheck).day();
-  const dayAttendance = calendarAttendance?.attendances?.find(
-    (attendanceItem) => attendanceItem.date === dayToCheck
-  );
+  const dayAttendance = calendarAttendanceMap.get(dayToCheck);
 
-  const isPartialAbsence = dayAttendance?.partiallyTaken;
-  const { bgColor, color, hoverBg } = getCalendarColors(
-    dayAttendance?.status ?? AttendanceCodeType.NotTaken,
-    dayOfWeek,
+  const { bgColor, color, hoverBg } = getCalendarColors({
     currentTabValue,
-    dayToCheck,
-    startDate,
+    dayAttendance,
     isPartialAbsenceEnabled,
-    isPartialAbsence
-  );
+  });
+
+  const canClickDay =
+    hasPermissionReadAndWriteAttendanceStudentCalendarView && !!dayAttendance;
 
   return (
     <PickersDay
       day={day}
       sx={{
-        pointerEvents: hasPermissionReadAndWriteAttendanceStudentCalendarView
-          ? undefined
-          : 'none',
+        pointerEvents: canClickDay ? undefined : 'none',
         borderRadius: '13px',
         backgroundColor: bgColor,
         color,
@@ -138,6 +123,7 @@ function CustomDay(props: CustomDayProps) {
         dayjs(day).format('YYYY-MM-DD');
       }}
       {...other}
+      selected={false}
     />
   );
 }
@@ -145,7 +131,7 @@ function CustomDay(props: CustomDayProps) {
 function MonthCalendar({
   month,
   handleAddAttendance,
-  calendarAttendance,
+  calendarAttendanceMap,
   currentTabValue,
   hasPermissionReadAndWriteAttendanceStudentCalendarView,
   startDate,
@@ -161,14 +147,14 @@ function MonthCalendar({
     >
       <DateCalendar
         view="day"
-        defaultCalendarMonth={dayjs(month)}
+        defaultValue={dayjs(month)}
         disableHighlightToday
         slots={{
           day: (props) =>
             CustomDay({
               ...props,
               handleAddAttendance,
-              calendarAttendance,
+              calendarAttendanceMap,
               currentTabValue,
               hasPermissionReadAndWriteAttendanceStudentCalendarView,
               startDate,
@@ -219,9 +205,12 @@ function MonthCalendar({
   );
 }
 
-type AcademicCalendarProps = {
+export type AcademicCalendarProps = {
   studentPartyId: string;
-  calendarAttendance?: ReturnTypeFromUseStudentCalendarAttendance;
+  calendarAttendance: Exclude<
+    ReturnType<MonthCalendarProps['calendarAttendanceMap']['get']>,
+    undefined
+  >[];
   activeAcademicNamespace?: AcademicNamespace;
   currentTabValue: AttendanceDataType['currentTabValue'];
   isPartialAbsenceEnabled: boolean;
@@ -256,6 +245,18 @@ export const AcademicCalendar = ({
     months.push(startDate.add(i, 'month').format('YYYY-MM-DD'));
   }
 
+  const calendarAttendanceMap = useMemo(
+    () =>
+      calendarAttendance.reduce<MonthCalendarProps['calendarAttendanceMap']>(
+        (acc, attendance) => {
+          acc.set(attendance.date, attendance);
+          return acc;
+        },
+        new Map()
+      ),
+    [calendarAttendance]
+  );
+
   return (
     <>
       <Stack
@@ -268,7 +269,7 @@ export const AcademicCalendar = ({
           <MonthCalendar
             key={month}
             month={month}
-            calendarAttendance={calendarAttendance}
+            calendarAttendanceMap={calendarAttendanceMap}
             currentTabValue={currentTabValue}
             handleAddAttendance={setSessionAttendanceToEdit}
             hasPermissionReadAndWriteAttendanceStudentCalendarView={
