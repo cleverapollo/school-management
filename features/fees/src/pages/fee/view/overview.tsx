@@ -32,11 +32,13 @@ import { Box, Fade } from '@mui/material';
 import {
   DiscountIcon,
   MobileIcon,
+  PersonCrossIcon,
   RemoveDiscountIcon,
   SendMailIcon,
 } from '@tyro/icons';
 import { SendSmsModal } from '@tyro/sms';
 import { useMailSettings } from '@tyro/mail';
+import { ConfirmRemoveStudentsFromFeeDialog } from '../../../components/fees/confirm-remove-students';
 import { FeeStatusChip } from '../../../components/common/fee-status-chip';
 import {
   ReturnTypeFromUseFeeDebtors,
@@ -131,7 +133,7 @@ const getFeeOverviewColumns = (
 
 export default function StudentProfileClassesPage() {
   const { id } = useParams();
-  const feeId = getNumber(id);
+  const feeId = getNumber(id) ?? 0;
   const { t } = useTranslation(['common', 'fees', 'people', 'mail', 'sms']);
   const { displayName } = usePreferredNameLayout();
   const { formatCurrency } = useFormatNumber();
@@ -153,9 +155,14 @@ export default function StudentProfileClassesPage() {
     onOpen: onOpenSendSms,
     onClose: onCloseSendSms,
   } = useDisclosure();
+  const {
+    isOpen: isRemoveStudentsConfirmOpen,
+    onOpen: onOpenRemoveStudentsConfirm,
+    onClose: onCloseRemoveStudentsConfirm,
+  } = useDisclosure();
 
   const { data: debtors } = useFeeDebtors({
-    ids: [feeId ?? 0],
+    ids: [feeId],
   });
 
   const { data: feesData } = useFees({ ids: [feeId ?? 0] });
@@ -321,6 +328,18 @@ export default function StudentProfileClassesPage() {
                       ),
                       onClick: onOpenDiscountConfirm,
                     },
+                    {
+                      label: t('fees:removeStudent', {
+                        count: selectedDebtors.length,
+                      }),
+                      icon: <PersonCrossIcon />,
+                      disabled: haveSomeSelectedDebtorsPaidSomething,
+                      disabledTooltip: t(
+                        'fees:youCanNotRemoveStudentAsSomeHaveAlreadyPaidFee',
+                        { count: selectedDebtors.length }
+                      ),
+                      onClick: onOpenRemoveStudentsConfirm,
+                    },
                   ],
                 ]}
               />
@@ -345,6 +364,13 @@ export default function StudentProfileClassesPage() {
         cancelText={t('common:no')}
         onConfirm={removeDiscounts}
         onClose={onCloseDiscountConfirm}
+      />
+
+      <ConfirmRemoveStudentsFromFeeDialog
+        open={isRemoveStudentsConfirmOpen}
+        onClose={onCloseRemoveStudentsConfirm}
+        feeId={feeId}
+        students={selectedDebtors}
       />
 
       <SendSmsModal
