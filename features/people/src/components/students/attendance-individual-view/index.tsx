@@ -28,10 +28,7 @@ import { ToggleButtonCalendarIcon, ToggleButtonTableIcon } from '@tyro/icons';
 import { getColourBasedOnAttendanceType } from '@tyro/core';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
-import {
-  ReturnTypeFromUseStudentCalendarAttendance,
-  useStudentCalendarAttendance,
-} from '@tyro/attendance';
+import { useStudentCalendarAttendance } from '@tyro/attendance';
 import { AcademicCalendar, AcademicCalendarProps } from './calendar';
 import { AttendanceTableView } from './attendance-table-view';
 
