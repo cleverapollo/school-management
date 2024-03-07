@@ -31,12 +31,14 @@ export type NonMenuLink = NonIndexNonMenuLink | IndexNonMenuLink;
 interface NonIndexMenuLink extends Omit<NonIndexRouteObject, 'children'> {
   type: NavObjectType.MenuLink;
   title: string;
+  info?: JSX.Element;
   children?: NonMenuLink[];
   hasAccess?: HasAccessFunction;
 }
 interface IndexMenuLink extends IndexRouteObject {
   type: NavObjectType.MenuLink;
   title: string;
+  info?: JSX.Element;
   hasAccess?: HasAccessFunction;
 }
 

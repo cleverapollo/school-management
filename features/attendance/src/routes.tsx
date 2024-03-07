@@ -1,6 +1,7 @@
 import { lazyWithRetry, NavObjectFunction, NavObjectType } from '@tyro/core';
 import { PersonCheckmarkIcon } from '@tyro/icons';
 import { getBulkAttendance } from './api/bulk-attendance/bulk-attendance';
+import { PendingAbsentRequestCountLabel } from './components/absent-requests/pending-absent-request-count-label';
 
 const SessionAttendance = lazyWithRetry(() => import('./pages/session'));
 const SessionAttendanceList = lazyWithRetry(
@@ -44,6 +45,7 @@ export const getRoutes: NavObjectFunction = (t) => [
           {
             type: NavObjectType.MenuLink,
             path: 'absent-requests',
+            info: <PendingAbsentRequestCountLabel />,
             title: t('navigation:general.attendance.absentRequests'),
             hasAccess: ({ isStaffUserWithPermission, isContact }) =>
               isStaffUserWithPermission(
