@@ -12,12 +12,10 @@ import { Stack, FormLabel, Box } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
 import { useMemo, useState } from 'react';
-import {
-  ReturnTypeFromUseAssessments,
-  getPrintAssessment,
-  useYearGroupEnrollments,
-} from '@tyro/assessments';
-import { AutocompleteValue } from './types';
+import { ReturnTypeFromUseAssessments } from '@tyro/assessments';
+import { useYearGroupEnrollments } from '@tyro/groups';
+import { PartyAutocompleteValue } from './types';
+import { getPrintAssessment } from '../../api/print-assessment';
 
 export interface PrintAssessmentFormProps {
   assessment?: ReturnTypeFromUseAssessments;
@@ -26,9 +24,9 @@ export interface PrintAssessmentFormProps {
 
 export type PrintAssessmentFormState = {
   orientation: PageOrientation;
-  yearGroups: AutocompleteValue[];
-  classGroups: AutocompleteValue[];
-  students: AutocompleteValue[];
+  yearGroups: PartyAutocompleteValue[];
+  classGroups: PartyAutocompleteValue[];
+  students: PartyAutocompleteValue[];
   includeAttendance: boolean;
   includeExtraFields: boolean;
 };
@@ -58,8 +56,10 @@ export default function PrintAssessmentForm({
       },
     });
 
-  const selectedYearGroups = watch('yearGroups') ?? [];
-  const selectedClassGroups = watch('classGroups') ?? [];
+  const [selectedYearGroups = [], selectedClassGroups = []] = watch([
+    'yearGroups',
+    'classGroups',
+  ]);
 
   const { data: yearGroupEnrollments } = useYearGroupEnrollments(
     {
@@ -73,12 +73,14 @@ export default function PrintAssessmentForm({
     () =>
       assessment?.years
         ?.map(({ yearGroupId, name }) => ({ partyId: yearGroupId, name }))
-        .sort((a, b) => a.name.localeCompare(b?.name)) as AutocompleteValue[],
+        .sort((a, b) =>
+          a.name.localeCompare(b?.name)
+        ) as PartyAutocompleteValue[],
     [assessment?.years]
   );
 
   const classGroupOptions = useMemo(() => {
-    const list: AutocompleteValue[] = [];
+    const list: PartyAutocompleteValue[] = [];
 
     yearGroupEnrollments?.forEach(({ students }) => {
       students.forEach(({ classGroup }) => {
@@ -95,7 +97,7 @@ export default function PrintAssessmentForm({
   }, [yearGroupEnrollments]);
 
   const studentOptions = useMemo(() => {
-    const list: AutocompleteValue[] = [];
+    const list: PartyAutocompleteValue[] = [];
 
     yearGroupEnrollments?.forEach(({ students }) => {
       students.forEach(({ partyId, person, classGroup }) => {
