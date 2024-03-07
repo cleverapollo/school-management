@@ -14,12 +14,10 @@ import { useTranslation } from '@tyro/i18n';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { CloseIcon } from '@tyro/icons';
+import { ReturnTypeFromUseContactsForSelect } from '../../../api/contact/list';
 import { ReturnTypeFromUseStudentsContacts } from '../../../api/student/overview';
 import { useUpdateSiblingsAndContacts } from '../../../api/student/update-siblings-and-contacts';
-import {
-  ContactAutocomplete,
-  ContactSelectOption,
-} from '../../common/contact-autocomplete';
+import { ContactAutocomplete } from '../../common/contact-autocomplete';
 
 export interface ManageContactsModalProps {
   open: boolean;
@@ -34,7 +32,7 @@ export interface ManageContactsModalProps {
 interface ManageContactsFormValues {
   contacts: Pick<
     ReturnTypeFromUseStudentsContacts,
-    'partyId' | 'relationshipType' | 'person'
+    'partyId' | 'relationshipType' | 'person' | 'personalInformation'
   >[];
 }
 
@@ -134,13 +132,16 @@ export function ManageContactsModal({
             multiple
             disableClearable
             isOptionEqualToValue={(option) => contactIds.has(option.partyId)}
-            value={contacts ?? []}
+            value={(contacts as ReturnTypeFromUseContactsForSelect[]) ?? []}
             onChange={(_e, value) => {
               const typedValue = value as Array<
-                | ContactSelectOption
+                | ReturnTypeFromUseContactsForSelect
                 | Pick<
                     ReturnTypeFromUseStudentsContacts,
-                    'partyId' | 'person' | 'relationshipType'
+                    | 'partyId'
+                    | 'person'
+                    | 'relationshipType'
+                    | 'personalInformation'
                   >
               >;
               if (!typedValue) {
@@ -194,6 +195,7 @@ export function ManageContactsModal({
                   <Avatar
                     src={person?.avatarUrl}
                     name={displayName(person)}
+                    person={person}
                     sx={{
                       my: 1,
                     }}

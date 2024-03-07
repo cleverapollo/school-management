@@ -155,6 +155,7 @@ export function StudentMedicalProfessionalWidget({
                 {
                   label: t('common:actions.delete'),
                   icon: <TrashIcon />,
+                  isDelete: true,
                   onClick: handleDeleteCondition,
                   disabled: !numberOfContacts,
                   hasAccess: ({ isStaffUserWithPermission }) =>
@@ -251,6 +252,7 @@ export function StudentMedicalProfessionalWidget({
                   <Stack direction="row" spacing={2} sx={{ py: 1 }}>
                     <Avatar
                       name={displayName(medicalContact)}
+                      person={medicalContact}
                       sx={{ width: 62, height: 62, fontSize: 20 }}
                     />
                     <Stack>

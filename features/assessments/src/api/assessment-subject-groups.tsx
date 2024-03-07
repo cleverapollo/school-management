@@ -19,6 +19,7 @@ const assessmentSubjectGroupsList = graphql(/* GraphQL */ `
         avatarUrl
         subjects {
           name
+          colour
         }
         staff {
           partyId

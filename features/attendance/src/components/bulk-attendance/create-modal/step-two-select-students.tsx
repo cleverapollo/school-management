@@ -94,7 +94,11 @@ export function SelectStudentsStepTwoForm({
                 onClick={() => toggleSelectedStudent(person.partyId)}
               >
                 <ListItemAvatar>
-                  <Avatar name={name} src={person.avatarUrl ?? undefined} />
+                  <Avatar
+                    name={name}
+                    src={person.avatarUrl ?? undefined}
+                    person={person}
+                  />
                 </ListItemAvatar>
                 <ListItemText id={labelId} primary={name} />
               </ListItemButton>

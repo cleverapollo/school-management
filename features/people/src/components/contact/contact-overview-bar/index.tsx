@@ -21,7 +21,9 @@ export function ContactOverviewBar({ contactId }: ContactOverviewBarProps) {
           <Avatar
             name={name}
             src={contactData?.person?.avatarUrl}
-            sx={{ mx: 1, width: 62, height: 62, fontSize: 20 }}
+            person={contactData?.person}
+            size={78}
+            sx={{ mr: 1 }}
           />
           <Stack sx={{ ml: 0.5, mr: 2.5 }}>
             <Typography variant="subtitle1" component="h2">

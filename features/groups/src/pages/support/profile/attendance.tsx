@@ -12,6 +12,7 @@ export default function SubjectGroupProfileAttendancePage() {
 
   return (
     <GroupAttendance
+      groupName={supportGroupData?.name}
       partyId={supportGroupData?.partyId ?? 0}
       students={supportGroupData?.students || []}
     />

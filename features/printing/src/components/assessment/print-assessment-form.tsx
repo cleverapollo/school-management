@@ -192,12 +192,10 @@ export default function PrintAssessmentForm({
         <Stack direction="row" gap={2}>
           <RHFCheckbox
             label={t('printing:assessment.includeAttendance')}
-            checkboxProps={{ color: 'primary' }}
             controlProps={{ name: 'includeAttendance', control }}
           />
           <RHFCheckbox
             label={t('printing:assessment.includeExtraFields')}
-            checkboxProps={{ color: 'primary' }}
             controlProps={{ name: 'includeExtraFields', control }}
           />
           <Stack direction="row" gap={3} alignItems="center">

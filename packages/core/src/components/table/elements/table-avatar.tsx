@@ -7,6 +7,7 @@ type TableAvatarProps = {
   name: string;
   avatarUrl?: string | null | undefined;
   AvatarProps?: CoreAvatarProps;
+  onBeforeNavigate?: () => void;
 };
 
 export function TableAvatar({
@@ -14,6 +15,7 @@ export function TableAvatar({
   name,
   avatarUrl,
   AvatarProps,
+  onBeforeNavigate,
 }: TableAvatarProps) {
   return (
     <Box display="flex" alignItems="center">
@@ -28,7 +30,7 @@ export function TableAvatar({
         }}
       />
       {to ? (
-        <RouterLink sx={{ fontWeight: 600 }} to={to}>
+        <RouterLink sx={{ fontWeight: 600 }} onClick={onBeforeNavigate} to={to}>
           {name}
         </RouterLink>
       ) : (

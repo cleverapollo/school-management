@@ -67,6 +67,9 @@ export type {
   ValueFormatterParams,
   NewValueParams,
   ProcessCellForExportParams,
+  ValueGetterFunc,
+  CellClassParams,
+  HeaderClassParams,
 } from '@ag-grid-community/core';
 export type {
   ReturnTypeUseEditableState as ReturnTypeTableUseEditableState,
@@ -92,6 +95,7 @@ export interface TableProps<T> extends AgGridReactProps<T> {
   editingStateRef?: React.Ref<ReturnTypeUseEditableState<T>>;
   isLoading?: boolean;
   additionalEditBarElements?: React.ReactNode;
+  visibleDataRef?: React.Ref<() => T[]>;
 }
 
 const defaultColDef: ColDef = {
@@ -138,6 +142,7 @@ function TableInner<T extends object>(
     editingStateRef,
     isLoading,
     additionalEditBarElements,
+    visibleDataRef,
     ...props
   }: TableProps<T>,
   ref: React.Ref<AgGridReact<T>>
@@ -172,6 +177,20 @@ function TableInner<T extends object>(
   } = editingUtils;
 
   useImperativeHandle(editingStateRef, () => editingUtils, [editingUtils]);
+  useImperativeHandle(
+    visibleDataRef,
+    () => () => {
+      const listData: Array<T> = [];
+      tableRef?.current?.api?.forEachNodeAfterFilterAndSort?.((node) => {
+        if (node.data) {
+          listData.push(node.data);
+        }
+      });
+
+      return listData;
+    },
+    []
+  );
 
   const colDefs = useMemo<ColDef<T>>(
     () => ({

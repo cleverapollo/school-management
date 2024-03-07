@@ -56,7 +56,8 @@ export const groupsKeys = {
   },
   year: {
     all: () => [...groupsKeys.all, 'year'] as const,
-    groups: () => [...groupsKeys.year.all(), 'list'] as const,
+    groups: (filter: YearGroupEnrollmentFilter) =>
+      [...groupsKeys.year.all(), 'list', filter] as const,
     details: (filter: YearGroupEnrollmentFilter) =>
       [...groupsKeys.year.all(), 'details', filter] as const,
     groupEnrollments: (filter: YearGroupEnrollmentFilter) =>

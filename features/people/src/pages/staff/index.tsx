@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Box, Button, Fade } from '@mui/material';
 import { Link } from 'react-router-dom';
 
@@ -13,6 +13,9 @@ import {
   ActionMenu,
   PageContainer,
   PageHeading,
+  useListNavigatorSettings,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import set from 'lodash/set';
@@ -21,7 +24,6 @@ import {
   SearchType,
   SmsRecipientType,
   UseQueryReturnType,
-  UserPermission,
 } from '@tyro/api';
 import dayjs from 'dayjs';
 import LocalizedFormat from 'dayjs/plugin/localizedFormat';
@@ -42,6 +44,7 @@ type ReturnTypeFromUseStudents = UseQueryReturnType<typeof useStaff>[number];
 
 const getStaffColumns = (
   t: TFunction<('common' | 'people')[], undefined, ('common' | 'people')[]>,
+  onBeforeNavigate: () => void,
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseStudents>['columnDefs'] => [
   {
@@ -55,6 +58,7 @@ const getStaffColumns = (
         <TablePersonAvatar
           person={data?.person}
           to={`./${data?.partyId ?? ''}`}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
     sort: 'asc',
@@ -167,9 +171,30 @@ export default function StaffListPage() {
     onClose: onCloseBulkPrint,
   } = useDisclosure();
 
+  const visibleDataRef = useRef<() => ReturnTypeFromUseStudents[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Staff,
+    });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      t('people:pageHeading.staff'),
+      visibleDataRef.current?.().map(({ partyId, person }) => ({
+        id: partyId,
+        type: 'person',
+        name: displayName(person),
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
+      }))
+    );
+  }, []);
+
   const staffColumns = useMemo(
-    () => getStaffColumns(t, displayName),
-    [t, displayName]
+    () => getStaffColumns(t, onBeforeNavigateProfile, displayName),
+    [t, onBeforeNavigateProfile, displayName]
   );
 
   const sendMailToSelectedStaff = () => {
@@ -235,6 +260,7 @@ export default function StaffListPage() {
           }
         />
         <Table
+          visibleDataRef={visibleDataRef}
           rowData={staff ?? []}
           columnDefs={staffColumns}
           rowSelection="multiple"

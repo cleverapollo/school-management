@@ -2,13 +2,15 @@ import {
   Avatar as MuiAvatar,
   AvatarProps as MuiAvatarProps,
 } from '@mui/material';
+import { Person } from '@tyro/api';
 import { forwardRef, useMemo } from 'react';
-import { getColorBasedOnString } from '../../utils';
+import { getColorBasedOnPerson, getColorBasedOnString } from '../../utils';
 
 export interface AvatarProps extends Omit<MuiAvatarProps, 'src'> {
   name?: string;
   src?: string | null | undefined;
   size?: number;
+  person?: Pick<Person, 'firstName' | 'lastName'> | null;
 }
 
 function getInitials(name: string | undefined) {
@@ -22,11 +24,13 @@ function getInitials(name: string | undefined) {
 }
 
 export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
-  ({ name, sx, children, src, size, ...props }, ref) => {
+  ({ name, person, sx, children, src, size, ...props }, ref) => {
     const { initials, bgcolor } = useMemo(
       () => ({
         initials: getInitials(name),
-        bgcolor: name ? getColorBasedOnString(name) : undefined,
+        bgcolor: person
+          ? getColorBasedOnPerson(person)
+          : name && getColorBasedOnString(name),
       }),
       [name]
     );
@@ -36,8 +40,13 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
         ref={ref}
         sx={{
           bgcolor,
+          '&:has(> img)': {
+            backgroundColor: 'white',
+          },
           width: size,
           height: size,
+          border: '1px solid',
+          borderColor: 'divider',
           fontSize: size ? Math.ceil(size * 0.35) : undefined,
           ...sx,
         }}

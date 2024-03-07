@@ -31,12 +31,13 @@ export function StudentOverviewBar({ studentId }: StudentOverviewBarProps) {
             src={studentData?.person?.avatarUrl}
             ContainingButtonProps={{
               sx: {
-                m: 1,
+                mr: 1,
               },
             }}
             isPriorityStudent={!!studentData?.extensions?.priority}
             hasSupportPlan={false}
-            size={62}
+            size={78}
+            person={studentData?.person}
           />
           <Stack sx={{ ml: 0.5, mr: 2.5 }}>
             <Typography variant="subtitle1" component="h2">

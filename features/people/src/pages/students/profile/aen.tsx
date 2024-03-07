@@ -127,6 +127,7 @@ const getStudentNoteColumns = (
             {
               label: translate('common:actions.delete'),
               icon: <TrashIcon />,
+              isDelete: true,
               onClick: () => onDelete(data),
               hasAccess: ({ isStaffUserWithPermission }) =>
                 isStaffUserWithPermission('ps:1:wellbeing:write_student_aen'),

@@ -220,6 +220,14 @@ const RED = {
   dark: '#b91c1c', // 700
   darker: '#7f1d1d', // 900
   contrastText: '#fff',
+  500_8: alpha('#ef4444', 0.08),
+  500_12: alpha('#ef4444', 0.12),
+  500_16: alpha('#ef4444', 0.16),
+  500_24: alpha('#ef4444', 0.24),
+  500_32: alpha('#ef4444', 0.32),
+  500_48: alpha('#ef4444', 0.48),
+  500_56: alpha('#ef4444', 0.56),
+  500_80: alpha('#ef4444', 0.8),
 };
 
 const ORANGE = {
@@ -548,6 +556,14 @@ const ROSE = {
   dark: '#be123c', // 700
   darker: '#881337', // 900
   contrastText: '#fff',
+  500_8: alpha('#f43f5e', 0.08),
+  500_12: alpha('#f43f5e', 0.12),
+  500_16: alpha('#f43f5e', 0.16),
+  500_24: alpha('#f43f5e', 0.24),
+  500_32: alpha('#f43f5e', 0.32),
+  500_48: alpha('#f43f5e', 0.48),
+  500_56: alpha('#f43f5e', 0.56),
+  500_80: alpha('#f43f5e', 0.8),
 };
 
 // SETUP COLORS

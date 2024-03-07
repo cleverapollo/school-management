@@ -217,7 +217,7 @@ export const getRoutes: NavObjectFunction = (t) => [
                 getPermissionGroups({ custom: true }),
                 getPermissionGroups({ custom: false }),
                 getStudentsForSelect({}),
-                getContactsForSelect(),
+                getContactsForSelect({}),
                 getStaffForSelect({}),
                 getPermissionSets({ student: true }),
                 getPermissionSets({ contact: true }),

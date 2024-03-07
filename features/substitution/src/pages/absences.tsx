@@ -151,6 +151,7 @@ const getColumnDefs = (
             {
               label: t('common:actions.delete'),
               icon: <TrashIcon />,
+              isDelete: true,
               onClick: () => {
                 setAbsenceToDelete(data);
               },

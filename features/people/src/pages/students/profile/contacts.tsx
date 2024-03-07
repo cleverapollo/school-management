@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   ActionMenu,
   getNumber,
@@ -14,6 +14,9 @@ import {
   TableSwitch,
   BulkEditedRows,
   useToast,
+  ListNavigatorType,
+  useListNavigatorSettings,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
@@ -48,6 +51,7 @@ const getStudentContactColumns = (
     undefined,
     ('common' | 'people')[]
   >,
+  onBeforeNavigate: () => void,
   displayName: ReturnTypeDisplayName
 ): GridOptions<ReturnTypeFromUseContacts>['columnDefs'] => [
   {
@@ -60,6 +64,7 @@ const getStudentContactColumns = (
       <TablePersonAvatar
         person={data?.person}
         to={`/people/contacts/${data?.partyId ?? ''}`}
+        onBeforeNavigate={onBeforeNavigate}
       />
     ),
     headerCheckboxSelection: true,
@@ -222,9 +227,30 @@ export default function StudentProfileContactsPage() {
     onClose: onCloseManageContactsModal,
   } = useDisclosure();
 
+  const visibleDataRef = useRef<() => ReturnTypeFromUseContacts[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Contact,
+    });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      displayName(studentData?.person),
+      visibleDataRef.current?.().map(({ partyId, person }) => ({
+        id: partyId,
+        type: 'person',
+        name: displayName(person),
+        firstName: person.firstName,
+        lastName: person.lastName,
+        avatarUrl: person.avatarUrl,
+      }))
+    );
+  }, [studentData]);
+
   const studentContactColumns = useMemo(
-    () => getStudentContactColumns(t, displayName),
-    [t, displayName]
+    () => getStudentContactColumns(t, onBeforeNavigateProfile, displayName),
+    [t, onBeforeNavigateProfile, displayName]
   );
 
   const recipientsForSms = useMemo(
@@ -358,6 +384,7 @@ export default function StudentProfileContactsPage() {
   return (
     <>
       <Table
+        visibleDataRef={visibleDataRef}
         rowData={contacts ?? []}
         columnDefs={studentContactColumns}
         tableContainerSx={{ height: 300 }}

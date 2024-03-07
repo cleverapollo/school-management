@@ -16,6 +16,8 @@ import {
 } from '@tyro/core';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useEffect, useId, useMemo } from 'react';
+import get from 'lodash/get';
+import { RHFContactAutocomplete } from '@tyro/people';
 import { ReturnTypeFromUseStudentFees } from '../../../api/student-fees';
 import { PaymentMethodSelect } from './fields/payment-method';
 import { PaymentsToPayAndMethod, usePayFeesSettings } from './store';
@@ -46,15 +48,24 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
   const { handleSubmit, control, watch, setValue } = useForm<FormValues>({
     resolver: resolver({
       paymentMethod: [rules.required()],
+      onBehalfOf: rules.required(),
       fees: {
         amountToPay: [
           rules.required(),
           rules.isNumber(),
           rules.min(0.5),
-          rules.validate((value, throwError, formValues, fieldArrayIndex) => {
-            const fee = formValues.fees[fieldArrayIndex as number];
+          rules.validate<string>((value, throwError, formValues, fieldName) => {
+            const pathToCurrentFee = fieldName.substring(
+              0,
+              fieldName.lastIndexOf('.')
+            );
+            const fee = get(
+              formValues,
+              pathToCurrentFee
+            ) as FormValues['fees'][number];
+            const valueAsNumber = Number(value);
 
-            if ((value ?? 0) > fee.amount - fee.amountPaid) {
+            if ((valueAsNumber ?? 0) > fee.amount - fee.amountPaid) {
               throwError(t('fees:amountToPayExceedsTheAmountThatsDue'));
             }
           }),
@@ -96,6 +107,10 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
     () => fees.reduce((acc, fee) => acc + Number(fee.amountToPay), 0),
     [JSON.stringify(fees)]
   );
+  const studentIds = useMemo(
+    () => feesToPay.map((fee) => fee.person.partyId),
+    [feesToPay]
+  );
 
   const onSubmit = handleSubmit((values) => {
     setPaymentsToPayAndMethod({
@@ -105,6 +120,7 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
         ...fee,
         amountToPay: Number(fee.amountToPay),
       })),
+      onBehalfOf: values?.onBehalfOf,
     });
     nextStep();
   });
@@ -132,12 +148,25 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
     <form onSubmit={onSubmit}>
       <Stack spacing={3}>
         {isStaffUser && (
-          <PaymentMethodSelect
-            controlProps={{
-              name: 'paymentMethod',
-              control,
-            }}
-          />
+          <>
+            <PaymentMethodSelect
+              controlProps={{
+                name: 'paymentMethod',
+                control,
+              }}
+            />
+            <RHFContactAutocomplete
+              controlProps={{
+                name: 'onBehalfOf',
+                control,
+              }}
+              label={t('fees:onBehalfOf')}
+              sx={{ maxWidth: 300 }}
+              contactsFilter={{
+                studentPartyIds: studentIds,
+              }}
+            />
+          </>
         )}
         <RHFRadioGroup
           controlProps={{
@@ -179,7 +208,7 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
               {t('common:total')}
             </Typography>
           </Stack>
-          <Stack>
+          <Stack spacing={2}>
             {fields.map((fee, index) => {
               const { feeName, person } = fee;
               const studentName = displayName(person);

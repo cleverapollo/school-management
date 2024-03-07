@@ -10,7 +10,7 @@ export enum PreferredNameFormat {
   'SurnameFirstname' = 'SURNAME_FIRST_NAME',
 }
 
-const displayName = (
+export const displayName = (
   person: DisplayNamePersonProps,
   options?: {
     format: PreferredNameFormat;
@@ -64,6 +64,15 @@ export function searchDisplayName<T extends DisplayNamePersonProps>(
     const studentName = displayName(option).toLowerCase();
     return splitInputValue.every((string) => studentName.includes(string));
   });
+}
+
+export function preferredNameLayoutUtils() {
+  return {
+    displayName,
+    displayNames,
+    sortByDisplayName,
+    searchDisplayName,
+  };
 }
 
 export function usePreferredNameLayout() {

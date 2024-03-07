@@ -47,6 +47,7 @@ const TeacherCard = forwardRef<HTMLDivElement, TeacherCardProps>(
             <Avatar
               src={teacher.avatarUrl}
               name={name}
+              person={teacher}
               sx={{
                 my: 0.5,
                 mr: 1,

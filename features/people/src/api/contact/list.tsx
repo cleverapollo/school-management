@@ -1,11 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
-import { gqlClient, graphql, queryClient, UseQueryReturnType } from '@tyro/api';
+import {
+  gqlClient,
+  graphql,
+  queryClient,
+  StudentContactFilter,
+  UseQueryReturnType,
+} from '@tyro/api';
 import { sortByDisplayName } from '@tyro/core';
 import { peopleKeys } from '../keys';
 
 const contacts = graphql(/* GraphQL */ `
-  query core_studentContacts {
-    core_studentContacts {
+  query core_studentContacts($filter: StudentContactFilter!) {
+    core_studentContacts(filter: $filter) {
       partyId
       person {
         avatarUrl
@@ -44,8 +50,8 @@ const contacts = graphql(/* GraphQL */ `
 `);
 
 const contactsInfoForSelect = graphql(/* GraphQL */ `
-  query core_studentContactsForSelect {
-    core_studentContacts {
+  query core_studentContactsForSelect($filter: StudentContactFilter!) {
+    core_studentContacts(filter: $filter) {
       person {
         partyId
         title {
@@ -58,52 +64,65 @@ const contactsInfoForSelect = graphql(/* GraphQL */ `
         avatarUrl
         type
       }
+      personalInformation {
+        primaryEmail {
+          email
+        }
+      }
     }
   }
 `);
 
-const contactsQuery = {
-  queryKey: peopleKeys.contacts.all(),
-  queryFn: async () => gqlClient.request(contacts),
-};
+const contactsQuery = (filter: StudentContactFilter) => ({
+  queryKey: peopleKeys.contacts.list(filter),
+  queryFn: async () => gqlClient.request(contacts, { filter }),
+});
 
-export function getContacts() {
-  return queryClient.fetchQuery(contactsQuery);
+export function getContacts(filter: StudentContactFilter) {
+  return queryClient.fetchQuery(contactsQuery(filter));
 }
 
-export function useContacts() {
+export function useContacts(filter: StudentContactFilter) {
   return useQuery({
-    ...contactsQuery,
+    ...contactsQuery(filter),
     select: ({ core_studentContacts }) => core_studentContacts,
   });
 }
 
-const contactsForSelectQuery = () => ({
-  queryKey: peopleKeys.contacts.forSelect(),
+const contactsForSelectQuery = (filter: StudentContactFilter) => ({
+  queryKey: peopleKeys.contacts.forSelect(filter),
   queryFn: async () => {
     const { core_studentContacts: contactsData } = await gqlClient.request(
-      contactsInfoForSelect
+      contactsInfoForSelect,
+      { filter }
     );
 
     return {
       core_studentContacts: (contactsData || [])
-        .map(({ person }) => person)
+        .map(({ person, personalInformation }) => ({
+          ...person,
+          personalInformation,
+        }))
         .sort(sortByDisplayName),
     };
   },
 });
 
-export function getContactsForSelect() {
-  return queryClient.fetchQuery(contactsForSelectQuery());
+export function getContactsForSelect(filter: StudentContactFilter) {
+  return queryClient.fetchQuery(contactsForSelectQuery(filter));
 }
 
-export function useContactsForSelect() {
+export function useContactsForSelect(filter: StudentContactFilter) {
   return useQuery({
-    ...contactsForSelectQuery(),
+    ...contactsForSelectQuery(filter),
     select: ({ core_studentContacts }) => core_studentContacts,
   });
 }
 
 export type ReturnTypeFromUseContacts = UseQueryReturnType<
   typeof useContacts
+>[number];
+
+export type ReturnTypeFromUseContactsForSelect = UseQueryReturnType<
+  typeof useContactsForSelect
 >[number];

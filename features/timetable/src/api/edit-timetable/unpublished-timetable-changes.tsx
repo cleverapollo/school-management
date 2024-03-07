@@ -11,7 +11,7 @@ import { timetableKeys } from '../keys';
 
 const unpublishedTimetableEdits = graphql(/* GraphQL */ `
   query tt_unpublishedChanges($filter: TTTimetableFilter) {
-    tt_timetables(filter: $filter) {
+    tt_timetable(filter: $filter) {
       timetableId
       liveStatus {
         totalChanges
@@ -196,8 +196,8 @@ export function useUnpublishedTimetableChanges(
   return useQuery({
     ...unpublishedChangesQuery(filter),
     enabled,
-    select: ({ tt_timetables }) => {
-      const { timetableId, liveStatus } = tt_timetables[0];
+    select: ({ tt_timetable }) => {
+      const { timetableId, liveStatus } = tt_timetable;
 
       return {
         timetableId,

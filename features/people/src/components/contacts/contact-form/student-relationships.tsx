@@ -165,7 +165,7 @@ export const StudentRelationships = <
       <Grid item xs={12}>
         <Typography
           variant="body1"
-          component="h2"
+          component="h3"
           color="text.secondary"
           fontWeight={600}
         >
@@ -176,7 +176,7 @@ export const StudentRelationships = <
         <Grid key={field.id} item xs={12}>
           <Card variant="outlined">
             <CardHeader
-              component="h3"
+              component="h4"
               title={`${t('common:student')} ${index + 1}`}
               sx={{
                 pb: 0,
@@ -239,7 +239,7 @@ export const StudentRelationships = <
 
               <Grid item xs={12}>
                 <Typography
-                  component="h3"
+                  component="h4"
                   variant="h6"
                   sx={{
                     mb: 1,
@@ -300,7 +300,6 @@ export const StudentRelationships = <
                           : contactSettings[index]?.some(
                               ({ checked }) => checked
                             ),
-                        color: 'primary',
                         onChange: (_event, checked) =>
                           updateEnableAll(index, checked),
                       }}

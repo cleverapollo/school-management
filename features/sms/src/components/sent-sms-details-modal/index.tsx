@@ -82,6 +82,7 @@ export function SentSmsDetailsModal({
               <Stack direction="row" alignItems="center">
                 <Avatar
                   src={data?.sender?.avatarUrl}
+                  person={data?.sender}
                   name={senderName}
                   sx={{
                     my: 1,

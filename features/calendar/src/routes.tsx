@@ -14,7 +14,7 @@ export const getRoutes: NavObjectFunction = (t) => [
         type: NavObjectType.RootLink,
         path: 'calendar',
         hasAccess: (permissions) =>
-          permissions.isStaffUserHasWithAtLestOnePermission([
+          permissions.isStaffUserHasWithAtLeastOnePermission([
             'ps:1:calendar:view_own_calendar',
             'ps:1:calendar:view_calendar',
           ]),

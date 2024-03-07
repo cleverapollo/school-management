@@ -60,7 +60,7 @@ export const RHFSelect = <
           </IconButton>
         ),
       }}
-      customSelectRef={ref}
+      inputRef={ref}
       value={value ?? ''}
       error={!!error}
       helperText={error?.message}

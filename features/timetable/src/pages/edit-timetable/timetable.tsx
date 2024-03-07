@@ -7,11 +7,12 @@ import { useYearGroups } from '@tyro/groups';
 import { TimetableSearch } from '../../components/edit-timetable/timetable-search';
 import { useTimetableResourceView } from '../../api/edit-timetable/resource-view';
 import { ResourcesTable } from '../../components/edit-timetable/resources-table';
-import { useLiveTimetableId } from '../../api/common/timetables';
+import { useTimetable } from '../../api/common/timetable';
 
 export default function EditTimetable() {
   const [selectedPartys, setSelectedPartys] = useState<CalendarParty[]>([]);
-  const { data: liveTimetableId = 0 } = useLiveTimetableId();
+  const { data: liveTimetable } = useTimetable({ liveTimetable: true });
+  const liveTimetableId = liveTimetable?.timetableId ?? 0;
   const direction = useBreakpointValue<'column' | 'row'>({
     base: 'column',
     sm: 'row',
@@ -23,7 +24,12 @@ export default function EditTimetable() {
       >(
         (acc, party) => {
           // TODO: Filter rooms when added to endpoint
+          if (party.type === SearchType.Room) {
+            acc.roomIds.push(party.partyId);
+          } else {
           acc.partyIds.push(party.partyId);
+          }
+
           return acc;
         },
         { partyIds: [], roomIds: [] }

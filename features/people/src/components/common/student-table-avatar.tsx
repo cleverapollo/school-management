@@ -12,21 +12,23 @@ type TableAvatarProps = {
   person:
     | Pick<Person, 'avatarUrl' | 'firstName' | 'lastName' | 'partyId'>
     | undefined;
-  isPriorityStudent: boolean;
-  hasSupportPlan: boolean;
+  isPriorityStudent?: boolean;
+  hasSupportPlan?: boolean;
   AvatarProps?: CoreAvatarProps;
   avatarBackgroundColor?: string;
   size?: number;
+  onBeforeNavigate?: () => void;
 };
 
 export function StudentTableAvatar({
   to,
   person,
-  isPriorityStudent,
-  hasSupportPlan,
+  isPriorityStudent = false,
+  hasSupportPlan = false,
   AvatarProps,
   avatarBackgroundColor,
   size,
+  onBeforeNavigate,
 }: TableAvatarProps) {
   const { displayName } = usePreferredNameLayout();
   const name = displayName(person);
@@ -41,16 +43,17 @@ export function StudentTableAvatar({
         hasSupportPlan={hasSupportPlan}
         avatarBackgroundColor={avatarBackgroundColor}
         size={size}
+        person={person}
         ContainingButtonProps={{
           sx: {
             my: 1,
             mr: 1.5,
           },
         }}
-        AvatarProps={AvatarProps}
+        AvatarProps={{ ...AvatarProps, person }}
       />
       {to ? (
-        <RouterLink sx={{ fontWeight: 600 }} to={to}>
+        <RouterLink sx={{ fontWeight: 600 }} onClick={onBeforeNavigate} to={to}>
           {name}
         </RouterLink>
       ) : (
