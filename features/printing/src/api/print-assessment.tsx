@@ -18,6 +18,7 @@ const printAssessment = graphql(/* GraphQL */ `
 
 const printAssessmentQuery = (filter: Print_AssessmentOptions) => ({
   queryKey: ['print', 'assessment', filter],
+  staleTime: 0,
   queryFn: async () =>
     gqlClient.request(printAssessment, {
       filter,
