@@ -12,7 +12,7 @@ export function LinkRender({ text }: LinkRenderProps) {
       return '';
     }
 
-    // Regular expression for detecting links in the format "(href)[linkName]"
+    // Regular expression for detecting links in the format "[href](linkName)"
     const linkPattern = /\[(.*?)\]\((http[s]?:\/\/\S+)\)/g;
     const textWithCustomLinkParsed = text.replace(
       linkPattern,
@@ -21,7 +21,7 @@ export function LinkRender({ text }: LinkRenderProps) {
     );
 
     // Regular expression for detecting links starting with http or https
-    const httpLinkPattern = /(?<!(href="|>))http[s]?:\/\/\S+(?!("|<))/g;
+    const httpLinkPattern = /(?:\s|^)(http[s]?:\/\/\S+)(?=\s|$|<)/g;
     const finalParsedText = textWithCustomLinkParsed.replace(
       httpLinkPattern,
       (url) => `<a href="${url}" rel="noopener noreferrer">${url}</a>`
