@@ -75,5 +75,6 @@
   "reservesUsed": "Reserves used",
   "subjectBlocks": "Subject blocks",
   "solverErrorStatus": "Error while solving. Please contact support",
-  "solverInput": "Solver input"
+  "solverInput": "Solver input",
+  "classLists": "Class lists"
 }

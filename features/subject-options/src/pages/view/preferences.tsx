@@ -385,6 +385,12 @@ export default function StudentOptionsPreferencesPage() {
           )
         }
         onBulkSave={onSavePreferences}
+        defaultExcelExportParams={{
+          processCellCallback: (params) => {
+            const value = params.value as number | undefined;
+            return params.formatValue(value);
+          },
+        }}
       />
 
       <SendSmsModal

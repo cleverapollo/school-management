@@ -3,25 +3,25 @@ import {
   gqlClient,
   graphql,
   UseQueryReturnType,
-  SolverInputFilter,
+  Options_OptionIdFilter,
 } from '@tyro/api';
 import { optionsKeys } from './keys';
 
 const optionsSolverInput = graphql(/* GraphQL */ `
-  query options_solverInput($filter: SolverInputFilter) {
+  query options_solverInput($filter: Options_OptionIdFilter) {
     options_solverInput(filter: $filter) {
       input
     }
   }
 `);
 
-const optionsSolverInputQuery = (filter: SolverInputFilter) => ({
+const optionsSolverInputQuery = (filter: Options_OptionIdFilter) => ({
   queryKey: optionsKeys.solverInput(filter),
   queryFn: () => gqlClient.request(optionsSolverInput, { filter }),
 });
 
 export function useOptionsSolverInput(
-  filter: SolverInputFilter,
+  filter: Options_OptionIdFilter,
   enabled = true
 ) {
   return useQuery({
