@@ -27,6 +27,8 @@ import {
   getPersonProfileLink,
   SaveAssessmentResultInput,
   StudentAssessmentExclusionInput,
+  UsePermissionsReturn,
+  usePermissions,
 } from '@tyro/api';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
@@ -53,12 +55,15 @@ import { getExtraFields } from '../../utils/get-extra-fields';
 import { updateStudentAssessmentExclusion } from '../../api/student-assessment-exclusion';
 import { useAssessmentSubjectGroups } from '../../api/assessment-subject-groups';
 
+const editAssessmentPermission = 'ps:1:assessment:write_assessment_result';
+
 const getColumnDefs = (
   t: TFunction<
     ('common' | 'assessments')[],
     undefined,
     ('common' | 'assessments')[]
   >,
+  permissions: UsePermissionsReturn,
   displayName: ReturnTypeDisplayName,
   onBeforeNavigate: () => void,
   gradeSets: ReturnTypeFromUseCbaGradeSets[],
@@ -89,7 +94,7 @@ const getColumnDefs = (
   {
     field: 'examinable',
     headerName: t('assessments:examinable'),
-    editable: true,
+    editable: permissions.hasPermission(editAssessmentPermission),
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     cellRenderer: ({
@@ -115,7 +120,7 @@ const getColumnDefs = (
   {
     field: 'studentStudyLevel',
     headerName: t('common:level'),
-    editable: true,
+    editable: permissions.hasPermission(editAssessmentPermission),
     valueSetter: (
       params: ValueSetterParams<ReturnTypeFromUseAssessmentResults>
     ) => {
@@ -133,7 +138,9 @@ const getColumnDefs = (
   {
     field: 'gradeId',
     headerName: t('assessments:achievement'),
-    editable: (params) => !!params.data?.examinable,
+    editable: (params) =>
+      !!params.data?.examinable &&
+      permissions.hasPermission(editAssessmentPermission),
     cellEditor: TableSwitch,
     valueGetter: ({ data }) => data?.gradeId,
     valueSetter: ({
@@ -208,7 +215,7 @@ const getColumnDefs = (
       );
     },
   },
-  ...getExtraFields(assessmentData?.extraFields, commentBanks),
+  ...getExtraFields(assessmentData?.extraFields, permissions, commentBanks),
 ];
 
 export default function EditStateCbaResults() {
@@ -219,6 +226,7 @@ export default function EditStateCbaResults() {
   const subjectGroupIdAsNumber = useNumber(subjectGroupId);
   const { t } = useTranslation(['assessments', 'common']);
   const { displayName } = usePreferredNameLayout();
+  const permissions = usePermissions();
 
   const { data: assessmentData } = useAssessmentById({
     academicNameSpaceId: academicNamespaceIdAsNumber ?? 0,
@@ -308,6 +316,7 @@ export default function EditStateCbaResults() {
     () =>
       getColumnDefs(
         t,
+        permissions,
         displayName,
         onBeforeNavigateProfile,
         gradeSets,
@@ -316,6 +325,7 @@ export default function EditStateCbaResults() {
       ),
     [
       t,
+      permissions,
       displayName,
       onBeforeNavigateProfile,
       gradeSets,
