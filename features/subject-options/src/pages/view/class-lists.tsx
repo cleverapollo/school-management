@@ -140,8 +140,6 @@ export default function StudentOptionsClassListsPage() {
     });
   };
 
-  console.log('classListData', classListData);
-
   return (
     <ClassListSettingsProvider showGender={showGender} removeContainerMargin>
       <Stack spacing={3}>
