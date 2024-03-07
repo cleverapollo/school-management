@@ -60,6 +60,8 @@ export const groupsKeys = {
       [...groupsKeys.year.all(), 'list', filter] as const,
     details: (filter: YearGroupEnrollmentFilter) =>
       [...groupsKeys.year.all(), 'details', filter] as const,
+    groupEnrollments: (filter: YearGroupEnrollmentFilter) =>
+      [...groupsKeys.all, 'listEnrollments', filter] as const,
   },
   blocks: {
     filter: (filter: BlockFilter) => [
