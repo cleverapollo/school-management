@@ -47,11 +47,11 @@ export default function NavMini({ onExpand, navConfig }: NavMiniProps) {
             size={50}
             sx={{
               mx: 'auto',
-              my: 2,
+              my: 2.5,
             }}
           />
         ) : (
-          <Logo sx={{ mx: 'auto', my: 2, width: 50 }} />
+          <Logo sx={{ mx: 'auto', my: 2, width: 50, height: 58 }} />
         )}
 
         <NavSectionMini data={navConfig} />

@@ -55,7 +55,7 @@ export default function NavVertical({
           spacing={3}
           sx={{
             pt: 3,
-            pb: 2,
+            pb: activeProfile?.tenant?.imgUrl ? 1 : 2,
             px: 2.5,
             flexShrink: 0,
           }}
