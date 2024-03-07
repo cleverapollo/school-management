@@ -260,6 +260,10 @@ export const getRoutes: NavObjectFunction = (t) => [
                   const studentId = getNumber(params.id);
                   return getStudentsContacts(studentId);
                 },
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission(
+                    'ps:1:people:view_contacts_for_student'
+                  ),
                 element: <StudentProfileContactsPage />,
               },
               {
