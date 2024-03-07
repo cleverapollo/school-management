@@ -102,6 +102,7 @@ const pendingAbsentRequestCount = graphql(/* GraphQL */ `
   }
 `);
 
+// Note: When we have spare time, we need to get backend to create a new query that just sends us the count as it will be more efficient for the backend when pooling it
 const pendingAbsentRequestCountQuery = () => ({
   queryKey: attendanceKeys.all,
   queryFn: async () => {
@@ -117,7 +118,7 @@ const pendingAbsentRequestCountQuery = () => ({
 export function usePendingAbsentRequestCount() {
   return useQuery({
     ...pendingAbsentRequestCountQuery(),
-    refetchInterval: 1000 * 60 * 2,
+    refetchInterval: 1000 * 60 * 5,
   });
 }
 
