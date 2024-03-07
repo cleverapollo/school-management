@@ -9,12 +9,14 @@ import {
   SetStateAction,
   useEffect,
 } from 'react';
+import { ReturnTypeFromUseContactsForSelect } from '@tyro/people';
 import { ReturnTypeFromUseStudentFees } from '../../../api/student-fees';
 
 export type PaymentsToPayAndMethod = {
   paymentMethod: PaymentMethod;
   fees: (ReturnTypeFromUseStudentFees & { amountToPay: number })[];
   total: number;
+  onBehalfOf?: ReturnTypeFromUseContactsForSelect;
 };
 
 export type PayFeesSettingsContextValue = {

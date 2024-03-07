@@ -6634,7 +6634,9 @@ __metadata:
     "@tyro/groups": "*"
     "@tyro/i18n": "*"
     "@tyro/icons": "*"
+    "@tyro/mail": "*"
     "@tyro/people": "*"
+    "@tyro/sms": "*"
     dayjs: ^1.11.7
     lodash: ^4.17.21
     react: ^18.2.0
@@ -6894,6 +6896,7 @@ __metadata:
     "@types/file-saver": ^2.0.5
     "@tyro/api": "*"
     "@tyro/attendance": "*"
+    "@tyro/calendar": "*"
     "@tyro/configs": "*"
     "@tyro/core": "*"
     "@tyro/i18n": "*"

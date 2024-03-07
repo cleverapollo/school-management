@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { PaymentMethod } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
-import { CoinsIcon, CreditCardIcon } from '@tyro/icons';
+import { BankIcon, ChequeIcon, CoinsIcon, CreditCardIcon } from '@tyro/icons';
 import { useId } from 'react';
 import {
   UseControllerProps,
@@ -22,10 +22,17 @@ type PaymentMethodSelectProps<TField extends FieldValues> = {
   controlProps: UseControllerProps<TField>;
 };
 
-const paymentMethods = [PaymentMethod.Card, PaymentMethod.Cash];
+const paymentMethods = [
+  PaymentMethod.Card,
+  PaymentMethod.Cash,
+  PaymentMethod.BankTransfer,
+  PaymentMethod.Cheque,
+];
 const paymentMethodIcons = {
   [PaymentMethod.Card]: CreditCardIcon,
   [PaymentMethod.Cash]: CoinsIcon,
+  [PaymentMethod.BankTransfer]: BankIcon,
+  [PaymentMethod.Cheque]: ChequeIcon,
 };
 
 export const PaymentMethodSelect = <TField extends FieldValues>({

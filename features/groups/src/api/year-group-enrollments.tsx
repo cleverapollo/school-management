@@ -6,7 +6,7 @@ import {
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
-import { assessmentsKeys } from './keys';
+import { groupsKeys } from './keys';
 
 const yearGroupEnrollments = graphql(/* GraphQL */ `
   query yearGroupEnrollments($filter: YearGroupEnrollmentFilter) {
@@ -30,7 +30,7 @@ const yearGroupEnrollments = graphql(/* GraphQL */ `
 `);
 
 const yearGroupEnrollmentsQuery = (filter: YearGroupEnrollmentFilter) => ({
-  queryKey: assessmentsKeys.yearGroupEnrollments(filter),
+  queryKey: groupsKeys.year.groupEnrollments(filter),
   queryFn: () => gqlClient.request(yearGroupEnrollments, { filter }),
 });
 
@@ -53,6 +53,6 @@ export function useYearGroupEnrollments(
   });
 }
 
-export type ReturnTypeFromUseAssessments = UseQueryReturnType<
+export type ReturnTypeFromUseYearGroupEnrollments = UseQueryReturnType<
   typeof useYearGroupEnrollments
 >[number];

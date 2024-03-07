@@ -27,3 +27,4 @@ export * from './components/behaviour/create-behaviour-modal';
 export * from './api/behaviour/student-behaviour';
 export * from './hooks/use-level-by-name';
 export * from './components/behaviour/confirm-delete-behaviour';
+export * from './components/common/contact-autocomplete';

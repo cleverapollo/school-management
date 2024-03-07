@@ -14,6 +14,7 @@ import {
   SubjectGroupRelationshipFilter,
   Print_PersonsGroupMemberships,
   FileTransferFilter,
+  StudentContactFilter,
 } from '@tyro/api';
 
 export const peopleKeys = {
@@ -29,11 +30,14 @@ export const peopleKeys = {
   ],
   contacts: {
     all: () => [...peopleKeys.all, 'contacts'] as const,
+    list: (filter: StudentContactFilter) =>
+      [...peopleKeys.all, 'list', filter] as const,
     personalDetails: (contactId: number | undefined) =>
       [...peopleKeys.contacts.all(), 'personal', contactId] as const,
     students: (contactId: number | undefined) =>
       [...peopleKeys.contacts.all(), 'students', contactId] as const,
-    forSelect: () => [...peopleKeys.contacts.all(), 'select'] as const,
+    forSelect: (filter: StudentContactFilter) =>
+      [...peopleKeys.contacts.all(), 'select', filter] as const,
   },
   notes: {
     all: () => [...peopleKeys.all, 'notes'] as const,

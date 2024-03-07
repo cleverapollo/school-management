@@ -59,7 +59,7 @@ function ReadOnlyRecipientListInner({
         justifyContent="space-between"
         position="relative"
       >
-        <Typography component="h3" variant="h6" sx={{ p: 3 }}>
+        <Typography component="h3" variant="h6">
           {t('sms:recipient', { count: recipients?.length ?? 0 })}
           <Typography
             component="span"
