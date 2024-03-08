@@ -1,21 +1,23 @@
 import {
-  useFormValidator,
   RHFAutocomplete,
   RHFRadioGroup,
-  RHFCheckbox,
+  RHFSwitch,
+  useFormValidator,
   usePreferredNameLayout,
   useToast,
 } from '@tyro/core';
 import { LoadingButton } from '@mui/lab';
 import { PageOrientation } from '@tyro/api';
-import { Stack, FormLabel, Box } from '@mui/material';
+import { Box, FormLabel, Grid, Stack } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import { useMemo, useState } from 'react';
-import { ReturnTypeFromUseAssessments } from '@tyro/assessments';
-import { useYearGroupEnrollments } from '@tyro/groups';
+import React, { useMemo, useState } from 'react';
+import {
+  getPrintAssessment,
+  ReturnTypeFromUseAssessments,
+  useYearGroupEnrollments,
+} from '@tyro/assessments';
 import { PartyAutocompleteValue } from './types';
-import { getPrintAssessment } from '../../api/print-assessment';
 
 export interface PrintAssessmentFormProps {
   assessment?: ReturnTypeFromUseAssessments;
@@ -27,8 +29,18 @@ export type PrintAssessmentFormState = {
   yearGroups: PartyAutocompleteValue[];
   classGroups: PartyAutocompleteValue[];
   students: PartyAutocompleteValue[];
-  includeAttendance: boolean;
+  includeLevel: boolean;
+  includeGrade: boolean;
+  includeResult: boolean;
+  includeTeacherComment: boolean;
   includeExtraFields: boolean;
+  includeTutorComment: boolean;
+  includeYearHeadComment: boolean;
+  includePrincipalComment: boolean;
+  includeAbsenceCount: boolean;
+  includeLateCount: boolean;
+  includeCAOPoints: boolean;
+  printColour: boolean;
 };
 
 export default function PrintAssessmentForm({
@@ -46,13 +58,33 @@ export default function PrintAssessmentForm({
     useForm<PrintAssessmentFormState>({
       resolver: resolver({
         orientation: rules.required(),
-        includeAttendance: rules.required(),
+        includeLevel: rules.required(),
+        includeGrade: rules.required(),
+        includeResult: rules.required(),
+        includeTeacherComment: rules.required(),
         includeExtraFields: rules.required(),
+        includeTutorComment: rules.required(),
+        includeYearHeadComment: rules.required(),
+        includePrincipalComment: rules.required(),
+        includeAbsenceCount: rules.required(),
+        includeLateCount: rules.required(),
+        includeCAOPoints: rules.required(),
+        printColour: rules.required(),
       }),
       defaultValues: {
         orientation: PageOrientation.Portrait,
-        includeAttendance: false,
-        includeExtraFields: false,
+        includeLevel: true,
+        includeGrade: true,
+        includeResult: true,
+        includeTeacherComment: true,
+        includeExtraFields: true,
+        includeTutorComment: true,
+        includeYearHeadComment: true,
+        includePrincipalComment: true,
+        includeAbsenceCount: false,
+        includeLateCount: false,
+        includeCAOPoints: false,
+        printColour: true,
       },
     });
 
@@ -133,7 +165,19 @@ export default function PrintAssessmentForm({
         yearGroupIds: yearGroupEnrollments?.map(({ partyId }) => partyId) ?? [],
         classGroupIds: classGroups.map(({ partyId }) => partyId),
         studentIds: students.map(({ partyId }) => partyId),
-        ...rest,
+        includeGrade: true,
+        includeLevel: true,
+        includeResult: true,
+        includeTeacherComment: true,
+        includeExtraFields: true,
+        includeTutorComment: true,
+        includeYearHeadComment: true,
+        includePrincipalComment: true,
+        includeAbsenceCount: false,
+        includeLateCount: false,
+        includeCAOPoints: false,
+        printColour: true,
+        orientation: PageOrientation.Portrait,
       });
 
       if (printResponse?.print_assessment?.url) {
@@ -189,15 +233,87 @@ export default function PrintAssessmentForm({
             options={studentOptions ?? []}
           />
         </Stack>
-        <Stack direction="row" gap={2}>
-          <RHFCheckbox
-            label={t('printing:assessment.includeAttendance')}
-            controlProps={{ name: 'includeAttendance', control }}
-          />
-          <RHFCheckbox
-            label={t('printing:assessment.includeExtraFields')}
-            controlProps={{ name: 'includeExtraFields', control }}
-          />
+        <Stack direction="row" gap={3}>
+          <Grid container spacing={2} direction="row" sx={{ py: 4 }}>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includeLevel')}
+                controlProps={{ name: 'includeLevel', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includeGrade')}
+                controlProps={{ name: 'includeGrade', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includeResult')}
+                controlProps={{ name: 'includeResult', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includeTeacherComment')}
+                controlProps={{ name: 'includeTeacherComment', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includeTeacherComment')}
+                controlProps={{ name: 'includeTeacherComment', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includeExtraFields')}
+                controlProps={{ name: 'includeExtraFields', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includeTutorComment')}
+                controlProps={{ name: 'includeTutorComment', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includeYearHeadComment')}
+                controlProps={{ name: 'includeYearHeadComment', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includePrincipalComment')}
+                controlProps={{ name: 'includeYearHeadComment', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includeAbsenceCount')}
+                controlProps={{ name: 'includeAbsenceCount', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includeLateCount')}
+                controlProps={{ name: 'includeLateCount', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.includeCAOPoints')}
+                controlProps={{ name: 'includeCAOPoints', control }}
+              />
+            </Grid>
+            <Grid item>
+              <RHFSwitch
+                label={t('printing:assessment.printColour')}
+                controlProps={{ name: 'printColour', control }}
+              />
+            </Grid>
+          </Grid>
           <Stack direction="row" gap={3} alignItems="center">
             <FormLabel>{t('printing:assessment.pageOrientation')}</FormLabel>
             <RHFRadioGroup

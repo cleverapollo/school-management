@@ -4947,9 +4947,19 @@ export type PrimarySchoolIreFilter = {
 export type Print_AssessmentOptions = {
   assessmentId: Scalars['Long'];
   classGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  includeAttendance: Scalars['Boolean'];
+  includeAbsenceCount: Scalars['Boolean'];
+  includeCAOPoints: Scalars['Boolean'];
   includeExtraFields: Scalars['Boolean'];
+  includeGrade: Scalars['Boolean'];
+  includeLateCount: Scalars['Boolean'];
+  includeLevel: Scalars['Boolean'];
+  includePrincipalComment: Scalars['Boolean'];
+  includeResult: Scalars['Boolean'];
+  includeTeacherComment: Scalars['Boolean'];
+  includeTutorComment: Scalars['Boolean'];
+  includeYearHeadComment: Scalars['Boolean'];
   orientation: PageOrientation;
+  printColour: Scalars['Boolean'];
   studentIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   yearGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
