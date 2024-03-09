@@ -1,4 +1,4 @@
-import { Divider, Typography, Card } from '@mui/material';
+import { Divider, Typography, Card, Stack } from '@mui/material';
 import {
   AcademicYearDropdown,
   ReturnTypeFromUseAssessments,
@@ -8,6 +8,7 @@ import { Autocomplete, PageContainer, PageHeading } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
 import { useState } from 'react';
 import { useAcademicNamespace } from '@tyro/api';
+import { SearchIcon } from '@tyro/icons';
 import PrintAssessmentForm from '../../components/assessment/print-assessment-form';
 
 export default function PrintAssessment() {
@@ -29,28 +30,39 @@ export default function PrintAssessment() {
   return (
     <PageContainer title={t('printing:assessment.title')}>
       <PageHeading title={t('printing:assessment.title')} />
-      {academicNameSpaceId && (
-        <AcademicYearDropdown
-          academicNamespaceId={academicNameSpaceId}
-          onChangeAcademicNamespace={setAcademicNameSpaceId}
-        />
-      )}
-      <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
-        <Autocomplete<ReturnTypeFromUseAssessments>
-          label={t('common:search')}
-          sx={{ maxWidth: 300 }}
-          optionIdKey="id"
-          optionTextKey="name"
-          options={assessmentsData}
-          onChange={(_, value) => {
-            setAssessment(value as ReturnTypeFromUseAssessments);
-          }}
-        />
-        <Divider textAlign="left" sx={{ py: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            {t('printing:timetable.printOptions')}
-          </Typography>
-        </Divider>
+      <Card variant="soft">
+        <Stack direction="row" spacing={1} pb={2}>
+          <Autocomplete<ReturnTypeFromUseAssessments>
+            label={t('common:search')}
+            sx={{ maxWidth: 300 }}
+            optionIdKey="id"
+            optionTextKey="name"
+            options={assessmentsData}
+            fullWidth
+            onChange={(_, value) => {
+              setAssessment(value as ReturnTypeFromUseAssessments);
+            }}
+            inputProps={{
+              variant: 'filled',
+              InputProps: { fullWidth: true },
+            }}
+          />
+          {academicNameSpaceId && (
+            <AcademicYearDropdown
+              academicNamespaceId={academicNameSpaceId}
+              onChangeAcademicNamespace={setAcademicNameSpaceId}
+              sx={{
+                '& .MuiSelect-select': {
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  pt: 3,
+                  pb: '7px',
+                },
+              }}
+            />
+          )}
+        </Stack>
         <PrintAssessmentForm
           assessment={assessment}
           academicNameSpaceId={academicNameSpaceId}

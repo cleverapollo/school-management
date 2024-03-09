@@ -1,11 +1,9 @@
-import React from 'react';
-import { Box, Card, Divider, Typography } from '@mui/material';
+import { Card } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useTranslation } from '@tyro/i18n';
 import { ClassGroupSelect } from '@tyro/groups';
 
 import {
-  defaultValues,
+  getDefaultValues,
   PrintStaffTimetableFormState,
   TimetablePrintForm,
 } from '../../components/timetable/timetable-print-form';
@@ -14,25 +12,20 @@ import { TimetablePrintClassGroupForm } from '../../components/timetable/timetab
 function mapper(resources: any): number[] {
   return ((resources as ClassGroupSelect[]) ?? []).map((p) => p.partyId);
 }
-export default function PrintYearGroupTimetable() {
-  const { t } = useTranslation(['printing']);
 
-  const methods = useForm<PrintStaffTimetableFormState>({
+const defaultValues = getDefaultValues<ClassGroupSelect>();
+
+export default function PrintYearGroupTimetable() {
+  const methods = useForm<PrintStaffTimetableFormState<ClassGroupSelect>>({
     defaultValues,
   });
+
   return (
-    <Box>
-      <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
-        <FormProvider {...methods}>
-          <TimetablePrintClassGroupForm />
-          <Divider textAlign="left" sx={{ py: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              {t('printing:timetable.printOptions')}
-            </Typography>
-          </Divider>
-          <TimetablePrintForm translatePartyIds={mapper} />
-        </FormProvider>
-      </Card>
-    </Box>
+    <Card variant="soft">
+      <FormProvider {...methods}>
+        <TimetablePrintClassGroupForm />
+        <TimetablePrintForm translateIds={mapper} />
+      </FormProvider>
+    </Card>
   );
 }

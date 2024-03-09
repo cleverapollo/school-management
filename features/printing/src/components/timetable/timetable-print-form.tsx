@@ -1,7 +1,7 @@
 import { useTranslation } from '@tyro/i18n';
 import { useState } from 'react';
-import { Stack, Grid } from '@mui/material';
-import { RHFSelect, RHFSwitch } from '@tyro/core';
+import { Stack, Card, Typography } from '@mui/material';
+import { RHFCheckboxGroup, RHFRadioGroup, RHFSelect } from '@tyro/core';
 import {
   Print_TimetableLayout,
   Print_TimetableOptions,
@@ -19,22 +19,7 @@ import {
   usePrintTimetable,
 } from '../../api/print-timetable';
 
-export interface PrintStaffTimetableFormState {
-  partyIds: number[];
-  roomIds: number[];
-  allStaff?: boolean;
-  allRooms?: boolean;
-  showRooms: boolean;
-  teacherDisplayOption: Print_TimetableStaffFormat;
-  layout: Print_TimetableLayout;
-  showGroupNames: boolean;
-  periodDisplayOnAxis: Print_TimetablePeriodDisplayOnAxis;
-  periodDisplayInCell: Print_TimetablePeriodDisplayInCell;
-  subjectFormat: Print_TimetableSubjectFormat;
-  individualStudents: boolean;
-  fontSize: FontSize;
-  printWithColour: boolean;
-}
+const checkboxOptions = ['showRooms', 'showGroupNames'] as const;
 
 enum FontSize {
   EXCEEDINGLY_SMALL = 'EXCEEDINGLY_SMALL',
@@ -43,11 +28,25 @@ enum FontSize {
   LARGE = 'LARGE',
 }
 
-export interface TimetablePrintFormProps {
-  // @ts-ignore
-  translatePartyIds?: (any) => number[];
-  // @ts-ignore
-  translateRoomIds?: (any) => number[];
+export interface PrintStaffTimetableFormState<T> {
+  parties: T[];
+  rooms: T[];
+  allStaff?: boolean;
+  allRooms?: boolean;
+  teacherDisplayOption: Print_TimetableStaffFormat;
+  layout: Print_TimetableLayout;
+  periodDisplayOnAxis: Print_TimetablePeriodDisplayOnAxis;
+  periodDisplayInCell: Print_TimetablePeriodDisplayInCell;
+  subjectFormat: Print_TimetableSubjectFormat;
+  individualStudents?: boolean;
+  fontSize: FontSize;
+  colorSetting: 'COLOR' | 'BLACK_AND_WHITE';
+  checkBoxes: (typeof checkboxOptions)[number][];
+}
+
+export interface TimetablePrintFormProps<T> {
+  translateIds: (partiesOrRooms: T[]) => number[];
+  isRoom?: boolean;
 }
 
 function mapFontSize(fontSize: FontSize) {
@@ -62,10 +61,28 @@ function mapFontSize(fontSize: FontSize) {
       return 12;
   }
 }
-export function TimetablePrintForm({
-  translatePartyIds,
-  translateRoomIds,
-}: TimetablePrintFormProps) {
+
+export function getDefaultValues<T>() {
+  return {
+    parties: [],
+    rooms: [],
+    showRooms: true,
+    teacherDisplayOption: Print_TimetableStaffFormat.Full,
+    layout: Print_TimetableLayout.DaysOnXAxis,
+    showGroupNames: true,
+    periodDisplayOnAxis: Print_TimetablePeriodDisplayOnAxis.Time,
+    periodDisplayInCell: Print_TimetablePeriodDisplayInCell.Hide,
+    subjectFormat: Print_TimetableSubjectFormat.Full,
+    fontSize: FontSize.MEDIUM,
+    checkBoxes: ['showRooms', 'showGroupNames'],
+    colorSetting: 'COLOR',
+  } as PrintStaffTimetableFormState<T>;
+}
+
+export function TimetablePrintForm<T>({
+  translateIds,
+  isRoom = false,
+}: TimetablePrintFormProps<T>) {
   const { t } = useTranslation(['printing', 'common']);
 
   const [filter, setFilter] = useState<Print_TimetableOptions>({
@@ -81,281 +98,253 @@ export function TimetablePrintForm({
     fontSize: 15,
     printWithColour: true,
   });
-  const { control, handleSubmit, watch } =
-    useFormContext<PrintStaffTimetableFormState>();
+
+  const { control, handleSubmit } =
+    useFormContext<PrintStaffTimetableFormState<T>>();
   const { data: timetableData, isLoading } = usePrintTimetable(filter);
-  const partyIds = watch('partyIds');
-  const roomIds = watch('roomIds');
-  const onSubmit = handleSubmit(
-    async ({
-      allStaff,
-      allRooms,
-      showRooms,
-      layout,
+
+  const getTimetableOptions = async ({
+    parties,
+    rooms,
+    allStaff,
+    allRooms,
+    layout,
+    teacherDisplayOption,
+    periodDisplayOnAxis,
+    periodDisplayInCell,
+    subjectFormat,
+    individualStudents,
+    fontSize,
+    colorSetting,
+    checkBoxes,
+  }: PrintStaffTimetableFormState<T>): Promise<Print_TimetableOptions> => {
+    let mappedPartyIds = !isRoom ? translateIds(parties) : [];
+    let mappedRoomIds = isRoom ? translateIds(rooms) : [];
+
+    if (allStaff) {
+      const { core_staff: coreStaff } = await getStaffForSelect({});
+      mappedPartyIds = coreStaff.map(({ partyId }) => partyId);
+    }
+
+    if (allRooms) {
+      const { core_rooms: coreRooms } = await getCoreRooms();
+      mappedRoomIds = (coreRooms ?? []).map(({ roomId }) => roomId);
+    }
+    return {
+      partyIds: mappedPartyIds,
+      roomIds: mappedRoomIds,
       teacherDisplayOption,
-      showGroupNames,
+      layout,
+      ...checkboxOptions.reduce((acc, option) => {
+        acc[option] = checkBoxes.includes(option);
+        return acc;
+      }, {} as Pick<Print_TimetableOptions, 'showRooms' | 'showGroupNames'>),
       periodDisplayOnAxis,
       periodDisplayInCell,
       subjectFormat,
-      individualStudents,
-      fontSize,
-      printWithColour,
-    }) => {
-      let mappedPartyIds = translatePartyIds ? translatePartyIds(partyIds) : [];
-      let mappedRoomIds = translateRoomIds ? translateRoomIds(roomIds) : [];
+      individualStudents: individualStudents ?? false,
+      fontSize: mapFontSize(fontSize),
+      printWithColour: colorSetting === 'COLOR',
+    };
+  };
 
-      if (allStaff) {
-        const { core_staff: coreStaff } = await getStaffForSelect({});
-        mappedPartyIds = coreStaff.map(({ partyId }) => partyId);
-      }
+  const onView = handleSubmit(async (formState) => {
+    const timetableOptions = await getTimetableOptions(formState);
+    setFilter(timetableOptions);
+  });
 
-      if (allRooms) {
-        const { core_rooms: coreRooms } = await getCoreRooms();
-        mappedRoomIds = (coreRooms ?? []).map(({ roomId }) => roomId);
-      }
-      setFilter({
-        partyIds: mappedPartyIds,
-        roomIds: mappedRoomIds,
-        showRooms,
-        teacherDisplayOption,
-        layout,
-        showGroupNames,
-        periodDisplayOnAxis,
-        periodDisplayInCell,
-        subjectFormat,
-        individualStudents,
-        fontSize: mapFontSize(fontSize),
-        printWithColour,
-      });
-    }
-  );
+  const handlePrint = handleSubmit(async (formState) => {
+    const timetableOptions = await getTimetableOptions(formState);
+    const printResponse = await getPrintTimetable(timetableOptions);
 
-  const handlePrint = handleSubmit(
-    async ({
-      allStaff,
-      allRooms,
-      showRooms,
-      layout,
-      teacherDisplayOption,
-      showGroupNames,
-      periodDisplayOnAxis,
-      periodDisplayInCell,
-      subjectFormat,
-      individualStudents,
-      fontSize,
-      printWithColour,
-    }) => {
-      let mappedPartyIds = translatePartyIds ? translatePartyIds(partyIds) : [];
-      let mappedRoomIds = translateRoomIds ? translateRoomIds(roomIds) : [];
+    if (
+      printResponse &&
+      printResponse.print_printTimetable &&
+      printResponse.print_printTimetable.url
+    )
+      window.open(
+        printResponse.print_printTimetable.url,
+        '_blank',
+        'noreferrer'
+      );
+  });
 
-      if (allStaff) {
-        const { core_staff: coreStaff } = await getStaffForSelect({});
-        mappedPartyIds = coreStaff.map(({ partyId }) => partyId);
-      }
-
-      if (allRooms) {
-        const { core_rooms: coreRooms } = await getCoreRooms();
-        mappedRoomIds = (coreRooms ?? []).map(({ roomId }) => roomId);
-      }
-
-      const f = {
-        partyIds: mappedPartyIds,
-        roomIds: mappedRoomIds,
-        showRooms,
-        teacherDisplayOption,
-        layout,
-        showGroupNames,
-        periodDisplayOnAxis,
-        periodDisplayInCell,
-        subjectFormat,
-        individualStudents,
-        fontSize: mapFontSize(fontSize),
-        printWithColour,
-      };
-      const printResponse = await getPrintTimetable(f);
-
-      if (
-        printResponse &&
-        printResponse.print_printTimetable &&
-        printResponse.print_printTimetable.url
-      )
-        window.open(
-          printResponse.print_printTimetable.url,
-          '_blank',
-          'noreferrer'
-        );
-    }
-  );
   return (
-    <>
-      <form onSubmit={onSubmit}>
-        <Grid container spacing={2} direction="row" sx={{ py: 4 }}>
-          <Grid item>
-            <RHFSwitch
-              label={t(`printing:timetable.options.printWithColour`)}
-              controlLabelProps={{
-                sx: { ml: 0, height: '100%' },
-              }}
-              controlProps={{ name: 'printWithColour', control }}
-            />
-          </Grid>
-          <Grid item>
-            <RHFSwitch
-              label={t(`printing:timetable.options.showRooms`)}
-              controlLabelProps={{
-                sx: { ml: 0, height: '100%' },
-              }}
-              controlProps={{ name: 'showRooms', control }}
-            />
-          </Grid>
-          <Grid item>
-            <RHFSwitch
-              label={t(`printing:timetable.options.showGroupNames`)}
-              controlLabelProps={{
-                sx: { ml: 0, height: '100%' },
-              }}
-              controlProps={{ name: 'showGroupNames', control }}
-            />
-          </Grid>
-          <Grid item>
-            <RHFSelect<PrintStaffTimetableFormState, Print_TimetableStaffFormat>
-              fullWidth
-              sx={{ minWidth: 200 }}
-              label={t(`printing:timetable.options.teacherDisplayFormat`)}
-              options={Object.values(Print_TimetableStaffFormat)}
-              getOptionLabel={(option) =>
-                t(`printing:timetable.teacherDisplayOptions.${option}`)
-              }
-              controlProps={{
-                name: 'teacherDisplayOption',
-                control,
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <RHFSelect<PrintStaffTimetableFormState, Print_TimetableLayout>
-              fullWidth
-              sx={{ minWidth: 200 }}
-              label={t(`printing:timetable.options.layout`)}
-              options={Object.values(Print_TimetableLayout)}
-              getOptionLabel={(option) =>
-                t(`printing:timetable.layout.${option}`)
-              }
-              controlProps={{
-                name: 'layout',
-                control,
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <RHFSelect<
-              PrintStaffTimetableFormState,
-              Print_TimetablePeriodDisplayOnAxis
+    <Stack spacing={2} pt={2}>
+      <form onSubmit={onView}>
+        <Stack direction="row" spacing={2}>
+          <Card sx={{ py: 1.5, px: 2.5, flex: 1 }}>
+            <Typography variant="h6" sx={{ pb: 2 }}>
+              {t('printing:selectInfoToPrint')}
+            </Typography>
+            <Stack direction="row" spacing={4}>
+              <Stack spacing={2} flex={1} maxWidth={300}>
+                <RHFSelect<
+                  PrintStaffTimetableFormState<T>,
+                  Print_TimetableStaffFormat
+                >
+                  fullWidth
+                  label={t(`printing:timetable.options.teacherDisplayFormat`)}
+                  options={Object.values(Print_TimetableStaffFormat)}
+                  getOptionLabel={(option) =>
+                    t(`printing:timetable.teacherDisplayOptions.${option}`)
+                  }
+                  controlProps={{
+                    name: 'teacherDisplayOption',
+                    control,
+                  }}
+                />
+                <RHFSelect<
+                  PrintStaffTimetableFormState<T>,
+                  Print_TimetableLayout
+                >
+                  fullWidth
+                  label={t(`printing:timetable.options.layout`)}
+                  options={Object.values(Print_TimetableLayout)}
+                  getOptionLabel={(option) =>
+                    t(`printing:timetable.layout.${option}`)
+                  }
+                  controlProps={{
+                    name: 'layout',
+                    control,
+                  }}
+                />
+                <RHFSelect<
+                  PrintStaffTimetableFormState<T>,
+                  Print_TimetablePeriodDisplayOnAxis
+                >
+                  fullWidth
+                  label={t(`printing:timetable.options.periodDisplayOnAxis`)}
+                  options={Object.values(Print_TimetablePeriodDisplayOnAxis)}
+                  getOptionLabel={(option) =>
+                    t(`printing:timetable.periodDisplayOnAxis.${option}`)
+                  }
+                  controlProps={{
+                    name: 'periodDisplayOnAxis',
+                    control,
+                  }}
+                />
+              </Stack>
+              <Stack spacing={2} flex={1} maxWidth={300}>
+                <RHFSelect<
+                  PrintStaffTimetableFormState<T>,
+                  Print_TimetablePeriodDisplayInCell
+                >
+                  fullWidth
+                  label={t(`printing:timetable.options.periodDisplayInCell`)}
+                  options={Object.values(Print_TimetablePeriodDisplayInCell)}
+                  getOptionLabel={(option) =>
+                    t(`printing:timetable.periodDisplayInCell.${option}`)
+                  }
+                  controlProps={{
+                    name: 'periodDisplayInCell',
+                    control,
+                  }}
+                />
+                <RHFSelect<
+                  PrintStaffTimetableFormState<T>,
+                  Print_TimetableSubjectFormat
+                >
+                  fullWidth
+                  label={t(`printing:timetable.options.subjectFormat`)}
+                  options={Object.values(Print_TimetableSubjectFormat)}
+                  getOptionLabel={(option) =>
+                    t(`printing:timetable.subjectFormat.${option}`)
+                  }
+                  controlProps={{
+                    name: 'subjectFormat',
+                    control,
+                  }}
+                />
+              </Stack>
+              <RHFCheckboxGroup
+                label={t('printing:otherInfoToShow')}
+                controlProps={{ name: 'checkBoxes', control }}
+                options={[...checkboxOptions]}
+                getOptionLabel={(option) =>
+                  t(`printing:timetable.checkboxes.${option}`)
+                }
+              />
+            </Stack>
+          </Card>
+          <Stack spacing={2}>
+            <Card
+              sx={{ py: 1.5, px: 2.5, backgroundColor: 'slate.100', flex: 1 }}
+              variant="outlined"
             >
-              fullWidth
-              sx={{ minWidth: 200 }}
-              label={t(`printing:timetable.options.periodDisplayOnAxis`)}
-              options={Object.values(Print_TimetablePeriodDisplayOnAxis)}
-              getOptionLabel={(option) =>
-                t(`printing:timetable.periodDisplayOnAxis.${option}`)
-              }
-              controlProps={{
-                name: 'periodDisplayOnAxis',
-                control,
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <RHFSelect<
-              PrintStaffTimetableFormState,
-              Print_TimetablePeriodDisplayInCell
-            >
-              fullWidth
-              sx={{ minWidth: 200 }}
-              label={t(`printing:timetable.options.periodDisplayInCell`)}
-              options={Object.values(Print_TimetablePeriodDisplayInCell)}
-              getOptionLabel={(option) =>
-                t(`printing:timetable.periodDisplayInCell.${option}`)
-              }
-              controlProps={{
-                name: 'periodDisplayInCell',
-                control,
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <RHFSelect<PrintStaffTimetableFormState, FontSize>
-              fullWidth
-              sx={{ minWidth: 200 }}
-              label={t(`printing:timetable.options.fontSize`)}
-              options={Object.values(FontSize)}
-              getOptionLabel={(option) =>
-                t(`printing:timetable.fontSize.${option}`)
-              }
-              controlProps={{
-                name: 'fontSize',
-                control,
-              }}
-            />
-          </Grid>
-          <Grid item>
-            <RHFSelect<
-              PrintStaffTimetableFormState,
-              Print_TimetableSubjectFormat
-            >
-              fullWidth
-              sx={{ minWidth: 200 }}
-              label={t(`printing:timetable.options.subjectFormat`)}
-              options={Object.values(Print_TimetableSubjectFormat)}
-              getOptionLabel={(option) =>
-                t(`printing:timetable.subjectFormat.${option}`)
-              }
-              controlProps={{
-                name: 'subjectFormat',
-                control,
-              }}
-            />
-          </Grid>
-        </Grid>
-        <Stack justifyContent="right" direction="row" gap={1.5}>
-          <LoadingButton
-            size="large"
-            variant="contained"
-            type="submit"
-            loading={isLoading}
-          >
-            {t('common:actions.view')}
-          </LoadingButton>
-          <LoadingButton
-            size="large"
-            variant="contained"
-            loading={isLoading}
-            onClick={handlePrint}
-          >
-            {t('common:actions.print')}
-          </LoadingButton>
+              <Typography variant="h6" sx={{ pb: 2 }}>
+                {t('printing:printSettings.title')}
+              </Typography>
+              <Stack spacing={1}>
+                <RHFRadioGroup
+                  label={t('printing:printSettings.colourSettings.title')}
+                  disabled={isLoading}
+                  options={(['COLOR', 'BLACK_AND_WHITE'] as const).map(
+                    (option) => ({
+                      value: option,
+                      label: t(
+                        `printing:printSettings.colourSettings.${option}`
+                      ),
+                    })
+                  )}
+                  controlProps={{
+                    name: 'colorSetting',
+                    control,
+                  }}
+                />
+                <RHFRadioGroup
+                  label={t('printing:printSettings.fontSize.title')}
+                  disabled={isLoading}
+                  options={Object.values(FontSize).map((option) => ({
+                    value: option,
+                    label: t(`printing:printSettings.fontSize.${option}`),
+                  }))}
+                  controlProps={{
+                    name: 'fontSize',
+                    control,
+                  }}
+                />
+              </Stack>
+            </Card>
+            <Stack direction="row" spacing={2}>
+              <LoadingButton
+                variant="soft"
+                type="submit"
+                loading={isLoading}
+                sx={{ flex: 1 }}
+              >
+                {t('common:actions.view')}
+              </LoadingButton>
+              <LoadingButton
+                variant="contained"
+                loading={isLoading}
+                onClick={handlePrint}
+                sx={{ flex: 1 }}
+              >
+                {t('common:actions.print')}
+              </LoadingButton>
+            </Stack>
+          </Stack>
         </Stack>
       </form>
-      <Stack style={{ maxHeight: '100%', overflow: 'auto' }}>
-        {timetableData && timetableData.html && (
-          <div
-            style={{ maxHeight: '100%', overflow: 'auto' }}
-            dangerouslySetInnerHTML={{ __html: timetableData.html }}
-          />
-        )}
-      </Stack>
-    </>
+      <Card>
+        <Stack
+          style={{
+            maxHeight: '100%',
+            overflow: 'auto',
+            padding: '16px',
+            paddingTop: '8px',
+          }}
+        >
+          {timetableData?.html && (
+            <div
+              style={{ maxHeight: '100%', overflow: 'auto' }}
+              // eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={{ __html: timetableData.html }}
+            />
+          )}
+        </Stack>
+      </Card>
+    </Stack>
   );
 }
-
-export const defaultValues = {
-  showRooms: true,
-  teacherDisplayOption: Print_TimetableStaffFormat.Full,
-  layout: Print_TimetableLayout.DaysOnXAxis,
-  showGroupNames: true,
-  periodDisplayOnAxis: Print_TimetablePeriodDisplayOnAxis.Time,
-  periodDisplayInCell: Print_TimetablePeriodDisplayInCell.Hide,
-  subjectFormat: Print_TimetableSubjectFormat.Full,
-  fontSize: FontSize.MEDIUM,
-  printWithColour: true,
-} as PrintStaffTimetableFormState;

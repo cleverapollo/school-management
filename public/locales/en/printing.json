@@ -1,4 +1,5 @@
 {
+  "selectInfoToPrint": "Select information to print",
   "timetable": {
     "title": "Print Timetables",
     "student": "Students",
@@ -47,16 +48,34 @@
       "individualStudents": "Individual Students",
       "allTeachers": "All Teachers",
       "allRooms": "All rooms",
-      "fontSize": "Font Size",
       "printWithColour": "Print with Colour"
     },
+    "checkboxes": {
+      "showGroupNames": "Show Group Names",
+      "showRooms": "Show Rooms"
+    }
+  },
+  "printSettings": {
+    "title": "Print settings",
+    "pageOrientation": {
+      "title": "Page orientation",
+      "LANDSCAPE": "Landscape",
+      "PORTRAIT": "Portrait"
+    },
+    "colourSettings": {
+      "title": "Colour settings",
+      "COLOR": "In colour",
+      "BLACK_AND_WHITE": "Black and white"
+    },
     "fontSize": {
+      "title": "Font size",
       "EXCEEDINGLY_SMALL": "Exceedingly Small",
       "SMALL": "Small",
       "MEDIUM": "Medium",
       "LARGE": "Large"
     }
   },
+  "otherInfoToShow": "Other information to show",
   "assessment": {
     "title": "Print assessment",
     "yearGroup": "Year group",
@@ -78,6 +97,22 @@
     "printDirection": {
       "LANDSCAPE": "Landscape",
       "PORTRAIT": "Portrait"
+    },
+    "showCommentsFrom": "Show comments from",
+    "commentOptions": {
+      "Teacher": "Teacher",
+      "Tutor": "Tutor",
+      "YearHead": "YearHead",
+      "Principal": "Principal"
+    },
+    "otherOptions": {
+      "Level": "Level",
+      "Grade": "Grade",
+      "Result": "Result",
+      "ExtraFields": "ExtraFields",
+      "AbsenceCount": "AbsenceCount",
+      "LateCount": "LateCount",
+      "CAOPoints": "CAOPoints"
     }
   }
 }
