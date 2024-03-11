@@ -1,19 +1,16 @@
 import { ICellRendererParams, Table, TableProps } from '@tyro/core';
-import { Reporting_TableFilterInput } from '@tyro/api';
+import {
+  Reporting_TableFilterInput,
+  Reporting_ReportCellType,
+} from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Color, Palette, useTheme } from '@mui/material';
 
 import { useRunReports } from '../api/run-report';
 import { DynamicForm } from '../components/dynamic-form';
-import {
-  ExtendedReportData,
-  ExtendedTableReportField,
-  ReportCellType,
-  ReportColumnDef,
-} from '../components/types';
+import { ExtendedReportData, ReportColumnDef } from '../components/types';
 import { useFormatTableValues } from '../hooks/use-format-values';
-import { mockTableReport } from './mock-custom-values';
 
 const getFiltersFromSearchParams = (
   searchParams: URLSearchParams
@@ -67,13 +64,9 @@ export default function ReportPage() {
   });
 
   const mainColumns = useMemo<ReportColumnDef[]>(() => {
-    const fields = (reportData?.fields || []) as ExtendedTableReportField[];
+    const fields = reportData?.fields || [];
 
-    // NOTE: only for testing purposes
-    const mockFields = mockTableReport.fields;
-
-    // TODO: replace mockFields with fields
-    return mockFields.map<ReportColumnDef>((column) => ({
+    return fields.map<ReportColumnDef>((column) => ({
       field: column.id,
       headerName: column.label,
       valueGetter: ({ data }) => {
@@ -81,28 +74,28 @@ export default function ReportPage() {
         const value = data[column.id];
 
         switch (column.cellType) {
-          case ReportCellType.Person: {
+          case Reporting_ReportCellType.Person: {
             return valueGetters.getPersonValue(value);
           }
-          case ReportCellType.PartyGroup: {
+          case Reporting_ReportCellType.PartyGroup: {
             return valueGetters.getPartyGroupValue(value);
           }
-          case ReportCellType.Date: {
+          case Reporting_ReportCellType.Date: {
             return valueGetters.getDateValue(value, column);
           }
-          case ReportCellType.Currency: {
+          case Reporting_ReportCellType.Currency: {
             return valueGetters.getCurrencyValue(value, column);
           }
-          case ReportCellType.Boolean: {
+          case Reporting_ReportCellType.Boolean: {
             return valueGetters.getBooleanValue(value);
           }
-          case ReportCellType.PhoneNumber: {
+          case Reporting_ReportCellType.PhoneNumber: {
             return valueGetters.getPhoneNumberValue(value);
           }
-          case ReportCellType.Chip: {
+          case Reporting_ReportCellType.Chip: {
             return valueGetters.getChipValue(value);
           }
-          case ReportCellType.Raw:
+          case Reporting_ReportCellType.Raw:
           default: {
             return valueGetters.getRawValue(value);
           }
@@ -113,29 +106,31 @@ export default function ReportPage() {
         if (!data) return null;
         const value = data[column.id];
 
+        if (!column.cellType) return cellRenders.renderRawValue(value, column);
+
         switch (column.cellType) {
-          case ReportCellType.Person: {
+          case Reporting_ReportCellType.Person: {
             return cellRenders.renderPersonAvatar(value, column);
           }
-          case ReportCellType.PartyGroup: {
+          case Reporting_ReportCellType.PartyGroup: {
             return cellRenders.renderPartyGroupAvatar(value, column);
           }
-          case ReportCellType.Date: {
+          case Reporting_ReportCellType.Date: {
             return valueGetters.getDateValue(value, column);
           }
-          case ReportCellType.Currency: {
+          case Reporting_ReportCellType.Currency: {
             return valueGetters.getCurrencyValue(value, column);
           }
-          case ReportCellType.Boolean: {
+          case Reporting_ReportCellType.Boolean: {
             return cellRenders.renderBooleanValue(value);
           }
-          case ReportCellType.PhoneNumber: {
+          case Reporting_ReportCellType.PhoneNumber: {
             return valueGetters.getPhoneNumberValue(value);
           }
-          case ReportCellType.Chip: {
+          case Reporting_ReportCellType.Chip: {
             return cellRenders.renderChipValue(value, column);
           }
-          case ReportCellType.Raw:
+          case Reporting_ReportCellType.Raw:
           default: {
             return cellRenders.renderRawValue(value, column);
           }
@@ -196,11 +191,7 @@ export default function ReportPage() {
   const genericReportData = useMemo<ExtendedReportData[]>(() => {
     const reportFieldsData = (reportData?.data || []) as ExtendedReportData[];
 
-    // NOTE: only for testing purposes
-    const mockFieldsData = mockTableReport.data;
-
-    // TODO: replace mockFieldsData with reportFieldsData
-    return mockFieldsData.reduce<ExtendedReportData[]>(
+    return reportFieldsData.reduce<ExtendedReportData[]>(
       (reportFieldData, obj) => {
         const rowData = Object.keys(obj).reduce((row, key) => {
           row[key] ??= obj[key];

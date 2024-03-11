@@ -58,6 +58,17 @@ const reportsRun = graphql(/* GraphQL */ `
         maxWidth
         minWidth
         pinned
+        cellType
+        type
+        meta {
+          chipSize
+          chipVariant
+          currency
+          dateFormat
+          showAvatar
+          avatarSize
+          enableLink
+        }
       }
       metrics {
         defaultValue

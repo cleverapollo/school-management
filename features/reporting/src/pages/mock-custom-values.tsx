@@ -1,13 +1,16 @@
-import { PartyGroupType, PartyPersonType, Reporting_Pinned } from '@tyro/api';
 import {
-  ExtendedReportData,
-  ExtendedTableReportField,
-  ReportCellType,
-} from '../components/types';
+  PartyGroupType,
+  PartyPersonType,
+  Reporting_Pinned,
+  Reporting_ReportCellType,
+  Reporting_TableFieldType,
+  Reporting_TableReportField,
+} from '@tyro/api';
+import { ExtendedReportData } from '../components/types';
 import { Report } from '../utils/get-report-url';
 
 export const mockTableReport: {
-  fields: ExtendedTableReportField[];
+  fields: Reporting_TableReportField[];
   data: ExtendedReportData[];
 } = {
   fields: [
@@ -19,7 +22,8 @@ export const mockTableReport: {
       sortable: true,
       pinned: Reporting_Pinned.Left,
       checkExpandedRows: false,
-      cellType: ReportCellType.Raw,
+      cellType: Reporting_ReportCellType.Raw,
+      type: Reporting_TableFieldType.String,
     },
     {
       id: 'full_name',
@@ -28,7 +32,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Person,
+      cellType: Reporting_ReportCellType.Person,
+      type: Reporting_TableFieldType.String,
       meta: {
         showAvatar: true,
         enableLink: true,
@@ -41,7 +46,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Person,
+      cellType: Reporting_ReportCellType.Person,
+      type: Reporting_TableFieldType.String,
       meta: {
         showAvatar: false,
         enableLink: true,
@@ -54,7 +60,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.PartyGroup,
+      cellType: Reporting_ReportCellType.PartyGroup,
+      type: Reporting_TableFieldType.String,
       meta: {
         showAvatar: true,
         enableLink: true,
@@ -67,7 +74,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Date,
+      cellType: Reporting_ReportCellType.Date,
+      type: Reporting_TableFieldType.String,
       meta: {
         dateFormat: 'L',
       },
@@ -79,7 +87,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Raw,
+      cellType: Reporting_ReportCellType.Raw,
+      type: Reporting_TableFieldType.String,
     },
     {
       id: 'amount',
@@ -88,7 +97,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Currency,
+      cellType: Reporting_ReportCellType.Currency,
+      type: Reporting_TableFieldType.String,
     },
     {
       id: 'service_fees_amount',
@@ -97,7 +107,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Currency,
+      cellType: Reporting_ReportCellType.Currency,
+      type: Reporting_TableFieldType.String,
     },
     {
       id: 'total',
@@ -106,7 +117,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Currency,
+      cellType: Reporting_ReportCellType.Currency,
+      type: Reporting_TableFieldType.String,
     },
     {
       id: 'payee_name',
@@ -115,7 +127,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Chip,
+      cellType: Reporting_ReportCellType.Chip,
+      type: Reporting_TableFieldType.String,
     },
     {
       id: 'payment_method',
@@ -124,7 +137,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Chip,
+      cellType: Reporting_ReportCellType.Chip,
+      type: Reporting_TableFieldType.String,
     },
     {
       id: 'stripe_id',
@@ -133,7 +147,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Raw,
+      cellType: Reporting_ReportCellType.Raw,
+      type: Reporting_TableFieldType.String,
       meta: {
         enableLink: true,
       },
@@ -145,7 +160,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Boolean,
+      cellType: Reporting_ReportCellType.Boolean,
+      type: Reporting_TableFieldType.String,
     },
     {
       id: 'card_type',
@@ -154,7 +170,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Raw,
+      cellType: Reporting_ReportCellType.Raw,
+      type: Reporting_TableFieldType.String,
     },
     {
       id: 'phone_number',
@@ -163,7 +180,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.PhoneNumber,
+      cellType: Reporting_ReportCellType.PhoneNumber,
+      type: Reporting_TableFieldType.String,
     },
     {
       id: 'payout_date',
@@ -172,7 +190,8 @@ export const mockTableReport: {
       hideMenu: false,
       sortable: true,
       checkExpandedRows: false,
-      cellType: ReportCellType.Date,
+      cellType: Reporting_ReportCellType.Date,
+      type: Reporting_TableFieldType.String,
       meta: {
         dateFormat: 'L',
       },

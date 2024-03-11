@@ -15,21 +15,20 @@ import {
   PartyPersonType,
   Person,
   PhoneNumber,
+  Reporting_MetaChipSize,
+  Reporting_MetaChipVariant,
+  Reporting_TableReportField,
   SubjectGroup,
 } from '@tyro/api';
 import { StudentTableAvatar } from '@tyro/people';
 import dayjs from 'dayjs';
 import { Stack, Chip } from '@mui/material';
-import {
-  ExtendedReportData,
-  ExtendedTableReportField,
-  ReportChipValue,
-} from '../components/types';
+import { ExtendedReportData, ReportChipValue } from '../components/types';
 import { getReportUrl, Report } from '../utils/get-report-url';
 
 const getCustomLink = (
   value: ExtendedReportData[number],
-  column: ExtendedTableReportField,
+  column: Reporting_TableReportField,
   internalUrl?: string | null
 ) => {
   if (!column.meta?.enableLink) return null;
@@ -88,7 +87,7 @@ export const useFormatTableValues = () => {
 
   const renderRawValue = (
     value: ExtendedReportData[number],
-    column: ExtendedTableReportField
+    column: Reporting_TableReportField
   ) => {
     const valueRaw = getRawValue(value);
     const toLink = getCustomLink(value, column);
@@ -118,7 +117,7 @@ export const useFormatTableValues = () => {
 
   const renderPersonAvatar = (
     value: ExtendedReportData[number],
-    column: ExtendedTableReportField
+    column: Reporting_TableReportField
   ) => {
     const valueAsPerson = value.value as Person | Person[];
 
@@ -164,7 +163,7 @@ export const useFormatTableValues = () => {
 
   const renderPartyGroupAvatar = (
     value: ExtendedReportData[number],
-    column: ExtendedTableReportField
+    column: Reporting_TableReportField
   ) => {
     const valueAsPartyGroup = value.value as PartyGroup & {
       type: PartyGroupType;
@@ -199,21 +198,21 @@ export const useFormatTableValues = () => {
 
   const getDateValue = (
     value: ExtendedReportData[number],
-    column: ExtendedTableReportField
+    column: Reporting_TableReportField
   ) => {
     const valueAsDate = dayjs(value.value as string);
 
-    return valueAsDate.format(column.meta?.dateFormat);
+    return valueAsDate.format(column.meta?.dateFormat || 'L');
   };
 
   const getCurrencyValue = (
     value: ExtendedReportData[number],
-    column: ExtendedTableReportField
+    column: Reporting_TableReportField
   ) => {
     const valueAsCurrency = Number(value.value as number);
 
     return formatCurrency(valueAsCurrency, {
-      currency: column.meta?.currency,
+      currency: column.meta?.currency || 'EUR',
     });
   };
 
@@ -240,7 +239,7 @@ export const useFormatTableValues = () => {
 
   const renderChipValue = (
     value: ExtendedReportData[number],
-    column: ExtendedTableReportField
+    column: Reporting_TableReportField
   ) => {
     const valueAsChip = value.value as ReportChipValue | ReportChipValue[];
 
@@ -255,8 +254,8 @@ export const useFormatTableValues = () => {
             key={name}
             label={name}
             color={color || 'slate'}
-            size={column.meta?.chipSize || 'small'}
-            variant={column.meta?.chipVariant || 'soft'}
+            size={column.meta?.chipSize || Reporting_MetaChipSize.Small}
+            variant={column.meta?.chipVariant || Reporting_MetaChipVariant.Soft}
           />
         ))}
       </Stack>
