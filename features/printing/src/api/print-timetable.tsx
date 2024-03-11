@@ -17,6 +17,7 @@ const printTimetable = graphql(/* GraphQL */ `
 `);
 const printTimetableQuery = (filter: Print_TimetableOptions) => ({
   queryKey: ['print', 'timetable', filter],
+  staleTime: 0,
   queryFn: async () =>
     gqlClient.request(printTimetable, {
       filter,

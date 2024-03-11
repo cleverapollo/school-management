@@ -6,7 +6,6 @@ import {
   queryClient,
   UseQueryReturnType,
 } from '@tyro/api';
-import { assessmentsKeys } from './keys';
 
 const printAssessment = graphql(/* GraphQL */ `
   query printAssessment($filter: Print_AssessmentOptions!) {
@@ -18,7 +17,8 @@ const printAssessment = graphql(/* GraphQL */ `
 `);
 
 const printAssessmentQuery = (filter: Print_AssessmentOptions) => ({
-  queryKey: assessmentsKeys.print(filter),
+  queryKey: ['print', 'assessment', filter],
+  staleTime: 0,
   queryFn: async () =>
     gqlClient.request(printAssessment, {
       filter,

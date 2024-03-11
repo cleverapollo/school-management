@@ -9,13 +9,14 @@ export default function SubjectGroupProfileAttendancePage() {
   const groupIdNumber = useNumber(groupId);
   const [searchParams] = useSearchParams();
 
-  const { data: supportGroupData } = useSubjectGroupById(groupIdNumber);
+  const { data: subjectGroupData } = useSubjectGroupById(groupIdNumber);
 
   return (
     <GroupAttendance
-      partyId={supportGroupData?.partyId ?? 0}
+      groupName={subjectGroupData?.name}
+      partyId={subjectGroupData?.partyId ?? 0}
       eventStartTime={searchParams.get('eventStartTime')}
-      students={supportGroupData?.students || []}
+      students={subjectGroupData?.students || []}
     />
   );
 }

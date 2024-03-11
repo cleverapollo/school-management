@@ -1,5 +1,5 @@
 import { Box, Fade } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import {
   PermissionUtils,
@@ -14,10 +14,13 @@ import {
   ICellRendererParams,
   PageContainer,
   PageHeading,
+  ListNavigatorType,
   Table,
   TableAvatar,
   useDisclosure,
   usePreferredNameLayout,
+  useListNavigatorSettings,
+  PartyListNavigatorMenuItemParams,
 } from '@tyro/core';
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
 import { MobileIcon, PrinterIcon, SendMailIcon } from '@tyro/icons';
@@ -33,6 +36,7 @@ import { printGroupMembers } from '../../utils/print-group-members';
 
 const getYearGroupsColumns = (
   t: TFunction<'common'[], undefined, 'common'[]>,
+  onBeforeNavigate: () => void,
   displayNames: ReturnType<typeof usePreferredNameLayout>['displayNames']
 ): GridOptions<ReturnTypeFromUseYearGroups>['columnDefs'] => [
   {
@@ -56,6 +60,7 @@ const getYearGroupsColumns = (
               borderRadius: 1,
             },
           }}
+          onBeforeNavigate={onBeforeNavigate}
         />
       ) : null,
   },
@@ -98,9 +103,29 @@ export default function YearGroups() {
   const { sendMailToParties } = useMailSettings();
   const { mutateAsync: updateYearGroupLeads } = useUpdateYearGroupLeads();
 
+  const visibleDataRef = useRef<() => ReturnTypeFromUseYearGroups[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.YearGroup,
+    });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      t('groups:yearGroups'),
+      visibleDataRef
+        .current?.()
+        .map(({ yearGroupEnrollmentPartyId, name }) => ({
+          id: yearGroupEnrollmentPartyId,
+          name,
+          type: 'group',
+        }))
+    );
+  }, []);
+
   const yearGroupColumns = useMemo(
-    () => getYearGroupsColumns(t, displayNames),
-    [t, displayNames]
+    () => getYearGroupsColumns(t, onBeforeNavigateProfile, displayNames),
+    [t, onBeforeNavigateProfile, displayNames]
   );
 
   const actionMenuItems = useMemo(
@@ -188,6 +213,7 @@ export default function YearGroups() {
           titleProps={{ variant: 'h3' }}
         />
         <Table
+          visibleDataRef={visibleDataRef}
           rowData={yearGroupData ?? []}
           columnDefs={yearGroupColumns}
           rowSelection="multiple"

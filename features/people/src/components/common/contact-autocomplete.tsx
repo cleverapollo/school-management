@@ -5,35 +5,37 @@ import {
   RHFAutocomplete,
   RHFAutocompleteProps,
 } from '@tyro/core';
-import { UseQueryReturnType } from '@tyro/api';
+import { StudentContactFilter } from '@tyro/api';
 import { useTranslation } from '@tyro/i18n';
 import { usePeopleAutocompleteProps } from './use-people-autocomplete-props';
-import { useContactsForSelect } from '../../api/contact/list';
-
-export type ContactSelectOption = UseQueryReturnType<
-  typeof useContactsForSelect
->[number];
+import {
+  useContactsForSelect,
+  ReturnTypeFromUseContactsForSelect,
+} from '../../api/contact/list';
 
 type RHFContactAutocompleteProps<TField extends FieldValues> = Omit<
-  RHFAutocompleteProps<TField, ContactSelectOption>,
+  RHFAutocompleteProps<TField, ReturnTypeFromUseContactsForSelect>,
   'options'
->;
+> & { contactsFilter?: StudentContactFilter };
 
 type ContactAutocompleteProps = Omit<
-  AutocompleteProps<ContactSelectOption>,
+  AutocompleteProps<ReturnTypeFromUseContactsForSelect>,
   'options'
->;
+> & { contactsFilter?: StudentContactFilter };
 
-export const RHFContactAutocomplete = <TField extends FieldValues>(
-  props: RHFContactAutocompleteProps<TField>
-) => {
+export const RHFContactAutocomplete = <TField extends FieldValues>({
+  contactsFilter,
+  ...props
+}: RHFContactAutocompleteProps<TField>) => {
   const { t } = useTranslation(['people']);
-  const { data: contactData = [], isLoading } = useContactsForSelect();
+  const { data: contactData = [], isLoading } = useContactsForSelect(
+    contactsFilter ?? {}
+  );
   const peopleAutocompleteProps =
-    usePeopleAutocompleteProps<ContactSelectOption>();
+    usePeopleAutocompleteProps<ReturnTypeFromUseContactsForSelect>();
 
   return (
-    <RHFAutocomplete<TField, ContactSelectOption>
+    <RHFAutocomplete<TField, ReturnTypeFromUseContactsForSelect>
       label={t('people:searchForAContact')}
       {...peopleAutocompleteProps}
       fullWidth
@@ -44,11 +46,16 @@ export const RHFContactAutocomplete = <TField extends FieldValues>(
   );
 };
 
-export const ContactAutocomplete = (props: ContactAutocompleteProps) => {
+export const ContactAutocomplete = ({
+  contactsFilter,
+  ...props
+}: ContactAutocompleteProps) => {
   const { t } = useTranslation(['common']);
-  const { data: contactData = [], isLoading } = useContactsForSelect();
+  const { data: contactData = [], isLoading } = useContactsForSelect(
+    contactsFilter ?? {}
+  );
   const peopleAutocompleteProps =
-    usePeopleAutocompleteProps<ContactSelectOption>();
+    usePeopleAutocompleteProps<ReturnTypeFromUseContactsForSelect>();
 
   return (
     <Autocomplete

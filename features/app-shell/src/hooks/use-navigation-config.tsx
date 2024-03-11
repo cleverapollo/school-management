@@ -50,7 +50,7 @@ function filterAndMapToNavigationMenuLink(
     if (!hasAccess) return acc;
 
     if (navItem.type === NavObjectType.MenuLink) {
-      const { title, path, children } = navItem;
+      const { title, path, info, children } = navItem;
 
       if (children) {
         const childPaths = path ? [...parentPaths, path] : parentPaths;
@@ -65,11 +65,11 @@ function filterAndMapToNavigationMenuLink(
           acc.push({ title, children: filteredChildren });
         } else if (path) {
           const fullPath = joinPaths(...parentPaths, path);
-          acc.push({ title, path: fullPath });
+          acc.push({ title, info, path: fullPath });
         }
       } else if (path) {
         const fullPath = joinPaths(...parentPaths, path);
-        acc.push({ title, path: fullPath });
+        acc.push({ title, info, path: fullPath });
       }
     }
 

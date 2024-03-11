@@ -9,6 +9,8 @@ import { BookOpenWithTextIcon } from '@tyro/icons';
 import { redirect } from 'react-router-dom';
 import { getOptionsSetup, getOptionsSetupList } from './api/options';
 import { getOptionsPreferences } from './api/options-preferences';
+import { getOptionsSolutions } from './api/options-solutions';
+import { getOptionsClassLists } from './api/options-class-list';
 
 const SubjectOptions = lazyWithRetry(() => import('./pages/index'));
 const CreateSubjectOptions = lazyWithRetry(() => import('./pages/create'));
@@ -25,6 +27,9 @@ const StudentOptionsStatsPage = lazyWithRetry(
 );
 const StudentOptionsSolvePage = lazyWithRetry(
   () => import('./pages/view/solve')
+);
+const StudentOptionsClassListsPage = lazyWithRetry(
+  () => import('./pages/view/class-lists')
 );
 
 export const getRoutes: NavObjectFunction = (t) => [
@@ -118,11 +123,47 @@ export const getRoutes: NavObjectFunction = (t) => [
                   ]);
                 },
               },
-              // {
-              //   type: NavObjectType.NonMenuLink,
-              //   path: 'solve',
-              //   element: <StudentOptionsSolvePage />,
-              // },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'solve',
+                element: <StudentOptionsSolvePage />,
+                hasAccess: ({ hasPermission }) =>
+                  hasPermission('ps:1:options:options_beta_test'),
+                loader: ({ params }) => {
+                  const id = getNumber(params.id);
+
+                  if (!id) {
+                    throw404Error();
+                  }
+
+                  return Promise.all([
+                    getOptionsSetup(id),
+                    getOptionsSolutions({ optionId: id }),
+                  ]);
+                },
+              },
+              {
+                type: NavObjectType.NonMenuLink,
+                path: 'class-lists',
+                element: <StudentOptionsClassListsPage />,
+                hasAccess: ({ hasPermission }) =>
+                  hasPermission('ps:1:options:options_beta_test'),
+                loader: async ({ params }) => {
+                  const id = getNumber(params.id);
+
+                  if (!id) {
+                    throw404Error();
+                  }
+
+                  const { options_solutions: optionsSolutions } =
+                    await getOptionsSolutions({ optionId: id });
+                  const firstBlock = optionsSolutions.pools[0]?.blocks[0];
+                  return getOptionsClassLists({
+                    optionId: id,
+                    blockIdx: firstBlock?.blockIdx ?? 0,
+                  });
+                },
+              },
             ],
           },
         ],

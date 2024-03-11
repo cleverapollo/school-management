@@ -18,6 +18,7 @@ type TableAvatarProps = {
   AvatarProps?: CoreAvatarProps;
   avatarBackgroundColor?: string;
   size?: number;
+  onBeforeNavigate?: () => void;
   hideAvatar?: boolean;
   target?: RouterLinkProps['target'];
 };
@@ -30,6 +31,7 @@ export function StudentTableAvatar({
   AvatarProps,
   avatarBackgroundColor,
   size,
+  onBeforeNavigate,
   hideAvatar,
   target,
 }: TableAvatarProps) {
@@ -58,7 +60,12 @@ export function StudentTableAvatar({
         />
       )}
       {to ? (
-        <RouterLink sx={{ fontWeight: 600 }} to={to} target={target}>
+        <RouterLink
+          sx={{ fontWeight: 600 }}
+          to={to}
+          target={target}
+          onClick={onBeforeNavigate}
+        >
           {name}
         </RouterLink>
       ) : (

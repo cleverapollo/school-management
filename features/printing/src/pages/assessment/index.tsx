@@ -10,11 +10,6 @@ import { useState } from 'react';
 import { useAcademicNamespace } from '@tyro/api';
 import PrintAssessmentForm from '../../components/assessment/print-assessment-form';
 
-export type AutocompleteValue = {
-  partyId: number;
-  name: string;
-};
-
 export default function PrintAssessment() {
   const { t } = useTranslation(['common', 'printing']);
   const [assessment, setAssessment] = useState<

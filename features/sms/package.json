@@ -8,7 +8,7 @@
     "@mui/material": "^5.15.0",
     "@mui/system": "^5.15.0",
     "@tanstack/react-query": "^4.29.7",
-    "@tanstack/react-virtual": "^3.0.1",
+    "@tanstack/react-virtual": "3.0.4",
     "@tyro/api": "*",
     "@tyro/core": "*",
     "@tyro/i18n": "*",

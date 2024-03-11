@@ -7,6 +7,7 @@ export type TableAvatarProps = {
   name: string;
   avatarUrl?: string | null | undefined;
   AvatarProps?: CoreAvatarProps;
+  onBeforeNavigate?: () => void;
   hideAvatar?: boolean;
   target?: RouterLinkProps['target'];
 };
@@ -16,6 +17,7 @@ export function TableAvatar({
   name,
   avatarUrl,
   AvatarProps,
+  onBeforeNavigate,
   hideAvatar,
   target,
 }: TableAvatarProps) {
@@ -34,7 +36,12 @@ export function TableAvatar({
         />
       )}
       {to ? (
-        <RouterLink sx={{ fontWeight: 600 }} to={to} target={target}>
+        <RouterLink
+          sx={{ fontWeight: 600 }}
+          to={to}
+          target={target}
+          onClick={onBeforeNavigate}
+        >
           {name}
         </RouterLink>
       ) : (

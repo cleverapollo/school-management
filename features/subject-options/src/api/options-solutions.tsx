@@ -4,14 +4,16 @@ import {
   graphql,
   queryClient,
   UseQueryReturnType,
-  SolutionsFilter,
+  Options_OptionIdFilter,
+  SolutionStatus,
 } from '@tyro/api';
 import { optionsKeys } from './keys';
 
 const optionsSolutions = graphql(/* GraphQL */ `
-  query options_solutions($filter: SolutionsFilter) {
+  query options_solutions($filter: Options_OptionIdFilter) {
     options_solutions(filter: $filter) {
       optionId
+      solverStatus
       pools {
         poolIdx
         blocks {
@@ -24,6 +26,7 @@ const optionsSolutions = graphql(/* GraphQL */ `
             subjectId
             subject {
               name
+              shortCode
               colour
             }
             numStudents
@@ -35,9 +38,11 @@ const optionsSolutions = graphql(/* GraphQL */ `
             optionId
             idx
           }
+          mustGet
           studentChoices {
             studentPartyId
-            missed
+            subjectsAllocated
+            reservedUsed
             subjectSetChoices {
               choiceIdx
               blockIdx
@@ -45,6 +50,7 @@ const optionsSolutions = graphql(/* GraphQL */ `
               subjectGroupName
               subject {
                 name
+                shortCode
                 colour
               }
             }
@@ -55,29 +61,34 @@ const optionsSolutions = graphql(/* GraphQL */ `
           subjectId
           subject {
             name
+            shortCode
             colour
           }
           maxSize
           numClasses
+          numPreferences
+          missed
         }
       }
     }
   }
 `);
 
-const optionsSolutionsQuery = (filter: SolutionsFilter) => ({
+const optionsSolutionsQuery = (filter: Options_OptionIdFilter) => ({
   queryKey: optionsKeys.solutions(filter),
   queryFn: () => gqlClient.request(optionsSolutions, { filter }),
 });
 
-export function useOptionsSolutions(filter: SolutionsFilter) {
+export function useOptionsSolutions(filter: Options_OptionIdFilter) {
   return useQuery({
     ...optionsSolutionsQuery(filter),
     select: ({ options_solutions }) => options_solutions,
+    refetchInterval: (data) =>
+      data?.solverStatus === SolutionStatus.NotSolving ? false : 5000,
   });
 }
 
-export function getOptionsSolutions(filter: SolutionsFilter) {
+export function getOptionsSolutions(filter: Options_OptionIdFilter) {
   return queryClient.fetchQuery(optionsSolutionsQuery(filter));
 }
 

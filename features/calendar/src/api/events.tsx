@@ -171,12 +171,12 @@ export function useCalendarEvents(
     dayjs(filter.date).add(1, 'month').endOf('month')
   );
 
-  const hasPartyIds = Boolean(filter.resources.partyIds?.length);
+  const hasResourceIds = Boolean(filter.resources.partyIds?.length) || Boolean(filter.resources.roomIds?.length) ;
 
   return useQuery({
     ...calendarEventsQuery(filter),
-    keepPreviousData: hasPartyIds,
-    enabled: hasPartyIds,
+    keepPreviousData: hasResourceIds,
+    enabled: hasResourceIds,
     select: useCallback(
       ({ calendar_calendarEvents }: Calendar_CalendarEventsQuery) => {
         const { resources } = calendar_calendarEvents ?? { resources: [] };

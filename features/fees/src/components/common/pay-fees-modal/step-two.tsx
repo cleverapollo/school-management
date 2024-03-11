@@ -235,6 +235,9 @@ export function PayFeesStepTwo() {
       paymentMethod:
         paymentsToPayAndMethod?.paymentMethod ?? PaymentMethod.Card,
       paymentStatus: PaymentStatus.Created,
+      onBehalfOfEmail:
+        paymentsToPayAndMethod?.onBehalfOf?.personalInformation?.primaryEmail
+          ?.email,
     }),
     [paymentsToPayAndMethod]
   );
@@ -251,7 +254,7 @@ export function PayFeesStepTwo() {
 
   if (!paymentsToPayAndMethod) return null;
 
-  return paymentsToPayAndMethod.paymentMethod === PaymentMethod.Cash ? (
+  return paymentsToPayAndMethod.paymentMethod !== PaymentMethod.Card ? (
     <CashCheckoutForm paymentInput={paymentInput} />
   ) : (
     <Elements stripe={stripePromise} options={options}>

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { GridOptions, Table, ValueGetterParams } from '@tyro/core';
-import { Theme, useTheme } from '@mui/material';
+import { alpha, Theme, useTheme } from '@mui/material';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { ReturnTypeFromUseOptionsSetup } from '../../../api/options';
 import { ReturnTypeFromUseOptionsPreferences } from '../../../api/options-preferences';
@@ -24,7 +24,7 @@ function getSubjectBreakdownData(
 
   studentChoices.forEach(({ choices }) => {
     choices.forEach(({ subject, id }) => {
-      const subjectIndex = subjectIndexesById.get(subject.id);
+      const subjectIndex = subjectIndexesById.get(subject?.id);
       if (subjectIndex !== undefined) {
         const { preferenceIdx } = id;
         const currentCount =
@@ -52,7 +52,14 @@ const getBreakdownTableColumns = (
     headerName: 'Subject',
     valueGetter: ({ data }) => data?.subject?.shortCode,
     cellStyle: ({ data }) => ({
-      backgroundColor: theme.palette[data?.subject?.colour ?? 'slate'][200],
+      backgroundColor: alpha(
+        theme.palette[data?.subject?.colour ?? 'slate'].main,
+        0.16
+      ),
+      color:
+        theme.palette[data?.subject?.colour ?? 'slate'][
+          theme.isLight ? 'dark' : 'light'
+        ],
       fontWeight: '600',
     }),
     pinned: 'left',
@@ -65,7 +72,7 @@ const getBreakdownTableColumns = (
     (_, preferenceIdx) =>
       ({
         coldId: `pref-${preferenceIdx}`,
-        headerName: t('subjectOptions:prefX', { x: preferenceIdx }),
+        headerName: t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
         valueGetter: ({ data }: ValueGetterParams<SubjectBreakdownRow>) =>
           data?.prefBreakdown?.get(preferenceIdx) ?? 0,
         width: 64,
@@ -95,8 +102,8 @@ const getBreakdownTableColumns = (
     (_, i) => {
       const preferenceIdx = i + (subjectSet?.mustGet ?? 0);
       return {
-        coldId: `pref-${preferenceIdx}`,
-        headerName: t('subjectOptions:prefX', { x: preferenceIdx }),
+        colId: `pref-${preferenceIdx}`,
+        headerName: t('subjectOptions:reserveX', { x: i + 1 }),
         valueGetter: ({ data }: ValueGetterParams<SubjectBreakdownRow>) =>
           data?.prefBreakdown?.get(preferenceIdx) ?? 0,
         width: 64,

@@ -260,6 +260,10 @@ export const getRoutes: NavObjectFunction = (t) => [
                   const studentId = getNumber(params.id);
                   return getStudentsContacts(studentId);
                 },
+                hasAccess: ({ isStaffUserWithPermission }) =>
+                  isStaffUserWithPermission(
+                    'ps:1:people:view_contacts_for_student'
+                  ),
                 element: <StudentProfileContactsPage />,
               },
               {
@@ -437,7 +441,7 @@ export const getRoutes: NavObjectFunction = (t) => [
             type: NavObjectType.MenuLink,
             path: 'contacts',
             title: t('navigation:management.people.contacts'),
-            loader: () => getContacts(),
+            loader: () => getContacts({}),
             hasAccess: (permissions) =>
               permissions.isStaffUserWithPermission(
                 'ps:1:people:view_contact_list'

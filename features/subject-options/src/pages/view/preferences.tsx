@@ -20,7 +20,7 @@ import {
 } from '@tyro/core';
 
 import { RecipientsForSmsModal, SendSmsModal } from '@tyro/sms';
-import { Box, Chip, Fade } from '@mui/material';
+import { Box, Button, Chip, Fade, Stack } from '@mui/material';
 import { MobileIcon, SendMailIcon } from '@tyro/icons';
 import {
   getPersonProfileLink,
@@ -41,7 +41,10 @@ import {
   ReturnTypeFromUseOptionsSetup,
   useOptionsSetup,
 } from '../../api/options';
-import { useSaveStudentPreferences } from '../../api/save-student-preferences';
+import {
+  useAutoGenerateStudentPreferences,
+  useSaveStudentPreferences,
+} from '../../api/save-student-preferences';
 
 type StudentRow = {
   student: NonNullable<ReturnTypeFromUseOptionsSetup['students']>[number];
@@ -120,7 +123,7 @@ const getStudentPreferenceColumns = (
     children: Array.from(Array(subjectSet.canChoose)).map(
       (_, preferenceIdx) => {
         const colId = `${subjectSet.id.idx}-${preferenceIdx}`;
-        const isOutsideWhatTheyGet = preferenceIdx > subjectSet.mustGet - 1;
+        const isOutsideWhatTheyGet = preferenceIdx >= subjectSet.mustGet;
         const showLeftBorder = preferenceIdx === 0 && subjectSet.id.idx !== 1;
         const options = subjectSet.subjects.sort((a, b) =>
           a.name.localeCompare(b.name)
@@ -128,7 +131,11 @@ const getStudentPreferenceColumns = (
 
         return {
           field: `choices.${colId}`,
-          headerName: t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
+          headerName: isOutsideWhatTheyGet
+            ? t('subjectOptions:reserveX', {
+                x: preferenceIdx - subjectSet.mustGet + 1,
+              })
+            : t('subjectOptions:prefX', { x: preferenceIdx + 1 }),
           cellClass: [
             'ag-editable-cell',
             isOutsideWhatTheyGet && 'outside-get',
@@ -250,11 +257,19 @@ export default function StudentOptionsPreferencesPage() {
   const { data: optionsSetup } = useOptionsSetup(optionId);
   const { data: preferences } = useOptionsPreferences({ optionId });
   const { mutateAsync: savePreferences } = useSaveStudentPreferences();
+  const { mutateAsync: autoGenerateStudentPrefs } =
+    useAutoGenerateStudentPreferences();
 
   const studentRows = useMemo(
     () => getStudentRows(optionsSetup, preferences ?? []),
     [optionsSetup, preferences]
   );
+
+  const autoGenerate = () => {
+    autoGenerateStudentPrefs({
+      optionId,
+    });
+  };
 
   const studentPreferenceColumns = useMemo(
     () =>
@@ -334,11 +349,27 @@ export default function StudentOptionsPreferencesPage() {
         rowSelection="multiple"
         getRowId={({ data }) => JSON.stringify(data?.student?.partyId)}
         rightAdornment={
-          <Fade in={selectedStudents.length > 0} unmountOnExit>
-            <Box>
-              <ActionMenu menuItems={actionMenuItems} />
-            </Box>
-          </Fade>
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            alignItems="center"
+            spacing={1}
+          >
+            <Fade in={selectedStudents.length > 0} unmountOnExit>
+              <Box>
+                <ActionMenu menuItems={actionMenuItems} />
+              </Box>
+            </Fade>
+            {permissions.isTyroUser && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={autoGenerate}
+              >
+                {t(`subjectOptions:autoAssignPref`)}
+              </Button>
+            )}
+          </Stack>
         }
         onRowSelection={(students) =>
           setSelectedStudents(
@@ -354,6 +385,12 @@ export default function StudentOptionsPreferencesPage() {
           )
         }
         onBulkSave={onSavePreferences}
+        defaultExcelExportParams={{
+          processCellCallback: (params) => {
+            const value = params.value as number | undefined;
+            return params.formatValue(value);
+          },
+        }}
       />
 
       <SendSmsModal
@@ -365,7 +402,7 @@ export default function StudentOptionsPreferencesPage() {
             label: t('sms:contactsOfStudent', {
               count: selectedStudents.length,
             }),
-            type: SmsRecipientType.SubjectGroupStaff,
+            type: SmsRecipientType.Student,
           },
         ]}
       />

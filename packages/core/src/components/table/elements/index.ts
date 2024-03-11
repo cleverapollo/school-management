@@ -1,5 +1,6 @@
 export * from './boolean-value';
 export * from './linear-progress';
+export * from './link-render';
 export * from './selected-color';
 export * from './study-level-chip';
 export * from './attendance-code-chip';

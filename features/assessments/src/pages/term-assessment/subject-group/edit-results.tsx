@@ -2,7 +2,6 @@ import {
   BulkEditedRows,
   GridOptions,
   ICellRendererParams,
-  PageHeading,
   ReturnTypeDisplayName,
   Table,
   TableSelect,
@@ -18,10 +17,15 @@ import {
   ReturnOfUseToast,
   TableSwitch,
   TableBooleanValue,
+  ListNavigator,
+  ListNavigatorType,
+  useListNavigatorSettings,
+  PartyListNavigatorMenuItemParams,
+  PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { TFunction, useTranslation } from '@tyro/i18n';
 import { useParams } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import {
   UseQueryReturnType,
   CommentType,
@@ -32,6 +36,8 @@ import {
   useUser,
   getPersonProfileLink,
   StudentAssessmentExclusionInput,
+  usePermissions,
+  UsePermissionsReturn,
 } from '@tyro/api';
 import set from 'lodash/set';
 import { StudentTableAvatar } from '@tyro/people';
@@ -46,6 +52,7 @@ import { checkAndSetGrades } from '../../../utils/check-and-set-grades';
 import { CommentTypeCellEditor } from '../../../components/common/comment-type-cell-editor';
 import { getExtraFields } from '../../../utils/get-extra-fields';
 import { updateStudentAssessmentExclusion } from '../../../api/student-assessment-exclusion';
+import { useAssessmentSubjectGroups } from '../../../api/assessment-subject-groups';
 
 export type ReturnTypeFromUseAssessmentById = UseQueryReturnType<
   typeof useAssessmentById
@@ -59,8 +66,11 @@ type ColumnDefs = NonNullable<
   GridOptions<ReturnTypeFromUseAssessmentResults>['columnDefs']
 >;
 
+const editAssessmentPermission = 'ps:1:assessment:write_assessment_result';
+
 function getCommentFields(
   assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
+  permissions: UsePermissionsReturn,
   commentBanks: ReturnTypeFromUseCommentBanksWithComments | undefined,
   t: TFunction<
     ('common' | 'assessments')[],
@@ -96,7 +106,7 @@ function getCommentFields(
           {
             colId: 'commentType',
             headerName: t('assessments:labels.commentType'),
-            editable: true,
+            editable: permissions.hasPermission(editAssessmentPermission),
             cellEditorSelector: CommentTypeCellEditor(t),
             valueGetter: ({
               data,
@@ -134,7 +144,7 @@ function getCommentFields(
     {
       field: 'teacherComment',
       headerName: t('common:comment'),
-      editable: true,
+      editable: permissions.hasPermission(editAssessmentPermission),
       autoHeight: true,
       wrapText: true,
       width: 350,
@@ -238,6 +248,8 @@ const getColumnDefs = (
     undefined,
     ('common' | 'assessments')[]
   >,
+  permissions: UsePermissionsReturn,
+  onBeforeNavigateProfile: () => void,
   displayName: ReturnTypeDisplayName,
   toast: ReturnOfUseToast['toast'],
   assessmentData: ReturnTypeFromUseAssessmentById | null | undefined,
@@ -257,6 +269,7 @@ const getColumnDefs = (
           isPriorityStudent={!!data?.student?.extensions?.priority}
           hasSupportPlan={false}
           to={getPersonProfileLink(data?.student?.person)}
+          onBeforeNavigate={onBeforeNavigateProfile}
         />
       ) : null,
     cellClass: 'cell-value-visible',
@@ -267,7 +280,7 @@ const getColumnDefs = (
   {
     field: 'examinable',
     headerName: t('assessments:examinable'),
-    editable: true,
+    editable: permissions.hasPermission(editAssessmentPermission),
     cellClass: ['ag-editable-cell', 'disable-cell-edit-style'],
     cellEditor: TableSwitch,
     cellRenderer: ({
@@ -293,7 +306,7 @@ const getColumnDefs = (
   {
     field: 'studentStudyLevel',
     headerName: t('common:level'),
-    editable: true,
+    editable: permissions.hasPermission(editAssessmentPermission),
     valueSetter: (
       params: ValueSetterParams<ReturnTypeFromUseAssessmentResults>
     ) => {
@@ -314,7 +327,8 @@ const getColumnDefs = (
   {
     field: 'result',
     headerName: t('common:result'),
-    editable: ({ data }) => !!data?.examinable,
+    editable: ({ data }) =>
+      !!data?.examinable && permissions.hasPermission(editAssessmentPermission),
     valueFormatter: ({ value }) =>
       typeof value === 'number' ? `${value}%` : '',
     valueSetter: (
@@ -342,7 +356,7 @@ const getColumnDefs = (
   {
     field: 'targetResult',
     headerName: t('assessments:targetResult'),
-    editable: true,
+    editable: permissions.hasPermission(editAssessmentPermission),
     hide: !assessmentData?.captureTarget,
     suppressColumnsToolPanel: !assessmentData?.captureTarget,
     valueFormatter: ({ value }) =>
@@ -371,8 +385,8 @@ const getColumnDefs = (
     hide: !assessmentData?.captureTarget,
     suppressColumnsToolPanel: !assessmentData?.captureTarget,
   },
-  ...getCommentFields(assessmentData, commentBanks, t, toast),
-  ...getExtraFields(assessmentData?.extraFields, commentBanks),
+  ...getCommentFields(assessmentData, permissions, commentBanks, t, toast),
+  ...getExtraFields(assessmentData?.extraFields, permissions, commentBanks),
 ];
 
 export default function EditTermAssessmentResults() {
@@ -384,6 +398,7 @@ export default function EditTermAssessmentResults() {
   const subjectGroupIdAsNumber = useNumber(subjectGroupId);
   const { t } = useTranslation(['assessments', 'common']);
   const { displayName } = usePreferredNameLayout();
+  const permissions = usePermissions();
   const assessmentResultsFilter = {
     assessmentId: assessmentIdAsNumber ?? 0,
     subjectGroupIds: [subjectGroupIdAsNumber ?? 0],
@@ -436,10 +451,37 @@ export default function EditTermAssessmentResults() {
 
   const subjectGroupName = subjectGroup?.name ?? '';
 
+  const visibleDataRef =
+    useRef<() => ReturnTypeFromUseAssessmentResults[]>(null);
+
+  const { storeList } =
+    useListNavigatorSettings<PartyListNavigatorMenuItemParams>({
+      type: ListNavigatorType.Student,
+    });
+
+  const onBeforeNavigateProfile = useCallback(() => {
+    storeList(
+      subjectGroupName,
+      visibleDataRef
+        .current?.()
+        .map(({ student: { person }, studentPartyId, studentClassGroup }) => ({
+          id: studentPartyId,
+          type: 'person',
+          name: displayName(person),
+          firstName: person.firstName,
+          lastName: person.lastName,
+          avatarUrl: person.avatarUrl,
+          caption: studentClassGroup,
+        }))
+    );
+  }, [subjectGroupName]);
+
   const columnDefs = useMemo(
     () =>
       getColumnDefs(
         t,
+        permissions,
+        onBeforeNavigateProfile,
         displayName,
         toast,
         assessmentData,
@@ -448,6 +490,8 @@ export default function EditTermAssessmentResults() {
       ),
     [
       t,
+      permissions,
+      onBeforeNavigateProfile,
       displayName,
       toast,
       assessmentData,
@@ -560,35 +604,75 @@ export default function EditTermAssessmentResults() {
     return updateAssessmentResult(results);
   };
 
+  const { data: assessmentSubjectGroupsData = [] } = useAssessmentSubjectGroups(
+    academicNamespaceIdAsNumber ?? 0,
+    {
+      assessmentId: assessmentIdAsNumber,
+    }
+  );
+
+  const defaultListData = useMemo(
+    () =>
+      assessmentSubjectGroupsData.map<PartyListNavigatorMenuItemParams>(
+        ({ subjectGroup: group }) => {
+          const subject = group?.subjects?.[0];
+          const bgColorStyle = subject?.colour
+            ? { bgcolor: `${subject.colour}.500` }
+            : {};
+
+          return {
+            id: group.partyId,
+            name: group.name,
+            type: 'group',
+            avatarProps: {
+              sx: {
+                ...bgColorStyle,
+              },
+            },
+          };
+        }
+      ),
+    [assessmentSubjectGroupsData]
+  );
+
   return (
     <PageContainer
       title={t('assessments:pageHeading.editResultsFor', {
         name: subjectGroupName,
       })}
     >
-      <PageHeading
-        title={t('assessments:pageHeading.editResultsFor', {
-          name: subjectGroupName,
-        })}
-        breadcrumbs={{
-          links: [
-            {
-              name: t('assessments:pageHeading.assessments'),
-              href: '/assessments',
-            },
-            {
-              name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
-                name: assessmentData?.name,
-              }),
-              href: './../..',
-            },
-            {
-              name: t('assessments:actions.editResults'),
-            },
-          ],
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.SubjectGroup}
+        itemId={subjectGroupIdAsNumber}
+        optionTextKey="name"
+        defaultListData={defaultListData}
+        getRenderOption={PartyListNavigatorMenuItem}
+        pageHeadingProps={{
+          title: t('assessments:pageHeading.editResultsFor', {
+            name: subjectGroupName,
+          }),
+          breadcrumbs: {
+            links: [
+              {
+                name: t('assessments:pageHeading.assessments'),
+                href: '/assessments',
+              },
+              {
+                name: t('assessments:pageHeading.termAssessmentSubjectGroups', {
+                  name: assessmentData?.name,
+                }),
+                href: './../..',
+              },
+              {
+                name: t('assessments:actions.editResults'),
+              },
+            ],
+          },
         }}
       />
       <Table
+        key={subjectGroupIdAsNumber}
+        visibleDataRef={visibleDataRef}
         rowData={studentResults ?? []}
         columnDefs={columnDefs}
         getRowId={({ data }) => String(data?.studentPartyId)}

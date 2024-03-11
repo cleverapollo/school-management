@@ -2,14 +2,18 @@ import { useParams } from 'react-router-dom';
 import {
   useNumber,
   usePreferredNameLayout,
-  PageHeading,
-  Page,
   TabPageContainer,
+  PageContainer,
+  ListNavigator,
+  ListNavigatorType,
+  PartyListNavigatorMenuItemParams,
+  PartyListNavigatorMenuItem,
 } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { Container } from '@mui/material';
+import { useMemo } from 'react';
 import { ContactOverviewBar } from './contact-overview-bar';
 import { useContactPersonal } from '../../api/contact/personal';
+import { useContactsForSelect } from '../../api/contact/list';
 
 export default function ContactProfileContainer() {
   const { t } = useTranslation(['common', 'people']);
@@ -18,6 +22,7 @@ export default function ContactProfileContainer() {
   const idNumber = useNumber(id);
 
   const { data: contactData } = useContactPersonal(idNumber);
+  const { data: contactsListData = [] } = useContactsForSelect({});
 
   const { displayName } = usePreferredNameLayout();
 
@@ -25,19 +30,30 @@ export default function ContactProfileContainer() {
     name: displayName(contactData?.person),
   });
 
+  const defaultListData = useMemo(
+    () =>
+      contactsListData.map<PartyListNavigatorMenuItemParams>((contact) => ({
+        id: contact.partyId,
+        type: 'person',
+        name: displayName(contact),
+        firstName: contact.firstName,
+        lastName: contact.lastName,
+        avatarUrl: contact.avatarUrl,
+      })),
+    [contactsListData]
+  );
+
   return (
-    <Page title={userProfileName}>
-      <Container
-        maxWidth="xl"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-        }}
-      >
-        <PageHeading
-          title={userProfileName}
-          breadcrumbs={{
+    <PageContainer title={userProfileName}>
+      <ListNavigator<PartyListNavigatorMenuItemParams>
+        type={ListNavigatorType.Contact}
+        itemId={idNumber}
+        optionTextKey="name"
+        getRenderOption={PartyListNavigatorMenuItem}
+        defaultListData={defaultListData}
+        pageHeadingProps={{
+          title: userProfileName,
+          breadcrumbs: {
             links: [
               {
                 name: t('people:contacts'),
@@ -47,31 +63,31 @@ export default function ContactProfileContainer() {
                 name: userProfileName,
               },
             ],
-          }}
-        />
-        <ContactOverviewBar contactId={idNumber} />
-        <TabPageContainer
-          links={[
-            {
-              label: t('people:personal.title'),
-              value: 'personal',
-            },
-            {
-              label: t('common:students'),
-              value: 'students',
-            },
-            // NOTE: hide temporary this tab
-            // {
-            //   label: 'Fees',
-            //   value: 'fees',
-            // },
-            {
-              label: 'Access',
-              value: 'access',
-            },
-          ]}
-        />
-      </Container>
-    </Page>
+          },
+        }}
+      />
+      <ContactOverviewBar contactId={idNumber} />
+      <TabPageContainer
+        links={[
+          {
+            label: t('people:personal.title'),
+            value: 'personal',
+          },
+          {
+            label: t('common:students'),
+            value: 'students',
+          },
+          // NOTE: hide temporary this tab
+          // {
+          //   label: 'Fees',
+          //   value: 'fees',
+          // },
+          {
+            label: 'Access',
+            value: 'access',
+          },
+        ]}
+      />
+    </PageContainer>
   );
 }

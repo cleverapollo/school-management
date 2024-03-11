@@ -1,7 +1,9 @@
 import {
   Options_OptionFilter,
   Options_PreferencesFilter,
-  SolutionsFilter,
+  Options_OptionIdFilter,
+  Options_AvailableGroupsFilter,
+  Options_ClmFilter,
 } from '@tyro/api';
 
 export const optionsKeys = {
@@ -18,6 +20,14 @@ export const optionsKeys = {
     [...optionsKeys.all, 'subjectStats', filter] as const,
   studentAssignment: (filter: Options_OptionFilter) =>
     [...optionsKeys.all, 'studentAssignment', filter] as const,
-  solutions: (filter: SolutionsFilter) =>
+  solutions: (filter: Options_OptionIdFilter) =>
     [...optionsKeys.all, 'solutions', filter] as const,
+  availableEnrollmentGroups: (filter: Options_AvailableGroupsFilter) =>
+    [...optionsKeys.all, 'availableEnrollmentGroups', filter] as const,
+  enrollmentGroupsStudents: (filter: Options_AvailableGroupsFilter) =>
+    [...optionsKeys.all, 'enrollmentGroupsStudents', filter] as const,
+  solverInput: (filter: Options_OptionIdFilter) =>
+    [...optionsKeys.all, 'solverInput', filter] as const,
+  classLists: (filter: Options_ClmFilter) =>
+    [...optionsKeys.all, 'classLists', filter] as const,
 };
