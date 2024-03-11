@@ -53,6 +53,11 @@ export enum AccessUserType {
   Student = 'STUDENT'
 }
 
+export type AccountReset = {
+  email: Scalars['String'];
+  partyId: Scalars['Long'];
+};
+
 export type ActivePlan = {
   __typename?: 'ActivePlan';
   active?: Maybe<Scalars['Boolean']>;
@@ -389,6 +394,44 @@ export type Attendance_SaveBulkAttendancePartialDateInput = {
 export type Attendance_SaveBulkAttendanceSingleDateInput = {
   date: Scalars['Date'];
 };
+
+export type Attendance_SignInOutDeleteInput = {
+  id: Scalars['Long'];
+  personType: Attendance_SignInOutPersonType;
+};
+
+export type Attendance_SignInOutInput = {
+  attendanceCodeId?: InputMaybe<Scalars['Long']>;
+  datetime: Scalars['DateTime'];
+  eventAttendance?: InputMaybe<Array<InputMaybe<SaveEventAttendanceInput>>>;
+  firstName?: InputMaybe<Scalars['String']>;
+  id?: InputMaybe<Scalars['Long']>;
+  lastName?: InputMaybe<Scalars['String']>;
+  note?: InputMaybe<Scalars['String']>;
+  personType: Attendance_SignInOutPersonType;
+  sessionAttendance?: InputMaybe<Array<InputMaybe<SaveStudentSessionAttendanceInput>>>;
+  signInOutType: Attendance_SignInOutType;
+  studentPartyId?: InputMaybe<Scalars['Long']>;
+  visitingPartyId?: InputMaybe<Scalars['Long']>;
+};
+
+export enum Attendance_SignInOutPersonType {
+  Student = 'STUDENT',
+  Visitor = 'VISITOR'
+}
+
+export type Attendance_SignInOutReportFilter = {
+  fromDate?: InputMaybe<Scalars['DateTime']>;
+  ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  signInOutPersonType: Attendance_SignInOutPersonType;
+  studentPartyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  toDate?: InputMaybe<Scalars['DateTime']>;
+};
+
+export enum Attendance_SignInOutType {
+  SignIn = 'SIGN_IN',
+  SignOut = 'SIGN_OUT'
+}
 
 export type AuditId = {
   __typename?: 'AuditId';
@@ -1320,6 +1363,7 @@ export type CommentBank = {
   __typename?: 'CommentBank';
   active: Scalars['Boolean'];
   comments?: Maybe<Array<Comment>>;
+  custom: Scalars['Boolean'];
   description?: Maybe<Scalars['String']>;
   externalSystemId?: Maybe<Scalars['String']>;
   id: Scalars['Long'];
@@ -1961,6 +2005,7 @@ export type DashboardAssessmentFilter = {
 export type DashboardAssessmentResult = {
   __typename?: 'DashboardAssessmentResult';
   assessmentId: Scalars['Long'];
+  extraFields?: Maybe<Array<ResultExtraField>>;
   grade?: Maybe<Scalars['String']>;
   id: Scalars['Long'];
   result?: Maybe<Scalars['Int']>;
@@ -2231,6 +2276,11 @@ export type EnrollmentIre_CoreMemberships = {
   unenrolledStudentIds: Array<Scalars['Long']>;
   unenrolledStudents: Array<Student>;
   yearGroupEnrollment?: Maybe<YearGroupEnrollment>;
+};
+
+export type EnrollmentIre_CreateStudent = {
+  programmeStageId: Scalars['Int'];
+  student: CreateStudentInput;
 };
 
 export enum EnrollmentIre_MembershipChangeEnum {
@@ -3039,10 +3089,12 @@ export type Mutation = {
   assessment_saveStateCbaAssessment?: Maybe<Assessment>;
   assessment_saveTermAssessment?: Maybe<Assessment>;
   assessment_studentAssessmentExclusion: Success;
+  attendance_deleteSignInOut?: Maybe<Success>;
   attendance_saveAttendanceCode: Array<AttendanceCode>;
   attendance_saveBulkAttendance?: Maybe<Success>;
   attendance_saveEventAttendance: Array<EventAttendance>;
   attendance_saveParentalAttendanceRequest: Array<ParentalAttendanceRequest>;
+  attendance_saveSignInOut: Array<SignInOut>;
   attendance_saveStudentSessionAttendance: Array<StudentSessionAttendance>;
   attendance_withdrawParentalAttendanceRequest?: Maybe<Success>;
   calendar_createCalendar?: Maybe<Calendar>;
@@ -3093,6 +3145,7 @@ export type Mutation = {
   enrollment_ire_autoAssignBlocks: Success;
   enrollment_ire_autoAssignCore: Success;
   enrollment_ire_changeProgrammeStage: Success;
+  enrollment_ire_createStudent?: Maybe<Student>;
   enrollment_ire_upsertBlockMemberships: EnrollmentIre_BlockMemberships;
   enrollment_ire_upsertCoreMemberships: EnrollmentIre_CoreMemberships;
   fees_bulkApplyIndividualDiscounts: Success;
@@ -3128,7 +3181,7 @@ export type Mutation = {
   swm_applySubstitutions: Success;
   swm_deleteAbsence: Success;
   swm_deleteSubstitutions: Success;
-  swm_upsertAbsence: Array<Swm_StaffAbsence>;
+  swm_upsertAbsence: Swm_UpsertStaffAbsencesResponse;
   swm_upsertAbsenceType: Array<Swm_StaffAbsenceType>;
   tt_addLesson: Success;
   tt_cloneTimetable: TtTimetable;
@@ -3142,11 +3195,16 @@ export type Mutation = {
   tt_upsertSubjectGroup: Success;
   ttsolve_clearTimeslots: TtSolve_SovlerStatus;
   ttsolve_currentBest: TtSolve_SovlerStatus;
+  ttsolve_deleteRestriction: Success;
   ttsolve_solve: Success;
+  ttsolve_updateConfigurations: Success;
+  ttsolve_updateSubjectCompetencies: Success;
   ttsolve_upsertRestriction: Success;
+  users_accountReset?: Maybe<Success>;
   users_createProfileForGlobalUser?: Maybe<Profile>;
   users_deactivateProfiles?: Maybe<Success>;
   users_inviteUsers?: Maybe<InviteUsersResponse>;
+  users_resetPasswordBySms?: Maybe<SuccessFailure>;
   users_savePermissionGroup?: Maybe<PermissionGroup>;
   wellbeing_deleteStudentAen: Success;
   wellbeing_deleteStudentMedicalCondition: StudentMedical;
@@ -3216,6 +3274,11 @@ export type MutationAssessment_StudentAssessmentExclusionArgs = {
 };
 
 
+export type MutationAttendance_DeleteSignInOutArgs = {
+  input?: InputMaybe<Attendance_SignInOutDeleteInput>;
+};
+
+
 export type MutationAttendance_SaveAttendanceCodeArgs = {
   input?: InputMaybe<Array<InputMaybe<SaveAttendanceCodeInput>>>;
 };
@@ -3233,6 +3296,11 @@ export type MutationAttendance_SaveEventAttendanceArgs = {
 
 export type MutationAttendance_SaveParentalAttendanceRequestArgs = {
   input?: InputMaybe<Array<InputMaybe<SaveParentalAttendanceRequest>>>;
+};
+
+
+export type MutationAttendance_SaveSignInOutArgs = {
+  input?: InputMaybe<Attendance_SignInOutInput>;
 };
 
 
@@ -3471,6 +3539,11 @@ export type MutationEnrollment_Ire_ChangeProgrammeStageArgs = {
 };
 
 
+export type MutationEnrollment_Ire_CreateStudentArgs = {
+  input?: InputMaybe<EnrollmentIre_CreateStudent>;
+};
+
+
 export type MutationEnrollment_Ire_UpsertBlockMembershipsArgs = {
   input: EnrollmentIre_UpsertBlockMembership;
 };
@@ -3642,7 +3715,7 @@ export type MutationSwm_DeleteSubstitutionsArgs = {
 
 
 export type MutationSwm_UpsertAbsenceArgs = {
-  input: Array<Swm_UpsertStaffAbsence>;
+  input: Swm_UpsertStaffAbsences;
 };
 
 
@@ -3711,13 +3784,33 @@ export type MutationTtsolve_CurrentBestArgs = {
 };
 
 
+export type MutationTtsolve_DeleteRestrictionArgs = {
+  input: TtSolve_DeleteRestrictions;
+};
+
+
 export type MutationTtsolve_SolveArgs = {
   input?: InputMaybe<TtSolve_SolveParams>;
 };
 
 
+export type MutationTtsolve_UpdateConfigurationsArgs = {
+  input: TtSolve_UpdateConfigurations;
+};
+
+
+export type MutationTtsolve_UpdateSubjectCompetenciesArgs = {
+  input: TtSolve_UpdateSubjectCompetenciesInput;
+};
+
+
 export type MutationTtsolve_UpsertRestrictionArgs = {
-  input?: InputMaybe<TtSolve_UpsertRestrictions>;
+  input: TtSolve_UpsertRestrictions;
+};
+
+
+export type MutationUsers_AccountResetArgs = {
+  input?: InputMaybe<Array<InputMaybe<AccountReset>>>;
 };
 
 
@@ -3733,6 +3826,11 @@ export type MutationUsers_DeactivateProfilesArgs = {
 
 export type MutationUsers_InviteUsersArgs = {
   input?: InputMaybe<Array<InputMaybe<InviteUser>>>;
+};
+
+
+export type MutationUsers_ResetPasswordBySmsArgs = {
+  input: Users_ResetPassword;
 };
 
 
@@ -3912,7 +4010,7 @@ export type Notes_StudentBehaviour = {
   incidentDate: Scalars['DateTime'];
   noteId: Scalars['Long'];
   referencedParties: Array<Person>;
-  referencedPartiesIds: Array<Scalars['Long']>;
+  referencedPartyIds: Array<Scalars['Long']>;
   tagIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
   tags?: Maybe<Array<Maybe<Notes_Tag>>>;
   takenBy: Person;
@@ -4947,27 +5045,89 @@ export type PrimarySchoolIreFilter = {
 export type Print_AssessmentOptions = {
   assessmentId: Scalars['Long'];
   classGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
-  includeAttendance: Scalars['Boolean'];
+  includeAbsenceCount: Scalars['Boolean'];
+  includeCAOPoints: Scalars['Boolean'];
   includeExtraFields: Scalars['Boolean'];
+  includeGrade: Scalars['Boolean'];
+  includeLateCount: Scalars['Boolean'];
+  includeLevel: Scalars['Boolean'];
+  includePrincipalComment: Scalars['Boolean'];
+  includeResult: Scalars['Boolean'];
+  includeTeacherComment: Scalars['Boolean'];
+  includeTutorComment: Scalars['Boolean'];
+  includeYearHeadComment: Scalars['Boolean'];
   orientation: PageOrientation;
+  printColour: Scalars['Boolean'];
   studentIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   yearGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Int']>>>;
 };
 
 export type Print_GroupMembers = {
+  fields?: InputMaybe<Array<InputMaybe<Print_GroupMembersFields>>>;
   groupIds: Array<Scalars['Long']>;
   options: Print_GroupMembersOptions;
+  orientation?: InputMaybe<Print_Orientation>;
+  sorting?: InputMaybe<Print_NameSorting>;
 };
+
+export enum Print_GroupMembersFields {
+  ClassGroup = 'CLASS_GROUP',
+  RowNumber = 'ROW_NUMBER',
+  SchoolRollNo = 'SCHOOL_ROLL_NO',
+  StudentDepartmentId = 'STUDENT_DEPARTMENT_ID',
+  StudentId = 'STUDENT_ID',
+  StudentName = 'STUDENT_NAME',
+  StudyLevel = 'STUDY_LEVEL',
+  Subject = 'SUBJECT',
+  SubjectCode = 'SUBJECT_CODE',
+  Teacher = 'TEACHER',
+  TeacherId = 'TEACHER_ID'
+}
 
 export enum Print_GroupMembersOptions {
   Csv = 'CSV',
   Print = 'PRINT'
 }
 
+export enum Print_NameSorting {
+  FirstNameLastName = 'FIRST_NAME_LAST_NAME',
+  LastNameFirstName = 'LAST_NAME_FIRST_NAME'
+}
+
+export enum Print_Orientation {
+  Horizontal = 'HORIZONTAL',
+  Vertical = 'VERTICAL'
+}
+
 export type Print_PersonsGroupMemberships = {
+  fields?: InputMaybe<Array<InputMaybe<Print_PersonsGroupMembershipsFields>>>;
   groupTypes: Array<PartyGroupType>;
   options: Print_GroupMembersOptions;
+  orientation?: InputMaybe<Print_Orientation>;
   personIds: Array<Scalars['Long']>;
+  sorting?: InputMaybe<Print_NameSorting>;
+};
+
+export enum Print_PersonsGroupMembershipsFields {
+  GroupName = 'GROUP_NAME',
+  RowNumber = 'ROW_NUMBER',
+  StudentCount = 'STUDENT_COUNT',
+  StudentNames = 'STUDENT_NAMES',
+  StudyLevel = 'STUDY_LEVEL',
+  Subject = 'SUBJECT',
+  SubjectCode = 'SUBJECT_CODE',
+  Teacher = 'TEACHER'
+}
+
+export type Print_ResolveTemplateInput = {
+  input: Print_TemplateContextInput;
+  template: Scalars['String'];
+  variables: Array<TemplatingContextVariableInput>;
+};
+
+export type Print_TemplateContextInput = {
+  contextId: Scalars['String'];
+  contextType: TemplatingContextType;
 };
 
 export enum Print_TimetableLayout {
@@ -5160,6 +5320,7 @@ export type Query = {
   attendance_eventAttendanceReport: EventAttendanceReport;
   attendance_parentalAttendanceRequests: Array<ParentalAttendanceRequest>;
   attendance_sessionAttendanceList: Array<SessionAttendanceList>;
+  attendance_signInOutReport: Array<SignInOut>;
   attendance_studentSessionAttendance: Array<StudentSessionAttendance>;
   calendar_bellTimes: Array<Calendar_BellTime>;
   calendar_calendar: Array<Calendar>;
@@ -5243,7 +5404,9 @@ export type Query = {
   print_groupMembers: TemporaryDownload;
   print_personsGroupMemberships: TemporaryDownload;
   print_printTimetable: TemporaryDownload;
+  print_resolveTemplate: TemporaryDownload;
   print_substitution: TemporaryDownload;
+  print_templateContext: TemplatingContexts;
   profileTypes?: Maybe<Array<Maybe<ProfileType>>>;
   profiles?: Maybe<Array<Maybe<ProfileType>>>;
   reporting_reports: Array<Reporting_ReportInfoTopLevel>;
@@ -5273,9 +5436,12 @@ export type Query = {
   tt_swapTeacherOptions: TtSwapTeacherOptions;
   tt_timetable: TtTimetable;
   tt_timetables: Array<TtTimetable>;
+  ttsolve_competenciesMeta: TtSolve_CompetenciesMeta;
+  ttsolve_configuration: TtSolve_Configuration;
   ttsolve_getSolverInput: TtSolve_SolverInput;
   ttsolve_restrictions: TtSolve_Restrictions;
   ttsolve_restrictionsMeta: TtSolve_RestrictionsMeta;
+  ttsolve_subjectCompetencies: TtSolve_SubjectCompetencies;
   users_permissionGroups?: Maybe<Array<Maybe<PermissionGroup>>>;
   users_permissionSets?: Maybe<Array<Maybe<PermissionSet>>>;
   users_schoolInfo?: Maybe<SchoolInfo>;
@@ -5393,6 +5559,11 @@ export type QueryAttendance_ParentalAttendanceRequestsArgs = {
 
 export type QueryAttendance_SessionAttendanceListArgs = {
   filter?: InputMaybe<SessionAttendanceListFilter>;
+};
+
+
+export type QueryAttendance_SignInOutReportArgs = {
+  filter?: InputMaybe<Attendance_SignInOutReportFilter>;
 };
 
 
@@ -5726,8 +5897,18 @@ export type QueryPrint_PrintTimetableArgs = {
 };
 
 
+export type QueryPrint_ResolveTemplateArgs = {
+  input?: InputMaybe<Print_ResolveTemplateInput>;
+};
+
+
 export type QueryPrint_SubstitutionArgs = {
   filter?: InputMaybe<Swm_EventsForSubstitutionFilter>;
+};
+
+
+export type QueryPrint_TemplateContextArgs = {
+  filter: Print_TemplateContextInput;
 };
 
 
@@ -5861,18 +6042,28 @@ export type QueryTt_TimetablesArgs = {
 };
 
 
+export type QueryTtsolve_ConfigurationArgs = {
+  filter: TtSolve_SolveParams;
+};
+
+
 export type QueryTtsolve_GetSolverInputArgs = {
   filter: TtSolve_SolveParams;
 };
 
 
 export type QueryTtsolve_RestrictionsArgs = {
-  filter: TtTimetableFilter;
+  filter: TtSolve_SolveParams;
 };
 
 
 export type QueryTtsolve_RestrictionsMetaArgs = {
-  filter: TtTimetableFilter;
+  filter: TtSolve_SolveParams;
+};
+
+
+export type QueryTtsolve_SubjectCompetenciesArgs = {
+  filter: TtSolve_SubjectCompetenciesFilter;
 };
 
 
@@ -6031,9 +6222,42 @@ export enum Reporting_InteractiveCrosstab {
   TimeGrouping = 'TIME_GROUPING'
 }
 
+export enum Reporting_MetaChipSize {
+  Medium = 'MEDIUM',
+  Small = 'SMALL'
+}
+
+export enum Reporting_MetaChipVariant {
+  Filled = 'FILLED',
+  Outlined = 'OUTLINED',
+  Soft = 'SOFT'
+}
+
 export enum Reporting_Pinned {
   Left = 'left',
   Right = 'right'
+}
+
+export type Reporting_ReportCellMeta = {
+  __typename?: 'Reporting_ReportCellMeta';
+  avatarSize?: Maybe<Scalars['Int']>;
+  chipSize?: Maybe<Reporting_MetaChipSize>;
+  chipVariant?: Maybe<Reporting_MetaChipVariant>;
+  currency?: Maybe<Scalars['String']>;
+  dateFormat?: Maybe<Scalars['String']>;
+  enableLink?: Maybe<Scalars['Boolean']>;
+  showAvatar?: Maybe<Scalars['Boolean']>;
+};
+
+export enum Reporting_ReportCellType {
+  Boolean = 'BOOLEAN',
+  Chip = 'CHIP',
+  Currency = 'CURRENCY',
+  Date = 'DATE',
+  PartyGroup = 'PARTY_GROUP',
+  Person = 'PERSON',
+  PhoneNumber = 'PHONE_NUMBER',
+  Raw = 'RAW'
 }
 
 export type Reporting_ReportFilter = {
@@ -6153,6 +6377,7 @@ export type Reporting_TableReportDebug = {
 
 export type Reporting_TableReportField = {
   __typename?: 'Reporting_TableReportField';
+  cellType?: Maybe<Reporting_ReportCellType>;
   checkExpandedRows: Scalars['Boolean'];
   hideMenu: Scalars['Boolean'];
   id: Scalars['String'];
@@ -6547,12 +6772,38 @@ export type Swm_UpsertStaffAbsenceRequest = {
   toDate?: InputMaybe<Scalars['Date']>;
 };
 
+export type Swm_UpsertStaffAbsenceResponse = {
+  __typename?: 'SWM_UpsertStaffAbsenceResponse';
+  wasApplied: Scalars['Boolean'];
+};
+
 export type Swm_UpsertStaffAbsenceType = {
   absenceTypeId?: InputMaybe<Scalars['Int']>;
   availableForRequests: Scalars['Boolean'];
   code: Scalars['String'];
   description: Array<InputMaybe<TranslationInput>>;
   name: Array<InputMaybe<TranslationInput>>;
+};
+
+export type Swm_UpsertStaffAbsences = {
+  absences: Array<Swm_UpsertStaffAbsence>;
+  existingEventChecksAction?: InputMaybe<Swm_UpsertStaffAbsencesProceedWithExistingValidationChecks>;
+  /**  bypasses checks to see if absent staff has events to notifiy user about such as substitution */
+  ignorePreValidationExistingEventChecks: Scalars['Boolean'];
+};
+
+export type Swm_UpsertStaffAbsencesProceedWithExistingValidationChecks = {
+  /** delete all substitutions for the period of staff absence */
+  deleteSubstitutions: Scalars['Boolean'];
+  /** proceed with creating staff absence */
+  proceed: Scalars['Boolean'];
+};
+
+export type Swm_UpsertStaffAbsencesResponse = {
+  __typename?: 'SWM_UpsertStaffAbsencesResponse';
+  absenceIds: Array<Scalars['Int']>;
+  substitutionsPresent: Array<CalendarEvent>;
+  wasApplied: Scalars['Boolean'];
 };
 
 export type Swm_UpsertStaffSubstitutionType = {
@@ -6985,6 +7236,7 @@ export type SaveSolution = {
 
 export type SaveStateCbaAssessmentInput = {
   endDate: Scalars['Date'];
+  externalSystemId?: InputMaybe<Scalars['String']>;
   extraFields?: InputMaybe<Array<InputMaybe<SaveExtraFieldInput>>>;
   id?: InputMaybe<Scalars['Long']>;
   startDate: Scalars['Date'];
@@ -7372,6 +7624,16 @@ export type Sibling = {
   studentPartyId: Scalars['Long'];
 };
 
+export type SignInOut = {
+  createdBy: Staff;
+  createdByPartyId: Scalars['Long'];
+  dateTime: Scalars['DateTime'];
+  id: Scalars['Long'];
+  note?: Maybe<Scalars['String']>;
+  signInOutPersonType: Attendance_SignInOutPersonType;
+  type: Attendance_SignInOutType;
+};
+
 export type Sms = {
   __typename?: 'Sms';
   body: Scalars['String'];
@@ -7438,6 +7700,7 @@ export enum SmsRecipientType {
   Contact = 'CONTACT',
   GeneralGroupContact = 'GENERAL_GROUP_CONTACT',
   GeneralGroupStaff = 'GENERAL_GROUP_STAFF',
+  Person = 'PERSON',
   Staff = 'STAFF',
   Student = 'STUDENT',
   StudentTeachers = 'STUDENT_TEACHERS',
@@ -7859,6 +8122,7 @@ export type StudentMedicalFilter = {
 export type StudentResultFilter = {
   academicYearId?: InputMaybe<Scalars['Int']>;
   assessmentId: Scalars['Long'];
+  filterOutEmptyResults?: InputMaybe<Scalars['Boolean']>;
   studentPartyIds?: InputMaybe<Array<Scalars['Long']>>;
   subjectGroupIds?: InputMaybe<Array<Scalars['Long']>>;
 };
@@ -7876,6 +8140,21 @@ export type StudentSessionAttendanceFilter = {
   from: Scalars['Date'];
   partyIds?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
   to: Scalars['Date'];
+};
+
+export type StudentSignInOut = SignInOut & {
+  __typename?: 'StudentSignInOut';
+  attendanceCode: AttendanceCode;
+  attendanceCodeId: Scalars['Long'];
+  createdBy: Staff;
+  createdByPartyId: Scalars['Long'];
+  dateTime: Scalars['DateTime'];
+  id: Scalars['Long'];
+  note?: Maybe<Scalars['String']>;
+  signInOutPersonType: Attendance_SignInOutPersonType;
+  student: Student;
+  studentPartyId: Scalars['Long'];
+  type: Attendance_SignInOutType;
 };
 
 export type StudentSubjectGroup = {
@@ -8156,6 +8435,12 @@ export enum SubjectUsage {
 
 export type Success = {
   __typename?: 'Success';
+  success?: Maybe<Scalars['Boolean']>;
+};
+
+export type SuccessFailure = {
+  __typename?: 'SuccessFailure';
+  error?: Maybe<Array<Maybe<Scalars['String']>>>;
   success?: Maybe<Scalars['Boolean']>;
 };
 
@@ -8662,6 +8947,11 @@ export type Tt_UpdateTimetableGroupInput = {
 };
 
 export type Tt_UpdateTimetableGroupRowInput = {
+  blockId?: InputMaybe<Scalars['String']>;
+  classGroupId?: InputMaybe<Scalars['Long']>;
+  membershipType?: InputMaybe<TtGroupStudentMembershipTypeEnum>;
+  name?: InputMaybe<Scalars['String']>;
+  subjectGroupType?: InputMaybe<SubjectGroupType>;
   teachersPartyIds: Array<Scalars['Long']>;
   timetableGroupPartyId: Scalars['Long'];
 };
@@ -8672,6 +8962,38 @@ export enum TargetStatus {
   NotAchieved = 'NOT_ACHIEVED',
   NotApplicable = 'NOT_APPLICABLE'
 }
+
+export type TemplatingContext = {
+  __typename?: 'TemplatingContext';
+  description?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  variables: Array<TemplatingContextVariable>;
+};
+
+export enum TemplatingContextType {
+  Assessment = 'ASSESSMENT',
+  People = 'PEOPLE',
+  Staff = 'STAFF',
+  Student = 'STUDENT'
+}
+
+export type TemplatingContextVariable = {
+  __typename?: 'TemplatingContextVariable';
+  category?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+};
+
+export type TemplatingContextVariableInput = {
+  id?: InputMaybe<Scalars['String']>;
+};
+
+export type TemplatingContexts = {
+  __typename?: 'TemplatingContexts';
+  contexts?: Maybe<Array<Maybe<TemplatingContext>>>;
+};
 
 export type TemporaryDownload = {
   __typename?: 'TemporaryDownload';
@@ -8685,6 +9007,7 @@ export type Tenant = {
   liveSchool: Scalars['Boolean'];
   location?: Maybe<Scalars['String']>;
   name: Scalars['String'];
+  rollNo?: Maybe<Scalars['String']>;
   tenant: Scalars['Int'];
   type?: Maybe<Scalars['String']>;
 };
@@ -8715,6 +9038,64 @@ export enum TtSolveConstraintType {
   Hard = 'HARD',
   Soft = 'SOFT'
 }
+
+export type TtSolve_CompetenciesGroup = {
+  __typename?: 'TtSolve_CompetenciesGroup';
+  groupId: Scalars['Int'];
+  subjects: Array<TtSolve_CompetenciesGroupSubject>;
+};
+
+export type TtSolve_CompetenciesGroupSubject = {
+  __typename?: 'TtSolve_CompetenciesGroupSubject';
+  preference1Staff: Array<Staff>;
+  preference1StaffIds: Array<Scalars['Long']>;
+  preference2Staff: Array<Staff>;
+  preference2StaffIds: Array<Scalars['Long']>;
+  preference3Staff: Array<Staff>;
+  preference3StaffIds: Array<Scalars['Long']>;
+  subject: Subject;
+  subjectId: Scalars['Int'];
+};
+
+export type TtSolve_CompetenciesMeta = {
+  __typename?: 'TtSolve_CompetenciesMeta';
+  groups: Array<TtSolve_CompetenciesMetaGroup>;
+};
+
+export type TtSolve_CompetenciesMetaGroup = {
+  __typename?: 'TtSolve_CompetenciesMetaGroup';
+  id: Scalars['Int'];
+  name: Scalars['String'];
+};
+
+export type TtSolve_Configuration = {
+  __typename?: 'TtSolve_Configuration';
+  weightings?: Maybe<TtSolve_ConfigurationRestrictions>;
+};
+
+export type TtSolve_ConfigurationRestrictionMeta = {
+  __typename?: 'TtSolve_ConfigurationRestrictionMeta';
+  description: Scalars['String'];
+  id: Scalars['String'];
+  name: Scalars['String'];
+};
+
+export type TtSolve_ConfigurationRestrictionValue = {
+  __typename?: 'TtSolve_ConfigurationRestrictionValue';
+  id: Scalars['String'];
+  value: Scalars['Int'];
+};
+
+export type TtSolve_ConfigurationRestrictions = {
+  __typename?: 'TtSolve_ConfigurationRestrictions';
+  meta?: Maybe<TtSolve_ConfigurationRestrictionMeta>;
+  values?: Maybe<TtSolve_ConfigurationRestrictionValue>;
+};
+
+export type TtSolve_DeleteRestrictions = {
+  restrictionIds: Array<Scalars['Int']>;
+  timetableId: Scalars['Int'];
+};
 
 export type TtSolve_Restriction = {
   __typename?: 'TtSolve_Restriction';
@@ -8757,6 +9138,8 @@ export enum TtSolve_RestrictionArgumentInputType {
 
 export type TtSolve_RestrictionArgumentMetaField = {
   __typename?: 'TtSolve_RestrictionArgumentMetaField';
+  description?: Maybe<Scalars['String']>;
+  label: Scalars['String'];
   /**  possible values if a dropdown list */
   selectValues?: Maybe<Array<TtSolve_RestrictionDropdownValues>>;
   type: TtSolve_RestrictionArgumentInputType;
@@ -8819,9 +9202,46 @@ export type TtSolve_SovlerStatus = {
   solverStatus?: Maybe<Scalars['String']>;
 };
 
+export type TtSolve_SubjectCompetencies = {
+  __typename?: 'TtSolve_SubjectCompetencies';
+  groups: Array<TtSolve_CompetenciesGroup>;
+};
+
+export type TtSolve_SubjectCompetenciesFilter = {
+  competencyGroupId: Scalars['Int'];
+  timetableId: Scalars['Int'];
+};
+
 export type TtSolve_TimeslotHardSoftInput = {
   hardSoft?: InputMaybe<TtSolveConstraintType>;
   timeslot?: InputMaybe<TtTimeslotIdInput>;
+};
+
+export type TtSolve_UpdateConfigurations = {
+  timetableId: Scalars['Int'];
+  weightings?: InputMaybe<Array<InputMaybe<TtSolve_UpdateConfigurationsWeightings>>>;
+};
+
+export type TtSolve_UpdateConfigurationsWeightings = {
+  id: Scalars['String'];
+  value: Scalars['Int'];
+};
+
+export type TtSolve_UpdateSubjectCompetenciesInput = {
+  groups: Array<TtSolve_UpdateSubjectGroupInput>;
+  timetableId: Scalars['Int'];
+};
+
+export type TtSolve_UpdateSubjectCompetenciesSubject = {
+  preference1Ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  preference2Ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  preference3Ids?: InputMaybe<Array<InputMaybe<Scalars['Long']>>>;
+  subjectId: Scalars['Int'];
+};
+
+export type TtSolve_UpdateSubjectGroupInput = {
+  groupId: Scalars['Int'];
+  subjects: Array<InputMaybe<TtSolve_UpdateSubjectCompetenciesSubject>>;
 };
 
 export type TtSolve_UpsertRestriction = {
@@ -9163,6 +9583,7 @@ export type UpsertStudentMedicalContactInput = {
 export type UpsertSubject = {
   colour?: InputMaybe<Colour>;
   examinable?: InputMaybe<Scalars['Boolean']>;
+  name?: InputMaybe<Scalars['String']>;
   subjectId?: InputMaybe<Scalars['Int']>;
 };
 
@@ -9215,6 +9636,25 @@ export enum UserType {
   ThirdParty = 'THIRD_PARTY',
   Tyro = 'TYRO'
 }
+
+export type Users_ResetPassword = {
+  partyIds: Array<Scalars['Long']>;
+};
+
+export type VisitorSignInOut = SignInOut & {
+  __typename?: 'VisitorSignInOut';
+  createdBy: Staff;
+  createdByPartyId: Scalars['Long'];
+  dateTime: Scalars['DateTime'];
+  firstname?: Maybe<Scalars['String']>;
+  id: Scalars['Long'];
+  lastname?: Maybe<Scalars['String']>;
+  note?: Maybe<Scalars['String']>;
+  signInOutPersonType: Attendance_SignInOutPersonType;
+  type: Attendance_SignInOutType;
+  visitingStaff: Staff;
+  visitingStaffPartyId: Scalars['Long'];
+};
 
 export type Wellbeing_DeleteStudentAenInput = {
   id: Scalars['Int'];
@@ -10921,11 +11361,11 @@ export type Swm_AbsencesQueryVariables = Exact<{
 export type Swm_AbsencesQuery = { __typename?: 'Query', swm_absences: Array<{ __typename?: 'SWM_StaffAbsence', absenceId: number, absenceTypeId: number, staffPartyId: number, isLongTermLeave: boolean, longTermLeaveGroupsRequired?: number | null, longTermLeaveGroupsApplied?: number | null, absenceReasonText?: string | null, substitutionRequired?: boolean | null, absenceType: { __typename?: 'SWM_StaffAbsenceType', absenceTypeId: number, name: string, code: string }, staff?: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } | null, dates: Array<{ __typename?: 'SWM_StaffAbsenceDate', continuousStartDate?: string | null, continuousEndDate?: string | null, individualDates?: Array<string> | null, partialAbsence: boolean, leavesAt?: string | null, returnsAt?: string | null }>, longTermLeaveGroups: Array<{ __typename?: 'SWM_StaffAbsenceLongTermLeaveGroup', groupId: number, coveringStaffId?: number | null, group: { __typename?: 'GeneralGroup', name: string, avatarUrl?: string | null } | { __typename?: 'ProgrammeStageEnrollment', name: string, avatarUrl?: string | null } | { __typename?: 'SubjectGroup', name: string, avatarUrl?: string | null } | { __typename?: 'YearGroupEnrollment', name: string, avatarUrl?: string | null }, coveringStaff?: { __typename?: 'Staff', person: { __typename?: 'Person', partyId: number, firstName?: string | null, lastName?: string | null, avatarUrl?: string | null, type?: PartyPersonType | null, title?: { __typename?: 'PersonalTitle', id: number, name: string, nameTextId: number } | null } } | null }> }> };
 
 export type Swm_UpsertAbsenceMutationVariables = Exact<{
-  input: Array<Swm_UpsertStaffAbsence> | Swm_UpsertStaffAbsence;
+  input: Swm_UpsertStaffAbsences;
 }>;
 
 
-export type Swm_UpsertAbsenceMutation = { __typename?: 'Mutation', swm_upsertAbsence: Array<{ __typename?: 'SWM_StaffAbsence', staffPartyId: number, absenceTypeId: number, fromAbsenceRequestId?: number | null, absenceReasonText?: string | null }> };
+export type Swm_UpsertAbsenceMutation = { __typename?: 'Mutation', swm_upsertAbsence: { __typename?: 'SWM_UpsertStaffAbsencesResponse', wasApplied: boolean, substitutionsPresent: Array<{ __typename?: 'CalendarEvent', eventId: number, name: string, startTime: string, endTime: string }> } };
 
 export type Swm_DeleteAbsenceMutationVariables = Exact<{
   input: Swm_DeleteStaffAbsence;
@@ -11384,7 +11824,7 @@ export const Swm_DeleteSubstitutionsDocument = {"kind":"Document","definitions":
 export const Swm_AbsenceTypesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"swm_absenceTypes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_StaffAbsenceTypeFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_absenceTypes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"descriptionTextId"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"availableForRequests"}}]}}]}}]} as unknown as DocumentNode<Swm_AbsenceTypesQuery, Swm_AbsenceTypesQueryVariables>;
 export const Swm_UpsertAbsenceTypeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_upsertAbsenceType"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"ListType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_UpsertStaffAbsenceType"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_upsertAbsenceType"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}}]}}]}}]} as unknown as DocumentNode<Swm_UpsertAbsenceTypeMutation, Swm_UpsertAbsenceTypeMutationVariables>;
 export const Swm_AbsencesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"swm_absences"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_StaffAbsenceFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_absences"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"staffPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"Field","name":{"kind":"Name","value":"isLongTermLeave"}},{"kind":"Field","name":{"kind":"Name","value":"longTermLeaveGroupsRequired"}},{"kind":"Field","name":{"kind":"Name","value":"longTermLeaveGroupsApplied"}},{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"absenceReasonText"}},{"kind":"Field","name":{"kind":"Name","value":"substitutionRequired"}},{"kind":"Field","name":{"kind":"Name","value":"dates"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"continuousStartDate"}},{"kind":"Field","name":{"kind":"Name","value":"continuousEndDate"}},{"kind":"Field","name":{"kind":"Name","value":"individualDates"}},{"kind":"Field","name":{"kind":"Name","value":"partialAbsence"}},{"kind":"Field","name":{"kind":"Name","value":"leavesAt"}},{"kind":"Field","name":{"kind":"Name","value":"returnsAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"longTermLeaveGroups"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"groupId"}},{"kind":"Field","name":{"kind":"Name","value":"group"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"coveringStaffId"}},{"kind":"Field","name":{"kind":"Name","value":"coveringStaff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<Swm_AbsencesQuery, Swm_AbsencesQueryVariables>;
-export const Swm_UpsertAbsenceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_upsertAbsence"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_UpsertStaffAbsence"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_upsertAbsence"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"fromAbsenceRequestId"}},{"kind":"Field","name":{"kind":"Name","value":"absenceReasonText"}}]}}]}}]} as unknown as DocumentNode<Swm_UpsertAbsenceMutation, Swm_UpsertAbsenceMutationVariables>;
+export const Swm_UpsertAbsenceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_upsertAbsence"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_UpsertStaffAbsences"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_upsertAbsence"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"wasApplied"}},{"kind":"Field","name":{"kind":"Name","value":"substitutionsPresent"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}}]}}]}}]} as unknown as DocumentNode<Swm_UpsertAbsenceMutation, Swm_UpsertAbsenceMutationVariables>;
 export const Swm_DeleteAbsenceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"swm_deleteAbsence"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_DeleteStaffAbsence"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_deleteAbsence"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<Swm_DeleteAbsenceMutation, Swm_DeleteAbsenceMutationVariables>;
 export const Swm_SubstitutionLookupDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"swm_substitutionLookup"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_SubstitutionLookupFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_substitutionLookup"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"extensions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"timetableSummary"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fulltimePeriods"}}]}},{"kind":"Field","name":{"kind":"Name","value":"substitutionSummary"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"substitutionCountThisWeek"}},{"kind":"Field","name":{"kind":"Name","value":"substitutionTimeThisWeekMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"substitutionCountThisYear"}},{"kind":"Field","name":{"kind":"Name","value":"substitutionTimeThisYearMinutes"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"available"}},{"kind":"Field","name":{"kind":"Name","value":"clashingEvents"}},{"kind":"Field","name":{"kind":"Name","value":"substitutionStats"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sandsWeekCount"}},{"kind":"Field","name":{"kind":"Name","value":"sandsWeekMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"sandsYearCount"}},{"kind":"Field","name":{"kind":"Name","value":"sandsYearMinutes"}},{"kind":"Field","name":{"kind":"Name","value":"casualWeekCount"}},{"kind":"Field","name":{"kind":"Name","value":"casualWeekMinutes"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"freeRooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"pools"}}]}},{"kind":"Field","name":{"kind":"Name","value":"clashingRooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"room"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"roomId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"pools"}}]}},{"kind":"Field","name":{"kind":"Name","value":"clash"}}]}}]}}]}}]} as unknown as DocumentNode<Swm_SubstitutionLookupQuery, Swm_SubstitutionLookupQueryVariables>;
 export const Swm_EventsForSubstitutionsByStaffByPeriodDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"swm_eventsForSubstitutionsByStaffByPeriod"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"SWM_EventsForSubstitutionFilter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"swm_eventsForSubstitutionsByStaffByPeriod"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventsByStaff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"substitutionEventsByDay"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dayInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"dayType"}},{"kind":"Field","name":{"kind":"Name","value":"periods"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"requireSubstitutionReason"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"reason"}},{"kind":"Field","name":{"kind":"Name","value":"note"}}]}},{"kind":"Field","name":{"kind":"Name","value":"substitutionEventsByPeriod"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"absenceId"}},{"kind":"Field","name":{"kind":"Name","value":"staffPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"coverTeacherDuplicatedAtSameTime"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"staffPartyId"}},{"kind":"Field","name":{"kind":"Name","value":"event"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"allDayEvent"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Staff"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"roomId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"context"}}]}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"substitution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"substitutionId"}},{"kind":"Field","name":{"kind":"Name","value":"originalStaff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"substituteStaff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"substitutionType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"substitutionTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"Field","name":{"kind":"Name","value":"substituteRoom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"roomId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"note"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"event"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"eventId"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"allDayEvent"}},{"kind":"Field","name":{"kind":"Name","value":"attendees"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Staff"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"person"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"rooms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"roomId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"label"}},{"kind":"Field","name":{"kind":"Name","value":"context"}}]}},{"kind":"Field","name":{"kind":"Name","value":"colour"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}},{"kind":"Field","name":{"kind":"Name","value":"substitution"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"substitutionId"}},{"kind":"Field","name":{"kind":"Name","value":"originalStaff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"substituteStaff"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"partyId"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"nameTextId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"Field","name":{"kind":"Name","value":"substitutionType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"substitutionTypeId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"code"}}]}},{"kind":"Field","name":{"kind":"Name","value":"substituteRoom"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"roomId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"note"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<Swm_EventsForSubstitutionsByStaffByPeriodQuery, Swm_EventsForSubstitutionsByStaffByPeriodQueryVariables>;

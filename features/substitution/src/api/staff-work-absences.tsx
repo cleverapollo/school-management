@@ -76,12 +76,15 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
 `);
 
 const saveStaffAbsence = graphql(/* GraphQL */ `
-  mutation swm_upsertAbsence($input: [SWM_UpsertStaffAbsence!]!) {
+  mutation swm_upsertAbsence($input: SWM_UpsertStaffAbsences!) {
     swm_upsertAbsence(input: $input) {
-      staffPartyId
-      absenceTypeId
-      fromAbsenceRequestId
-      absenceReasonText
+      wasApplied
+      substitutionsPresent {
+        eventId
+        name
+        startTime
+        endTime
+      }
     }
   }
 `);
@@ -116,7 +119,12 @@ export function useSaveStaffAbsence() {
 
   return useMutation({
     mutationFn: (input: Swm_UpsertStaffAbsence[]) =>
-      gqlClient.request(saveStaffAbsence, { input }),
+      gqlClient.request(saveStaffAbsence, {
+        input: {
+          absences: input,
+          ignorePreValidationExistingEventChecks: false,
+        },
+      }),
     onSuccess: async (_data, absences) => {
       await queryClient.invalidateQueries(substitutionKeys.all);
       const [firstAbsence] = absences;
