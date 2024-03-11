@@ -13,6 +13,7 @@ import {
   ReportColumnDef,
 } from '../components/types';
 import { useFormatTableValues } from '../hooks/use-format-values';
+import { mockTableReport } from './mock-custom-values';
 
 const getFiltersFromSearchParams = (
   searchParams: URLSearchParams
@@ -68,7 +69,11 @@ export default function ReportPage() {
   const mainColumns = useMemo<ReportColumnDef[]>(() => {
     const fields = (reportData?.fields || []) as ExtendedTableReportField[];
 
-    return fields.map<ReportColumnDef>((column) => ({
+    // NOTE: only for testing purposes
+    const mockFields = mockTableReport.fields;
+
+    // TODO: replace mockFields with fields
+    return mockFields.map<ReportColumnDef>((column) => ({
       field: column.id,
       headerName: column.label,
       valueGetter: ({ data }) => {
@@ -191,7 +196,11 @@ export default function ReportPage() {
   const genericReportData = useMemo<ExtendedReportData[]>(() => {
     const reportFieldsData = (reportData?.data || []) as ExtendedReportData[];
 
-    return reportFieldsData.reduce<ExtendedReportData[]>(
+    // NOTE: only for testing purposes
+    const mockFieldsData = mockTableReport.data;
+
+    // TODO: replace mockFieldsData with reportFieldsData
+    return mockFieldsData.reduce<ExtendedReportData[]>(
       (reportFieldData, obj) => {
         const rowData = Object.keys(obj).reduce((row, key) => {
           row[key] ??= obj[key];
