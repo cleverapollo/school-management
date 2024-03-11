@@ -23,7 +23,7 @@ export type ExtendedReportData = {
       report?: Report;
       reportFilters?: Record<string, any>;
       reportTab?: keyof ReportTabs[keyof ReportTabs];
-      searchParams?: Record<string, any>;
+      queryParams?: Record<string, any>;
       target?: RouterLinkProps['target'];
     };
   };

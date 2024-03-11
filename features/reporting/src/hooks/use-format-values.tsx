@@ -56,7 +56,7 @@ const getCustomLink = (
     }
   }
 
-  const { profileTab, searchParams } = value.link || {};
+  const { profileTab, queryParams } = value.link || {};
 
   // for internal profile links
   if (internalUrl) {
@@ -64,7 +64,7 @@ const getCustomLink = (
       const basePath = [internalUrl, profileTab].filter(Boolean).join('/');
       const url = new URL(basePath, new URL(window.location.origin));
 
-      Object.entries(searchParams || {}).forEach(([param, paramValue]) => {
+      Object.entries(queryParams || {}).forEach(([param, paramValue]) => {
         url.searchParams.append(param, String(paramValue ?? ''));
       });
 

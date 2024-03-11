@@ -225,7 +225,7 @@ export const mockTableReport: {
         },
         link: {
           profileTab: 'attendance',
-          searchParams: {
+          queryParams: {
             eventStartTime: '2024-01-30T08:55:00',
           },
         },
