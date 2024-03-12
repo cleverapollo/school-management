@@ -744,13 +744,27 @@ export function UpsertAbsenceModal({
                   <ul>
                     {(
                       substitutionsPresent ?? debouncedSubstitutionsPresent
-                    ).map((substitution) => (
-                      <li key={substitution.name}>
-                        {substitution.name} -{' '}
-                        {dayjs(substitution.startTime).format('llll')} -{' '}
-                        {dayjs(substitution.endTime).format('LT')}
-                      </li>
-                    ))}
+                    ).map(
+                      ({ eventId, name, startTime, endTime, exclusions }) => {
+                        const excludedParty = exclusions?.[0].partyInfo;
+                        const staffName =
+                          excludedParty?.__typename === 'Staff'
+                            ? displayName(excludedParty.person)
+                            : '';
+
+                        return (
+                          <li key={eventId}>
+                            {t('substitution:staffAbsenceCoverClassFound', {
+                              staffName,
+                              className: name,
+                              dateTime: `${dayjs(startTime).format(
+                                'llll'
+                              )} - ${dayjs(endTime).format('LT')}`,
+                            })}
+                          </li>
+                        );
+                      }
+                    )}
                   </ul>
                   <Typography variant="body1">
                     {t('common:areYouSureYouWantToContinue')}

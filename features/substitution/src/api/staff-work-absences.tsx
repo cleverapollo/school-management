@@ -86,6 +86,7 @@ const saveStaffAbsence = graphql(/* GraphQL */ `
         endTime
         exclusions {
           partyInfo {
+            __typename
             partyId
             ... on Staff {
               person {

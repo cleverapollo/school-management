@@ -56,5 +56,6 @@
   "actions": "Actions",
   "staffScheduledCoverWillBeDeletedDescription_one": "{{staffName}} is scheduled to cover {{count}} subject group during their absence. Creating this absence will remove them as a cover teacher for:",
   "staffScheduledCoverWillBeDeletedDescription_other": "{{staffName}} is scheduled to cover {{count}} subject groups during their absence. Creating this absence will remove them as a cover teacher for:",
-  "hideCoveredEvents": "Hide covered events"
+  "hideCoveredEvents": "Hide covered events",
+  "staffAbsenceCoverClassFound": "{{staffName}} - {{className}} on {{dateTime}}"
 }
