@@ -376,5 +376,6 @@
   "errorLoadingWidget": "Error loading widget",
   "copiedToClipboard": "Copied to clipboard.",
   "issueCopyingToClipboard": "Issue copying to clipboard.",
-  "areYouSureYouWantToContinue": "Are you sure you want to continue?"
+  "areYouSureYouWantToContinue": "Are you sure you want to continue?",
+  "roleNumber": "Role number"
 }

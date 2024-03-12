@@ -67,12 +67,17 @@ const getAdminTenantColumns = (
     headerName: t('admin:location'),
   },
   {
+    field: 'rollNo',
+    headerName: t('common:roleNumber'),
+  },
+  {
     field: 'type',
     headerName: t('common:type'),
   },
   {
     field: 'tenant',
     headerName: t('common:tenant'),
+    sort: 'desc',
   },
   {
     headerName: '',
