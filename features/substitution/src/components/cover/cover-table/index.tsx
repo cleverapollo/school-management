@@ -307,7 +307,7 @@ export function CoverTable({
                   onChange={toggleHiddenEvents}
                 />
               }
-              label={t('substitution:hideCoveredEvents')}
+              label={t('substitution:highlightEventsWithoutCover')}
             />
           </Box>
           <Box display="flex" justifyContent="center">
