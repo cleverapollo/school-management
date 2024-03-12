@@ -6,6 +6,7 @@ import {
   TablePersonAvatar,
   usePreferredNameLayout,
   RouterLink,
+  PreferredNameFormat,
 } from '@tyro/core';
 import {
   getGroupProfileLink,
@@ -17,6 +18,7 @@ import {
   PhoneNumber,
   Reporting_MetaChipSize,
   Reporting_MetaChipVariant,
+  Reporting_ReportCellType,
   Reporting_TableReportField,
   SubjectGroup,
 } from '@tyro/api';
@@ -25,6 +27,7 @@ import dayjs from 'dayjs';
 import { Stack, Chip } from '@mui/material';
 import { ExtendedReportData, ReportChipValue } from '../components/types';
 import { getReportUrl, Report } from '../utils/get-report-url';
+import { ReturnTypeFromUseRunReports } from '../api/run-report';
 
 const getCustomLink = (
   value: ExtendedReportData[number],
@@ -77,7 +80,7 @@ const getCustomLink = (
   return value.link?.externalUrl || null;
 };
 
-export const useFormatTableValues = () => {
+export const useReportFormatValues = () => {
   const { t } = useTranslation(['common']);
   const { displayName, displayNames } = usePreferredNameLayout();
   const { formatCurrency } = useFormatNumber();
@@ -112,7 +115,9 @@ export const useFormatTableValues = () => {
 
     return Array.isArray(valueAsPerson)
       ? displayNames(valueAsPerson)
-      : displayName(valueAsPerson);
+      : displayName(valueAsPerson, {
+          format: PreferredNameFormat.FirstnameSurname,
+        });
   };
 
   const renderPersonAvatar = (
@@ -200,6 +205,8 @@ export const useFormatTableValues = () => {
     value: ExtendedReportData[number],
     column: Reporting_TableReportField
   ) => {
+    if (!value.value) return undefined;
+
     const valueAsDate = dayjs(value.value as string);
 
     return valueAsDate.format(column.meta?.dateFormat || 'L');
@@ -234,7 +241,10 @@ export const useFormatTableValues = () => {
   const getChipValue = (value: ExtendedReportData[number]) => {
     const valueAsChip = value.value as ReportChipValue | ReportChipValue[];
 
-    return [valueAsChip].flat().map((chip) => chip.name);
+    return [valueAsChip]
+      .flat()
+      .map((chip) => chip.name)
+      .join(', ');
   };
 
   const renderChipValue = (
@@ -245,10 +255,10 @@ export const useFormatTableValues = () => {
 
     const chips = [valueAsChip].flat();
 
-    if (chips.length === 0) return '-';
+    if (chips.length === 0) return undefined;
 
     return (
-      <Stack gap={1} my={1} direction="row" flexWrap="wrap">
+      <Stack gap={1} direction="row" flexWrap="wrap">
         {chips.map(({ name, color }) => (
           <Chip
             key={name}
@@ -262,23 +272,128 @@ export const useFormatTableValues = () => {
     );
   };
 
+  const getValue = (
+    column: Reporting_TableReportField,
+    value: ExtendedReportData[number] | undefined
+  ) => {
+    if (!value) return undefined;
+
+    switch (column.cellType) {
+      case Reporting_ReportCellType.Person: {
+        return getPersonValue(value);
+      }
+      case Reporting_ReportCellType.PartyGroup: {
+        return getPartyGroupValue(value);
+      }
+      case Reporting_ReportCellType.Date: {
+        return getDateValue(value, column);
+      }
+      case Reporting_ReportCellType.Currency: {
+        return getCurrencyValue(value, column);
+      }
+      case Reporting_ReportCellType.Boolean: {
+        return getBooleanValue(value);
+      }
+      case Reporting_ReportCellType.PhoneNumber: {
+        return getPhoneNumberValue(value);
+      }
+      case Reporting_ReportCellType.Chip: {
+        return getChipValue(value);
+      }
+      case Reporting_ReportCellType.Raw:
+      default: {
+        return getRawValue(value);
+      }
+    }
+  };
+
+  const renderValue = (
+    column: Reporting_TableReportField,
+    value: ExtendedReportData[number] | undefined
+  ) => {
+    if (!value) return undefined;
+
+    switch (column.cellType) {
+      case Reporting_ReportCellType.Person: {
+        return renderPersonAvatar(value, column);
+      }
+      case Reporting_ReportCellType.PartyGroup: {
+        return renderPartyGroupAvatar(value, column);
+      }
+      case Reporting_ReportCellType.Date: {
+        return getDateValue(value, column);
+      }
+      case Reporting_ReportCellType.Currency: {
+        return getCurrencyValue(value, column);
+      }
+      case Reporting_ReportCellType.Boolean: {
+        return renderBooleanValue(value);
+      }
+      case Reporting_ReportCellType.PhoneNumber: {
+        return getPhoneNumberValue(value);
+      }
+      case Reporting_ReportCellType.Chip: {
+        return renderChipValue(value, column);
+      }
+      case Reporting_ReportCellType.Raw:
+      default: {
+        return renderRawValue(value, column);
+      }
+    }
+  };
+
+  type ReportFieldMapping<Key extends string> = {
+    [K in Key]: {
+      textValue: string;
+      rawValue: any;
+      renderedValue: ReturnType<typeof renderValue>;
+    };
+  };
+
+  const mapField = <Key extends string>(
+    reportData: ReturnTypeFromUseRunReports | null | undefined,
+    options?: {
+      limitData?: number;
+    }
+  ): ReportFieldMapping<Key>[] => {
+    if (!reportData) return [];
+
+    type ColumnsByKeys = Record<Key, Reporting_TableReportField>;
+
+    const columnsByKeys = (reportData?.fields || []).reduce<ColumnsByKeys>(
+      (keys, field) => {
+        keys[field.id as Key] = field;
+        return keys;
+      },
+      {} as ColumnsByKeys
+    );
+
+    const typedData = (reportData.data || []) as Record<
+      Key,
+      ExtendedReportData[number]
+    >[];
+
+    return typedData.slice(0, options?.limitData).map((data) =>
+      Object.keys(columnsByKeys).reduce((mappedField, key) => {
+        const typedKey = key as Key;
+        const currentData = data[typedKey];
+        const currentColumn = columnsByKeys[typedKey];
+
+        mappedField[typedKey] = {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          rawValue: currentData?.value,
+          textValue: String(getValue(currentColumn, currentData) ?? ''),
+          renderedValue: renderValue(currentColumn, currentData),
+        };
+
+        return mappedField;
+      }, {} as ReportFieldMapping<Key>)
+    );
+  };
+
   return {
-    valueGetters: {
-      getRawValue,
-      getPersonValue,
-      getPartyGroupValue,
-      getDateValue,
-      getCurrencyValue,
-      getBooleanValue,
-      getPhoneNumberValue,
-      getChipValue,
-    },
-    cellRenders: {
-      renderRawValue,
-      renderPersonAvatar,
-      renderPartyGroupAvatar,
-      renderBooleanValue,
-      renderChipValue,
-    },
+    getValue,
+    renderValue,
+    mapField,
   };
 };

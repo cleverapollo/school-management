@@ -1,8 +1,5 @@
 import { ICellRendererParams, Table, TableProps } from '@tyro/core';
-import {
-  Reporting_TableFilterInput,
-  Reporting_ReportCellType,
-} from '@tyro/api';
+import { Reporting_TableFilterInput } from '@tyro/api';
 import { useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Color, Palette, useTheme } from '@mui/material';
@@ -10,7 +7,7 @@ import { Color, Palette, useTheme } from '@mui/material';
 import { useRunReports } from '../api/run-report';
 import { DynamicForm } from '../components/dynamic-form';
 import { ExtendedReportData, ReportColumnDef } from '../components/types';
-import { useFormatTableValues } from '../hooks/use-format-values';
+import { useReportFormatValues } from '../hooks/use-report-format-values';
 
 const getFiltersFromSearchParams = (
   searchParams: URLSearchParams
@@ -48,7 +45,7 @@ export default function ReportPage() {
   }>({});
 
   const { palette } = useTheme();
-  const { valueGetters, cellRenders } = useFormatTableValues();
+  const { getValue, renderValue } = useReportFormatValues();
 
   const {
     data: reportData,
@@ -71,70 +68,14 @@ export default function ReportPage() {
       headerName: column.label,
       valueGetter: ({ data }) => {
         if (!data) return null;
-        const value = data[column.id];
 
-        switch (column.cellType) {
-          case Reporting_ReportCellType.Person: {
-            return valueGetters.getPersonValue(value);
-          }
-          case Reporting_ReportCellType.PartyGroup: {
-            return valueGetters.getPartyGroupValue(value);
-          }
-          case Reporting_ReportCellType.Date: {
-            return valueGetters.getDateValue(value, column);
-          }
-          case Reporting_ReportCellType.Currency: {
-            return valueGetters.getCurrencyValue(value, column);
-          }
-          case Reporting_ReportCellType.Boolean: {
-            return valueGetters.getBooleanValue(value);
-          }
-          case Reporting_ReportCellType.PhoneNumber: {
-            return valueGetters.getPhoneNumberValue(value);
-          }
-          case Reporting_ReportCellType.Chip: {
-            return valueGetters.getChipValue(value);
-          }
-          case Reporting_ReportCellType.Raw:
-          default: {
-            return valueGetters.getRawValue(value);
-          }
-        }
+        return getValue(column, data[column.id]);
       },
       // eslint-disable-next-line react/no-unstable-nested-components
       cellRenderer: ({ data }: ICellRendererParams<ExtendedReportData>) => {
         if (!data) return null;
-        const value = data[column.id];
 
-        if (!column.cellType) return cellRenders.renderRawValue(value, column);
-
-        switch (column.cellType) {
-          case Reporting_ReportCellType.Person: {
-            return cellRenders.renderPersonAvatar(value, column);
-          }
-          case Reporting_ReportCellType.PartyGroup: {
-            return cellRenders.renderPartyGroupAvatar(value, column);
-          }
-          case Reporting_ReportCellType.Date: {
-            return valueGetters.getDateValue(value, column);
-          }
-          case Reporting_ReportCellType.Currency: {
-            return valueGetters.getCurrencyValue(value, column);
-          }
-          case Reporting_ReportCellType.Boolean: {
-            return cellRenders.renderBooleanValue(value);
-          }
-          case Reporting_ReportCellType.PhoneNumber: {
-            return valueGetters.getPhoneNumberValue(value);
-          }
-          case Reporting_ReportCellType.Chip: {
-            return cellRenders.renderChipValue(value, column);
-          }
-          case Reporting_ReportCellType.Raw:
-          default: {
-            return cellRenders.renderRawValue(value, column);
-          }
-        }
+        return renderValue(column, data[column.id]) || '-';
       },
       sortable: column.sortable,
       initialHide: !column.visibleByDefault,
