@@ -1,6 +1,7 @@
 import { StudentSelectOption } from '@tyro/people';
 import { Card } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useFormValidator } from '@tyro/core';
 import {
   getDefaultValues,
   PrintStaffTimetableFormState,
@@ -15,7 +16,12 @@ function mapper(resources: any): number[] {
 const defaultValues = getDefaultValues<StudentSelectOption>();
 
 export default function PrintStudentTimetable() {
+  const { resolver, rules } =
+    useFormValidator<PrintStaffTimetableFormState<StudentSelectOption>>();
   const methods = useForm<PrintStaffTimetableFormState<StudentSelectOption>>({
+    resolver: resolver({
+      parties: rules.required(),
+    }),
     defaultValues,
   });
 

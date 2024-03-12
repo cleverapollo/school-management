@@ -75,7 +75,7 @@
       "LARGE": "Large"
     }
   },
-  "otherInfoToShow": "Other information to show",
+  "includeAdditionalInformation": "Include additional information",
   "assessment": {
     "title": "Print assessment",
     "yearGroup": "Year group",
@@ -102,17 +102,18 @@
     "commentOptions": {
       "Teacher": "Teacher",
       "Tutor": "Tutor",
-      "YearHead": "YearHead",
+      "YearHead": "Year head",
       "Principal": "Principal"
     },
     "otherOptions": {
       "Level": "Level",
       "Grade": "Grade",
       "Result": "Result",
-      "ExtraFields": "ExtraFields",
-      "AbsenceCount": "AbsenceCount",
-      "LateCount": "LateCount",
-      "CAOPoints": "CAOPoints"
+      "ExtraFields": "Extra fields",
+      "AbsenceCount": "Absence count",
+      "LateCount": "Late count",
+      "CAOPoints": "CAO points"
     }
-  }
+  },
+  "pleaseSelectPrintSettings": "Please select print settings"
 }

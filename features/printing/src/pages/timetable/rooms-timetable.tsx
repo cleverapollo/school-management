@@ -1,6 +1,8 @@
 import { Card } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { RoomSelect } from '@tyro/settings';
+import { useFormValidator } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import {
   getDefaultValues,
   PrintStaffTimetableFormState,
@@ -15,7 +17,17 @@ function mapper(resources: any): number[] {
 const defaultValues = getDefaultValues<RoomSelect>();
 
 export default function PrintRoomTimetable() {
+  const { t } = useTranslation(['common']);
+  const { resolver, rules } =
+    useFormValidator<PrintStaffTimetableFormState<RoomSelect>>();
   const methods = useForm<PrintStaffTimetableFormState<RoomSelect>>({
+    resolver: resolver({
+      rooms: rules.validate<RoomSelect[]>((value, throwError, formValues) => {
+        if (value.length === 0 && !formValues.allRooms) {
+          return throwError(t('common:errorMessages.required'));
+        }
+      }),
+    }),
     defaultValues,
   });
 

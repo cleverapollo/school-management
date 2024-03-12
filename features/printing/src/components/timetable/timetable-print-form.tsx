@@ -1,7 +1,12 @@
 import { useTranslation } from '@tyro/i18n';
 import { useState } from 'react';
 import { Stack, Card, Typography } from '@mui/material';
-import { RHFCheckboxGroup, RHFRadioGroup, RHFSelect } from '@tyro/core';
+import {
+  LoadingPlaceholderContainer,
+  RHFCheckboxGroup,
+  RHFRadioGroup,
+  RHFSelect,
+} from '@tyro/core';
 import {
   Print_TimetableLayout,
   Print_TimetableOptions,
@@ -101,7 +106,7 @@ export function TimetablePrintForm<T>({
 
   const { control, handleSubmit } =
     useFormContext<PrintStaffTimetableFormState<T>>();
-  const { data: timetableData, isLoading } = usePrintTimetable(filter);
+  const { data: timetableData, isFetching } = usePrintTimetable(filter);
 
   const getTimetableOptions = async ({
     parties,
@@ -157,11 +162,7 @@ export function TimetablePrintForm<T>({
     const timetableOptions = await getTimetableOptions(formState);
     const printResponse = await getPrintTimetable(timetableOptions);
 
-    if (
-      printResponse &&
-      printResponse.print_printTimetable &&
-      printResponse.print_printTimetable.url
-    )
+    if (printResponse?.print_printTimetable?.url)
       window.open(
         printResponse.print_printTimetable.url,
         '_blank',
@@ -258,7 +259,7 @@ export function TimetablePrintForm<T>({
                 />
               </Stack>
               <RHFCheckboxGroup
-                label={t('printing:otherInfoToShow')}
+                label={t('printing:includeAdditionalInformation')}
                 controlProps={{ name: 'checkBoxes', control }}
                 options={[...checkboxOptions]}
                 getOptionLabel={(option) =>
@@ -278,7 +279,7 @@ export function TimetablePrintForm<T>({
               <Stack spacing={1}>
                 <RHFRadioGroup
                   label={t('printing:printSettings.colourSettings.title')}
-                  disabled={isLoading}
+                  disabled={isFetching}
                   options={(['COLOR', 'BLACK_AND_WHITE'] as const).map(
                     (option) => ({
                       value: option,
@@ -294,7 +295,7 @@ export function TimetablePrintForm<T>({
                 />
                 <RHFRadioGroup
                   label={t('printing:printSettings.fontSize.title')}
-                  disabled={isLoading}
+                  disabled={isFetching}
                   options={Object.values(FontSize).map((option) => ({
                     value: option,
                     label: t(`printing:printSettings.fontSize.${option}`),
@@ -310,14 +311,14 @@ export function TimetablePrintForm<T>({
               <LoadingButton
                 variant="soft"
                 type="submit"
-                loading={isLoading}
+                loading={isFetching}
                 sx={{ flex: 1 }}
               >
                 {t('common:actions.view')}
               </LoadingButton>
               <LoadingButton
                 variant="contained"
-                loading={isLoading}
+                loading={isFetching}
                 onClick={handlePrint}
                 sx={{ flex: 1 }}
               >
@@ -334,14 +335,38 @@ export function TimetablePrintForm<T>({
             overflow: 'auto',
             padding: '16px',
             paddingTop: '8px',
+            minHeight: '180px',
           }}
         >
-          {timetableData?.html && (
+          {timetableData?.html ? (
             <div
               style={{ maxHeight: '100%', overflow: 'auto' }}
               // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={{ __html: timetableData.html }}
             />
+          ) : (
+            <LoadingPlaceholderContainer isLoading={isFetching}>
+              <Stack
+                sx={{
+                  position: 'absolute',
+                  height: '100%',
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Typography variant="h2" component="span">
+                  ⚙️
+                </Typography>
+                <Typography
+                  variant="body1"
+                  component="span"
+                  color="text.secondary"
+                >
+                  {t('printing:pleaseSelectPrintSettings')}
+                </Typography>
+              </Stack>
+            </LoadingPlaceholderContainer>
           )}
         </Stack>
       </Card>

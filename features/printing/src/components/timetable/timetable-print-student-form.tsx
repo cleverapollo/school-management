@@ -2,10 +2,6 @@ import { RHFStudentAutocomplete, StaffSelectOption } from '@tyro/people';
 import { useFormContext } from 'react-hook-form';
 import { PrintStaffTimetableFormState } from './timetable-print-form';
 
-interface StaffTimetableFormState {
-  partyIds: NonNullable<StaffSelectOption[]>;
-}
-
 export function TimetablePrintStudentForm() {
   const { control } =
     useFormContext<PrintStaffTimetableFormState<StaffSelectOption>>();
@@ -22,8 +18,16 @@ export function TimetablePrintStudentForm() {
         control,
       }}
       inputProps={{
-        variant: 'filled',
+        variant: 'white-filled',
         InputProps: { fullWidth: true },
+        sx: {
+          '& .MuiInputBase-root': {
+            border: '1px solid',
+            borderColor: 'divider',
+            borderRadius: 1,
+            pt: '17px',
+          },
+        },
       }}
     />
   );

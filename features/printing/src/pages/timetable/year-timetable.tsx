@@ -1,6 +1,7 @@
 import { Card } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { YearGroupSelect } from '@tyro/groups';
+import { useFormValidator } from '@tyro/core';
 import {
   getDefaultValues,
   PrintStaffTimetableFormState,
@@ -15,7 +16,12 @@ function mapper(resources: any): number[] {
 const defaultValues = getDefaultValues<YearGroupSelect>();
 
 export default function PrintYearGroupTimetable() {
+  const { resolver, rules } =
+    useFormValidator<PrintStaffTimetableFormState<YearGroupSelect>>();
   const methods = useForm<PrintStaffTimetableFormState<YearGroupSelect>>({
+    resolver: resolver({
+      parties: rules.required(),
+    }),
     defaultValues,
   });
 

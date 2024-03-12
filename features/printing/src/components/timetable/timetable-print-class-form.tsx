@@ -23,8 +23,16 @@ export function TimetablePrintClassGroupForm() {
           control,
         }}
         inputProps={{
-          variant: 'filled',
+          variant: 'white-filled',
           InputProps: { fullWidth: true },
+          sx: {
+            '& .MuiInputBase-root': {
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1,
+              pt: '17px',
+            },
+          },
         }}
       />
       <RHFSwitch
