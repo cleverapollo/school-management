@@ -86,7 +86,9 @@ export function EventCoverCard({
       <CoverCardTooltip staff={staff} eventInfo={eventInfo}>
         <Box
           ref={(ref: HTMLDivElement) => setClickableContainerRef(ref)}
-          className="event-cover-card"
+          className={`event-cover-card ${
+            substitutionType ? 'covered-event' : ''
+          }`}
           sx={{
             backgroundColor: `${color}.100`,
             borderRadius: 0.75,

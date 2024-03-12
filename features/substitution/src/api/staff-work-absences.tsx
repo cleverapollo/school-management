@@ -6,7 +6,7 @@ import {
   queryClient,
   Swm_DeleteStaffAbsence,
   Swm_StaffAbsenceFilter,
-  Swm_UpsertStaffAbsence,
+  Swm_UpsertStaffAbsences,
   UseQueryReturnType,
 } from '@tyro/api';
 import { useToast } from '@tyro/core';
@@ -76,12 +76,34 @@ const staffWorkAbsences = graphql(/* GraphQL */ `
 `);
 
 const saveStaffAbsence = graphql(/* GraphQL */ `
-  mutation swm_upsertAbsence($input: [SWM_UpsertStaffAbsence!]!) {
+  mutation swm_upsertAbsence($input: SWM_UpsertStaffAbsences!) {
     swm_upsertAbsence(input: $input) {
-      staffPartyId
-      absenceTypeId
-      fromAbsenceRequestId
-      absenceReasonText
+      wasApplied
+      substitutionsPresent {
+        eventId
+        name
+        startTime
+        endTime
+        exclusions {
+          partyInfo {
+            partyId
+            ... on Staff {
+              person {
+                partyId
+                title {
+                  id
+                  name
+                  nameTextId
+                }
+                firstName
+                lastName
+                avatarUrl
+                type
+              }
+            }
+          }
+        }
+      }
     }
   }
 `);
@@ -115,17 +137,8 @@ export function useSaveStaffAbsence() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationFn: (input: Swm_UpsertStaffAbsence[]) =>
+    mutationFn: (input: Swm_UpsertStaffAbsences) =>
       gqlClient.request(saveStaffAbsence, { input }),
-    onSuccess: async (_data, absences) => {
-      await queryClient.invalidateQueries(substitutionKeys.all);
-      const [firstAbsence] = absences;
-      toast(
-        firstAbsence.staffAbsenceId
-          ? t('common:snackbarMessages.updateSuccess')
-          : t('common:snackbarMessages.createSuccess')
-      );
-    },
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
@@ -152,3 +165,7 @@ export function useDeleteStaffAbsence() {
 export type ReturnTypeFromUseStaffWorkAbsences = UseQueryReturnType<
   typeof useStaffWorkAbsences
 >[number];
+
+export type ReturnTypeFromUseSaveStaffAbsence = UseQueryReturnType<
+  typeof useSaveStaffAbsence
+>;
