@@ -12,7 +12,8 @@ export default function Radio(theme: Theme) {
 
       styleOverrides: {
         root: ({ ownerState }: { ownerState: RadioProps }) => ({
-          padding: theme.spacing(1),
+          padding: theme.spacing(0.5),
+          margin: `0 ${theme.spacing(1)}`,
           ...(ownerState.size === 'small' && {
             '& svg': { width: 20, height: 20 },
           }),

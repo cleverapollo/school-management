@@ -1,4 +1,5 @@
 {
+  "selectInfoToPrint": "Select information to print",
   "timetable": {
     "title": "Print Timetables",
     "student": "Students",
@@ -47,27 +48,72 @@
       "individualStudents": "Individual Students",
       "allTeachers": "All Teachers",
       "allRooms": "All rooms",
-      "fontSize": "Font Size",
       "printWithColour": "Print with Colour"
     },
+    "checkboxes": {
+      "showGroupNames": "Show Group Names",
+      "showRooms": "Show Rooms"
+    }
+  },
+  "printSettings": {
+    "title": "Print settings",
+    "pageOrientation": {
+      "title": "Page orientation",
+      "LANDSCAPE": "Landscape",
+      "PORTRAIT": "Portrait"
+    },
+    "colourSettings": {
+      "title": "Colour settings",
+      "COLOR": "In colour",
+      "BLACK_AND_WHITE": "Black and white"
+    },
     "fontSize": {
+      "title": "Font size",
       "EXCEEDINGLY_SMALL": "Exceedingly Small",
       "SMALL": "Small",
       "MEDIUM": "Medium",
       "LARGE": "Large"
     }
   },
+  "includeAdditionalInformation": "Include additional information",
   "assessment": {
     "title": "Print assessment",
     "yearGroup": "Year group",
     "classGroup": "Class group",
     "student": "Student",
-    "includeAttendance": "Show attendance",
-    "includeExtraFields": "Show extra fields",
+    "includeLevel": "Show level",
+    "includeGrade": "Show grade",
+    "includeResult": "Show result",
+    "includeTeacherComment": "Show Teacher Comments",
+    "includeExtraFields": "Show Extra Fields",
+    "includeTutorComment": "Show Tutor Comments",
+    "includeYearHeadComment": "Show Year Head Comments",
+    "includePrincipalComment": "Show Principal Comments",
+    "includeAbsenceCount": "Show Absence Count",
+    "includeLateCount": "Show Late Count",
+    "includeCAOPoints": "Show CAO Points",
+    "printColour": "Print with Colour",
     "pageOrientation": "Page orientation",
     "printDirection": {
       "LANDSCAPE": "Landscape",
       "PORTRAIT": "Portrait"
+    },
+    "showCommentsFrom": "Show comments from",
+    "commentOptions": {
+      "Teacher": "Teacher",
+      "Tutor": "Tutor",
+      "YearHead": "Year head",
+      "Principal": "Principal"
+    },
+    "otherOptions": {
+      "Level": "Level",
+      "Grade": "Grade",
+      "Result": "Result",
+      "ExtraFields": "Extra fields",
+      "AbsenceCount": "Absence count",
+      "LateCount": "Late count",
+      "CAOPoints": "CAO points"
     }
-  }
+  },
+  "pleaseSelectPrintSettings": "Please select print settings"
 }

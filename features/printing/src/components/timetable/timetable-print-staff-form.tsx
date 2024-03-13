@@ -3,42 +3,48 @@ import { RHFSwitch } from '@tyro/core';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
 import { Stack } from '@mui/material';
-
-interface StaffTimetableFormState {
-  partyIds: NonNullable<StaffSelectOption[]>;
-  allStaff: boolean;
-}
+import { PrintStaffTimetableFormState } from './timetable-print-form';
 
 export function TimetablePrintStaffForm() {
   const { t } = useTranslation(['printing']);
-  const { control, watch } = useFormContext<StaffTimetableFormState>();
+  const { control, watch } =
+    useFormContext<PrintStaffTimetableFormState<StaffSelectOption>>();
   const allStaff = watch('allStaff');
 
   return (
-    <form>
-      <Stack direction="row" spacing={2}>
-        <RHFStaffAutocomplete
-          multiple
-          disableCloseOnSelect
-          disabled={allStaff}
-          sx={() => ({
-            backgroundColor: 'white',
-            width: 300,
-            opacity: allStaff ? 0.2 : 1,
-          })}
-          controlProps={{
-            name: 'partyIds',
-            control,
-          }}
-        />
-        <RHFSwitch
-          label={t('printing:timetable.options.allTeachers')}
-          controlLabelProps={{
-            sx: { ml: 0, height: '100%', pt: 1 },
-          }}
-          controlProps={{ name: 'allStaff', control }}
-        />
-      </Stack>
-    </form>
+    <Stack direction="row" spacing={2}>
+      <RHFStaffAutocomplete
+        multiple
+        disableCloseOnSelect
+        disabled={allStaff}
+        sx={() => ({
+          width: 300,
+          opacity: allStaff ? 0.2 : 1,
+        })}
+        controlProps={{
+          name: 'parties',
+          control,
+        }}
+        inputProps={{
+          variant: 'white-filled',
+          InputProps: { fullWidth: true },
+          sx: {
+            '& .MuiInputBase-root': {
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 1,
+              pt: '17px',
+            },
+          },
+        }}
+      />
+      <RHFSwitch
+        label={t('printing:timetable.options.allTeachers')}
+        controlLabelProps={{
+          sx: { ml: 0, height: '100%', pt: 1 },
+        }}
+        controlProps={{ name: 'allStaff', control }}
+      />
+    </Stack>
   );
 }
