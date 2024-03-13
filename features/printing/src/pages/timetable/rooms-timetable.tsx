@@ -1,9 +1,10 @@
-import { Box, Card, Divider, Typography } from '@mui/material';
+import { Card } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useTranslation } from '@tyro/i18n';
 import { RoomSelect } from '@tyro/settings';
+import { useFormValidator } from '@tyro/core';
+import { useTranslation } from '@tyro/i18n';
 import {
-  defaultValues,
+  getDefaultValues,
   PrintStaffTimetableFormState,
   TimetablePrintForm,
 } from '../../components/timetable/timetable-print-form';
@@ -12,25 +13,30 @@ import { TimetablePrintRoomForm } from '../../components/timetable/timetable-pri
 function mapper(resources: any): number[] {
   return ((resources as RoomSelect[]) ?? []).map((p) => p.roomId);
 }
-export default function PrintRoomTimetable() {
-  const { t } = useTranslation(['printing']);
 
-  const methods = useForm<PrintStaffTimetableFormState>({
+const defaultValues = getDefaultValues<RoomSelect>();
+
+export default function PrintRoomTimetable() {
+  const { t } = useTranslation(['common']);
+  const { resolver, rules } =
+    useFormValidator<PrintStaffTimetableFormState<RoomSelect>>();
+  const methods = useForm<PrintStaffTimetableFormState<RoomSelect>>({
+    resolver: resolver({
+      rooms: rules.validate<RoomSelect[]>((value, throwError, formValues) => {
+        if (value.length === 0 && !formValues.allRooms) {
+          return throwError(t('common:errorMessages.required'));
+        }
+      }),
+    }),
     defaultValues,
   });
+
   return (
-    <Box>
-      <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
-        <FormProvider {...methods}>
-          <TimetablePrintRoomForm />
-          <Divider textAlign="left" sx={{ py: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              {t('printing:timetable.printOptions')}
-            </Typography>
-          </Divider>
-          <TimetablePrintForm translateRoomIds={mapper} />
-        </FormProvider>
-      </Card>
-    </Box>
+    <Card variant="soft">
+      <FormProvider {...methods}>
+        <TimetablePrintRoomForm />
+        <TimetablePrintForm translateIds={mapper} isRoom />
+      </FormProvider>
+    </Card>
   );
 }

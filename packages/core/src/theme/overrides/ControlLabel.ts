@@ -20,6 +20,13 @@ export default function ControlLabel(theme: Theme) {
       styleOverrides: {
         root: {
           color: theme.palette.text.disabled,
+          '&:not(.MuiInputLabel-root)': {
+            color: theme.palette.text.secondary,
+            fontWeight: theme.typography.fontWeightMedium,
+            '&.Mui-focused': {
+              color: theme.palette.text.secondary,
+            },
+          },
         },
       },
     },

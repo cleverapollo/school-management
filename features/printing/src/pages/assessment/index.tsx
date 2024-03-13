@@ -1,20 +1,32 @@
-import { Divider, Typography, Card } from '@mui/material';
+import { Card, Stack } from '@mui/material';
+import { AcademicYearDropdown, useAssessments } from '@tyro/assessments';
 import {
-  AcademicYearDropdown,
-  ReturnTypeFromUseAssessments,
-  useAssessments,
-} from '@tyro/assessments';
-import { Autocomplete, PageContainer, PageHeading } from '@tyro/core';
+  PageContainer,
+  PageHeading,
+  RHFAutocomplete,
+  useFormValidator,
+} from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAcademicNamespace } from '@tyro/api';
-import PrintAssessmentForm from '../../components/assessment/print-assessment-form';
+import { FormProvider, useForm } from 'react-hook-form';
+import {
+  defaultValues,
+  PrintAssessmentForm,
+  PrintAssessmentFormState,
+} from '../../components/assessment/print-assessment-form';
 
 export default function PrintAssessment() {
-  const { t } = useTranslation(['common', 'printing']);
-  const [assessment, setAssessment] = useState<
-    ReturnTypeFromUseAssessments | undefined
-  >();
+  const { t } = useTranslation(['common', 'printing', 'assessments']);
+  const { resolver, rules } = useFormValidator<PrintAssessmentFormState>();
+  const methods = useForm<PrintAssessmentFormState>({
+    resolver: resolver({
+      assessment: rules.required(),
+      orientation: rules.required(),
+      colorSetting: rules.required(),
+    }),
+    defaultValues,
+  });
 
   const { activeAcademicNamespace } = useAcademicNamespace();
 
@@ -26,36 +38,59 @@ export default function PrintAssessment() {
     academicNameSpaceId: academicNameSpaceId ?? 0,
   });
 
+  useEffect(() => {
+    methods.setValue('assessment', undefined);
+  }, [academicNameSpaceId]);
+
   return (
-    <PageContainer title={t('printing:assessment.title')}>
-      <PageHeading title={t('printing:assessment.title')} />
-      {academicNameSpaceId && (
-        <AcademicYearDropdown
-          academicNamespaceId={academicNameSpaceId}
-          onChangeAcademicNamespace={setAcademicNameSpaceId}
-        />
-      )}
-      <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
-        <Autocomplete<ReturnTypeFromUseAssessments>
-          label={t('common:search')}
-          sx={{ maxWidth: 300 }}
-          optionIdKey="id"
-          optionTextKey="name"
-          options={assessmentsData}
-          onChange={(_, value) => {
-            setAssessment(value as ReturnTypeFromUseAssessments);
-          }}
-        />
-        <Divider textAlign="left" sx={{ py: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            {t('printing:timetable.printOptions')}
-          </Typography>
-        </Divider>
-        <PrintAssessmentForm
-          assessment={assessment}
-          academicNameSpaceId={academicNameSpaceId}
-        />
-      </Card>
-    </PageContainer>
+    <FormProvider {...methods}>
+      <PageContainer title={t('printing:assessment.title')}>
+        <PageHeading title={t('printing:assessment.title')} />
+        <Card variant="soft">
+          <Stack direction="row" spacing={1}>
+            {academicNameSpaceId && (
+              <AcademicYearDropdown
+                academicNamespaceId={academicNameSpaceId}
+                onChangeAcademicNamespace={setAcademicNameSpaceId}
+                sx={{
+                  '& .MuiSelect-select': {
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
+                    pt: 3,
+                    pb: '7px',
+                  },
+                }}
+              />
+            )}
+            <RHFAutocomplete
+              label={t('assessments:assessment')}
+              controlProps={{
+                name: 'assessment',
+                control: methods.control,
+              }}
+              sx={{ maxWidth: 300 }}
+              optionIdKey="id"
+              optionTextKey="name"
+              options={assessmentsData}
+              fullWidth
+              inputProps={{
+                variant: 'white-filled',
+                InputProps: { fullWidth: true },
+                sx: {
+                  '& .MuiInputBase-root': {
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
+                    pt: '17px',
+                  },
+                },
+              }}
+            />
+          </Stack>
+          <PrintAssessmentForm academicNameSpaceId={academicNameSpaceId} />
+        </Card>
+      </PageContainer>
+    </FormProvider>
   );
 }

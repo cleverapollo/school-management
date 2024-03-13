@@ -29,10 +29,11 @@ export function getPrintAssessment(filter: Print_AssessmentOptions) {
   return queryClient.fetchQuery(printAssessmentQuery(filter));
 }
 
-export function usePrintAssessment(filter: Print_AssessmentOptions) {
+export function usePrintAssessment(filter: Print_AssessmentOptions | null) {
   return useQuery({
-    ...printAssessmentQuery(filter),
+    ...printAssessmentQuery(filter ?? ({} as Print_AssessmentOptions)),
     select: ({ print_assessment }) => print_assessment,
+    enabled: !!filter,
   });
 }
 

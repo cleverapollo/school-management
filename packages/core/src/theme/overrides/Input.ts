@@ -44,12 +44,12 @@ export default function Input(theme: Theme) {
       styleOverrides: {
         root: {
           borderRadius: theme.shape.borderRadius,
-          backgroundColor: alpha(theme.palette.slate[400], 0.08),
+          backgroundColor: alpha(theme.palette.slate[500], 0.08),
           '&:hover': {
-            backgroundColor: alpha(theme.palette.slate[400], 0.16),
+            backgroundColor: alpha(theme.palette.slate[500], 0.16),
           },
           '&.Mui-focused': {
-            backgroundColor: alpha(theme.palette.slate[400], 0.16),
+            backgroundColor: alpha(theme.palette.slate[500], 0.16),
           },
           '&.Mui-disabled': {
             backgroundColor: theme.palette.action.disabledBackground,

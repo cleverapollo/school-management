@@ -1,9 +1,10 @@
 import { StaffSelectOption } from '@tyro/people';
-import { Box, Card, Typography, Divider } from '@mui/material';
+import { Card } from '@mui/material';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
+import { useFormValidator } from '@tyro/core';
 import {
-  defaultValues,
+  getDefaultValues,
   PrintStaffTimetableFormState,
   TimetablePrintForm,
 } from '../../components/timetable/timetable-print-form';
@@ -12,25 +13,32 @@ import { TimetablePrintStaffForm } from '../../components/timetable/timetable-pr
 function mapper(resources: any): number[] {
   return ((resources as StaffSelectOption[]) ?? []).map((p) => p.partyId);
 }
-export default function StudentProfileContainer() {
-  const { t } = useTranslation(['printing']);
 
-  const methods = useForm<PrintStaffTimetableFormState>({
+const defaultValues = getDefaultValues<StaffSelectOption>();
+
+export default function PrintStaffTimetable() {
+  const { t } = useTranslation(['common']);
+  const { resolver, rules } =
+    useFormValidator<PrintStaffTimetableFormState<StaffSelectOption>>();
+  const methods = useForm<PrintStaffTimetableFormState<StaffSelectOption>>({
+    resolver: resolver({
+      parties: rules.validate<StaffSelectOption[]>(
+        (value, throwError, formValues) => {
+          if (value.length === 0 && !formValues.allStaff) {
+            return throwError(t('common:errorMessages.required'));
+          }
+        }
+      ),
+    }),
     defaultValues,
   });
+
   return (
-    <Box>
-      <Card variant="outlined" sx={{ p: 1.25, display: 'inline-block' }}>
-        <FormProvider {...methods}>
-          <TimetablePrintStaffForm />
-          <Divider textAlign="left" sx={{ py: 2 }}>
-            <Typography variant="body2" color="text.secondary">
-              {t('printing:timetable.printOptions')}
-            </Typography>
-          </Divider>
-          <TimetablePrintForm translatePartyIds={mapper} />
-        </FormProvider>
-      </Card>
-    </Box>
+    <Card variant="soft">
+      <FormProvider {...methods}>
+        <TimetablePrintStaffForm />
+        <TimetablePrintForm translateIds={mapper} />
+      </FormProvider>
+    </Card>
   );
 }
