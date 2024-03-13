@@ -6,7 +6,7 @@ import {
   queryClient,
   Swm_DeleteStaffAbsence,
   Swm_StaffAbsenceFilter,
-  Swm_UpsertStaffAbsence,
+  Swm_UpsertStaffAbsences,
   UseQueryReturnType,
 } from '@tyro/api';
 import { useToast } from '@tyro/core';
@@ -84,6 +84,26 @@ const saveStaffAbsence = graphql(/* GraphQL */ `
         name
         startTime
         endTime
+        exclusions {
+          partyInfo {
+            __typename
+            partyId
+            ... on Staff {
+              person {
+                partyId
+                title {
+                  id
+                  name
+                  nameTextId
+                }
+                firstName
+                lastName
+                avatarUrl
+                type
+              }
+            }
+          }
+        }
       }
     }
   }
@@ -118,22 +138,8 @@ export function useSaveStaffAbsence() {
   const { t } = useTranslation(['common']);
 
   return useMutation({
-    mutationFn: (input: Swm_UpsertStaffAbsence[]) =>
-      gqlClient.request(saveStaffAbsence, {
-        input: {
-          absences: input,
-          ignorePreValidationExistingEventChecks: false,
-        },
-      }),
-    onSuccess: async (_data, absences) => {
-      await queryClient.invalidateQueries(substitutionKeys.all);
-      const [firstAbsence] = absences;
-      toast(
-        firstAbsence.staffAbsenceId
-          ? t('common:snackbarMessages.updateSuccess')
-          : t('common:snackbarMessages.createSuccess')
-      );
-    },
+    mutationFn: (input: Swm_UpsertStaffAbsences) =>
+      gqlClient.request(saveStaffAbsence, { input }),
     onError: () => {
       toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
     },
@@ -160,3 +166,7 @@ export function useDeleteStaffAbsence() {
 export type ReturnTypeFromUseStaffWorkAbsences = UseQueryReturnType<
   typeof useStaffWorkAbsences
 >[number];
+
+export type ReturnTypeFromUseSaveStaffAbsence = UseQueryReturnType<
+  typeof useSaveStaffAbsence
+>;

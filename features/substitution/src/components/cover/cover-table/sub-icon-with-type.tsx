@@ -13,6 +13,7 @@ export const colorsBySubstitutionType = {
   'Personal (Unpaid)': 'yellow',
   'Windfall (Unpaid i.e. class away)': 'blue',
   'Emergency 35 hours': 'orange',
+  'Covid-19 related': 'purple',
 } as const;
 
 export function SubIconWithType({ substitutionType }: SubIconWithTypeProps) {

@@ -1,8 +1,10 @@
 import {
   Box,
   Card,
+  FormControlLabel,
   Link,
   Stack,
+  Switch,
   Table,
   TableBody,
   TableCell,
@@ -13,7 +15,12 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { useTranslation, TFunction } from '@tyro/i18n';
-import { ActionMenu, Avatar, useDebouncedValue } from '@tyro/core';
+import {
+  ActionMenu,
+  Avatar,
+  useDebouncedValue,
+  useDisclosure,
+} from '@tyro/core';
 import dayjs, { Dayjs } from 'dayjs';
 import {
   createColumnHelper,
@@ -214,6 +221,8 @@ export function CoverTable({
   const { t } = useTranslation(['timetable', 'common', 'substitution']);
   const coverTableProps = useCoverTable(data);
   const isCompact = useMediaQuery('(max-width: 1980px)');
+  const { isOpen: hideCoveredEvents, onToggle: toggleHiddenEvents } =
+    useDisclosure();
   const [eventIdWithContextMenuOpen, setEventIdWithContextMenuOpen] = useState<
     string | null
   >(null);
@@ -290,21 +299,21 @@ export function CoverTable({
             p: 2,
           }}
         >
-          <Box
-            sx={{
-              gridColumn: '2 / 2',
-              justifySelf: 'center',
-            }}
-          >
+          <Box>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={hideCoveredEvents}
+                  onChange={toggleHiddenEvents}
+                />
+              }
+              label={t('substitution:highlightEventsWithoutCover')}
+            />
+          </Box>
+          <Box display="flex" justifyContent="center">
             {datepicker}
           </Box>
-          <Box
-            sx={{
-              gridColumn: '3 / 3',
-              justifySelf: 'end',
-              alignSelf: 'center',
-            }}
-          >
+          <Box display="flex" justifyContent="flex-end">
             <ActionMenu
               menuItems={[
                 {
@@ -320,6 +329,7 @@ export function CoverTable({
           <TableContainer>
             <Table
               stickyHeader
+              className={hideCoveredEvents ? 'hide-covered-events' : ''}
               sx={({ palette }) => ({
                 width: table.getTotalSize(),
                 tableLayout: 'fixed',
@@ -368,6 +378,10 @@ export function CoverTable({
                 '& .cursor-pointer': {
                   cursor: 'pointer',
                 },
+                '&.hide-covered-events .event-break-card, &.hide-covered-events .covered-event':
+                  {
+                    opacity: 0.2,
+                  },
               })}
             >
               <TableHead>
