@@ -342,52 +342,51 @@ export const useReportFormatValues = () => {
     }
   };
 
-  type ReportFieldMapping<Key extends string> = {
-    [K in Key]: {
+  type ReportFieldMapping<T extends Record<string, any>> = {
+    [K in keyof T]?: {
       textValue: string;
-      rawValue: any;
+      typedValue: T[K];
       renderedValue: ReturnType<typeof renderValue>;
     };
   };
 
-  const mapField = <Key extends string>(
+  const mapField = <T extends Record<string, any>>(
     reportData: ReturnTypeFromUseRunReports | null | undefined,
     options?: {
       limitData?: number;
     }
-  ): ReportFieldMapping<Key>[] => {
+  ): ReportFieldMapping<T>[] => {
     if (!reportData) return [];
 
-    type ColumnsByKeys = Record<Key, Reporting_TableReportField>;
+    type ColumnsByKeys = Record<keyof T, Reporting_TableReportField>;
 
     const columnsByKeys = (reportData?.fields || []).reduce<ColumnsByKeys>(
       (keys, field) => {
-        keys[field.id as Key] = field;
+        keys[field.id as keyof T] = field;
         return keys;
       },
       {} as ColumnsByKeys
     );
 
     const typedData = (reportData.data || []) as Record<
-      Key,
+      keyof T,
       ExtendedReportData[number]
     >[];
 
     return typedData.slice(0, options?.limitData).map((data) =>
       Object.keys(columnsByKeys).reduce((mappedField, key) => {
-        const typedKey = key as Key;
+        const typedKey = key as keyof T;
         const currentData = data[typedKey];
         const currentColumn = columnsByKeys[typedKey];
 
         mappedField[typedKey] = {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          rawValue: currentData?.value,
+          typedValue: currentData?.value as T[keyof T],
           textValue: String(getValue(currentColumn, currentData) ?? ''),
           renderedValue: renderValue(currentColumn, currentData),
         };
 
         return mappedField;
-      }, {} as ReportFieldMapping<Key>)
+      }, {} as ReportFieldMapping<T>)
     );
   };
 

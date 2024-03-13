@@ -13,10 +13,11 @@ import dayjs from 'dayjs';
 import { useTranslation } from '@tyro/i18n';
 import { Link } from 'react-router-dom';
 import { LoadingPlaceholderContainer, getHumanizedTime } from '@tyro/core';
-import { useUser } from '@tyro/api';
+import { SubjectGroup, useUser } from '@tyro/api';
 import { useRunReports } from '../../api/run-report';
 import { getReportUrl, Report } from '../../utils/get-report-url';
 import { useReportFormatValues } from '../../hooks/use-report-format-values';
+import { ReportChipValue } from '../types';
 
 export function OverdueAttendanceWidget() {
   const { t } = useTranslation(['common', 'reports']);
@@ -49,16 +50,16 @@ export function OverdueAttendanceWidget() {
 
   const { mapField } = useReportFormatValues();
 
-  const overdueAttendances = mapField<
-    | 'id'
-    | 'overdue_by_mins'
-    | 'class_avatar_cell'
-    | 'event_start_datetime'
-    | 'subject_group_id'
-    | 'subject_name_1'
-    | 'calendar_room_name'
-    | 'colour'
-  >(overdueAttendanceData, { limitData: 6 });
+  const overdueAttendances = mapField<{
+    id: number;
+    overdue_by_mins: number;
+    class_avatar_cell: SubjectGroup;
+    event_start_datetime: string;
+    subject_group_id: number;
+    subject_name_1: ReportChipValue[];
+    room_name: string;
+    colour: string;
+  }>(overdueAttendanceData, { limitData: 6 });
 
   return (
     <Card
@@ -134,14 +135,18 @@ export function OverdueAttendanceWidget() {
               event_start_datetime: eventStartDatetime,
               subject_group_id: subjectGroupId,
               subject_name_1: subjectName,
-              calendar_room_name: calendarRoomName,
+              room_name: roomName,
               colour,
             }) => (
               <Grid key={id?.textValue} xs={6}>
                 <Card>
                   <Box
                     component={Link}
-                    to={`/groups/subject/${subjectGroupId?.textValue}/attendance?eventStartTime=${eventStartDatetime?.textValue}`}
+                    to={`/groups/subject/${
+                      subjectGroupId?.textValue ?? ''
+                    }/attendance?eventStartTime=${
+                      eventStartDatetime?.textValue ?? ''
+                    }`}
                     sx={{
                       color: 'inherit',
                       backgroundColor: 'white',
@@ -175,7 +180,7 @@ export function OverdueAttendanceWidget() {
                         sx={{
                           width: 6,
                           borderRadius: 3,
-                          backgroundColor: `${colour?.textValue}.main`,
+                          backgroundColor: `${colour?.textValue ?? ''}.main`,
                           mr: 0.75,
                         }}
                       />
@@ -200,7 +205,7 @@ export function OverdueAttendanceWidget() {
                             color="slate.500"
                           >
                             {t('reports:roomX', {
-                              name: calendarRoomName?.textValue,
+                              name: roomName?.textValue || '-',
                             })}
                           </Typography>
                         </Stack>
@@ -224,7 +229,7 @@ export function OverdueAttendanceWidget() {
                                 />
                               }
                               label={getHumanizedTime(
-                                parseInt(overdueByMins?.textValue),
+                                parseInt(overdueByMins?.textValue ?? ''),
                                 t
                               )}
                               sx={{

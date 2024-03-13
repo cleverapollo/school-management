@@ -9,9 +9,11 @@ import {
   LoadingPlaceholderContainer,
 } from '@tyro/core';
 import { useState } from 'react';
+import { Person } from '@tyro/api';
 import { useRunReports } from '../../api/run-report';
 import { getReportUrl, Report } from '../../utils/get-report-url';
 import { useReportFormatValues } from '../../hooks/use-report-format-values';
+import { ReportChipValue } from '../types';
 
 export function BehaviourWidget() {
   const { t } = useTranslation(['common', 'reports']);
@@ -37,18 +39,17 @@ export function BehaviourWidget() {
 
   const { mapField } = useReportFormatValues();
 
-  const behaviourStudents = mapField<
-    | 'id'
-    | 'avatar_url'
-    | 'party_id'
-    | 'first_name'
-    | 'last_name'
-    | 'class'
-    | 'created_by'
-    | 'tags'
-    | 'category'
-    | 'date'
-  >(behaviourData, { limitData: 5 });
+  const behaviourStudents = mapField<{
+    id: number;
+    avatar_cell: Person;
+    avatar_url: string;
+    party_id: number;
+    class: string;
+    created_by: string;
+    tags: ReportChipValue[];
+    category: ReportChipValue[];
+    date: string;
+  }>(behaviourData, { limitData: 5 });
 
   return (
     <Card
@@ -125,29 +126,26 @@ export function BehaviourWidget() {
           {behaviourStudents.map(
             ({
               id,
+              avatar_cell: studentPerson,
               party_id: partyId,
               avatar_url: avatarUrl,
-              first_name,
-              last_name,
               class: classGroup,
               created_by: createdBy,
               tags,
               category,
               date: loggedDate,
             }) => {
-              const name = [first_name?.textValue, last_name?.textValue].join(
-                ' '
-              );
+              const name = studentPerson?.textValue;
 
-              const loggedTime = dayjs(loggedDate?.rawValue as string).format(
-                'LT'
-              );
+              const loggedTime = loggedDate?.typedValue
+                ? dayjs(loggedDate.typedValue).format('LT')
+                : '-';
 
               return (
                 <Card
                   component={Link}
-                  key={id.textValue}
-                  to={`/people/students/${partyId?.textValue}/behaviour`}
+                  key={id?.textValue ?? ''}
+                  to={`/people/students/${partyId?.textValue ?? ''}/behaviour`}
                   sx={{
                     p: 1.5,
                     textDecoration: 'inherit',
@@ -171,6 +169,7 @@ export function BehaviourWidget() {
                           name={name}
                           src={avatarUrl?.textValue}
                           size={48}
+                          person={studentPerson?.typedValue}
                         />
                         <Stack>
                           <Typography variant="subtitle1" component="span">
