@@ -131,6 +131,7 @@ export function getRunReports(filter: InnerReportFilter) {
 export function useRunReports(filter: InnerReportFilter) {
   const reportData = useQuery({
     ...runReportsQuery(filter),
+    keepPreviousData: true,
     select: ({ reporting_runReport }) => reporting_runReport,
   });
 
