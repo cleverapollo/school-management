@@ -87,7 +87,7 @@ export function PrintAssessmentForm({
   const { data: yearGroupEnrollments } = useYearGroupEnrollments(
     {
       yearGroupIds: selectedYearGroups.map((yearGroup) => yearGroup.partyId),
-      academicNamespaceIds: [academicNameSpaceId ?? 0],
+      academicNameSpaceId: academicNameSpaceId ?? 0,
     },
     selectedYearGroups?.length > 0
   );
