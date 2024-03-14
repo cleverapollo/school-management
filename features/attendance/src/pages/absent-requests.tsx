@@ -125,7 +125,10 @@ const getAbsentRequestColumns = (
 ];
 
 export default function AbsentRequests() {
-  const { isContact } = usePermissions();
+  const { isContact, hasPermission } = usePermissions();
+  const canCreateAbsentRequest = hasPermission(
+    'ps:1:attendance:write_parental_attendance_requests'
+  );
   const { t } = useTranslation(['common', 'attendance']);
   const { data: absentRequests } = useAbsentRequests({});
   const [isCreateAbsentRequest, setIsCreateAbsentRequest] = useState(false);
@@ -185,7 +188,8 @@ export default function AbsentRequests() {
         title={t('attendance:absentRequests')}
         titleProps={{ variant: 'h3' }}
         rightAdornment={
-          isContact && (
+          isContact &&
+          canCreateAbsentRequest && (
             <Box display="flex" alignItems="center">
               <Button
                 variant="contained"
