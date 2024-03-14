@@ -1,12 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import {
-  YearGroupEnrollmentFilter,
+  YearGroupEnrollmentFilter as BEYearGroupEnrollmentFilter,
   graphql,
   gqlClient,
   queryClient,
   UseQueryReturnType,
+  EmulateHeaders,
 } from '@tyro/api';
 import { groupsKeys } from './keys';
+
+export type YearGroupEnrollmentFilter = BEYearGroupEnrollmentFilter & {
+  academicNameSpaceId?: number;
+};
 
 const yearGroupEnrollments = graphql(/* GraphQL */ `
   query yearGroupEnrollments($filter: YearGroupEnrollmentFilter) {
@@ -29,10 +34,23 @@ const yearGroupEnrollments = graphql(/* GraphQL */ `
   }
 `);
 
-const yearGroupEnrollmentsQuery = (filter: YearGroupEnrollmentFilter) => ({
-  queryKey: groupsKeys.year.groupEnrollments(filter),
-  queryFn: () => gqlClient.request(yearGroupEnrollments, { filter }),
-});
+const yearGroupEnrollmentsQuery = (filter: YearGroupEnrollmentFilter) => {
+  const { academicNameSpaceId, ...restOfFilter } = filter;
+  return {
+    queryKey: groupsKeys.year.groupEnrollments(filter),
+    queryFn: () =>
+      gqlClient.request(
+        yearGroupEnrollments,
+        { filter: restOfFilter },
+        academicNameSpaceId
+          ? {
+              [EmulateHeaders.ACADEMIC_NAMESPACE_ID]:
+                academicNameSpaceId.toString(),
+            }
+          : {}
+      ),
+  };
+};
 
 export function getYearGroupEnrollments(filter: YearGroupEnrollmentFilter) {
   return queryClient.fetchQuery(yearGroupEnrollmentsQuery(filter));

@@ -10,11 +10,12 @@ import { PageOrientation, Print_AssessmentOptions } from '@tyro/api';
 import { Card, Stack, Typography } from '@mui/material';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from '@tyro/i18n';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ReturnTypeFromUseAssessments } from '@tyro/assessments';
 import { useYearGroupEnrollments } from '@tyro/groups';
 import { PartyAutocompleteValue } from './types';
 import {
+  PrintAssessmentOptions,
   getPrintAssessment,
   usePrintAssessment,
 } from '../../api/print-assessment';
@@ -74,8 +75,8 @@ export function PrintAssessmentForm({
   const { t } = useTranslation(['common', 'printing']);
 
   const { displayName } = usePreferredNameLayout();
-  const [filter, setFilter] = useState<Print_AssessmentOptions | null>(null);
-  const { control, handleSubmit, watch, setValue } =
+  const [filter, setFilter] = useState<PrintAssessmentOptions | null>(null);
+  const { control, handleSubmit, watch, setValue, getValues } =
     useFormContext<PrintAssessmentFormState>();
 
   const [assessment, selectedYearGroups = [], selectedClassGroups = []] = watch(
@@ -86,7 +87,7 @@ export function PrintAssessmentForm({
   const { data: yearGroupEnrollments } = useYearGroupEnrollments(
     {
       yearGroupIds: selectedYearGroups.map((yearGroup) => yearGroup.partyId),
-      academicNamespaceIds: [academicNameSpaceId ?? 0],
+      academicNameSpaceId: academicNameSpaceId ?? 0,
     },
     selectedYearGroups?.length > 0
   );
@@ -137,14 +138,6 @@ export function PrintAssessmentForm({
     return list.sort((a, b) => a.name.localeCompare(b?.name));
   }, [yearGroupEnrollments, selectedClassGroups]);
 
-  const updateClassGroupValue = () => {
-    setValue('classGroups', [], { shouldDirty: true });
-  };
-
-  const updateStudentValue = () => {
-    setValue('students', [], { shouldDirty: true });
-  };
-
   const getAssessmentOptions = ({
     orientation,
     yearGroups,
@@ -153,7 +146,8 @@ export function PrintAssessmentForm({
     colorSetting,
     showCommentsFrom,
     includeOtherInfo,
-  }: PrintAssessmentFormState): Print_AssessmentOptions => ({
+  }: PrintAssessmentFormState): PrintAssessmentOptions => ({
+    academicNameSpaceId: academicNameSpaceId ?? 0,
     assessmentId: assessment?.id ?? 0,
     orientation,
     yearGroupIds: yearGroups?.map(({ partyId }) => partyId) ?? [],
@@ -184,6 +178,44 @@ export function PrintAssessmentForm({
       window.open(printResponse.print_assessment.url, '_blank', 'noreferrer');
   });
 
+  useEffect(() => {
+    const yearGroupOptionIds = yearGroupOptions?.map(({ partyId }) => partyId);
+    const { yearGroups = [] } = getValues();
+    const filteredYearsGroups = yearGroups.filter(
+      (yearGroup) => yearGroupOptionIds?.includes(yearGroup.partyId) ?? false
+    );
+
+    if (filteredYearsGroups.length !== yearGroups.length) {
+      setValue('yearGroups', filteredYearsGroups);
+    }
+  }, [yearGroupOptions]);
+
+  useEffect(() => {
+    const classGroupOptionIds = classGroupOptions?.map(
+      ({ partyId }) => partyId
+    );
+    const { classGroups = [] } = getValues();
+    const filteredClassGroups = classGroups.filter(
+      (classGroup) => classGroupOptionIds?.includes(classGroup.partyId) ?? false
+    );
+
+    if (filteredClassGroups.length !== classGroups.length) {
+      setValue('classGroups', filteredClassGroups);
+    }
+  }, [classGroupOptions]);
+
+  useEffect(() => {
+    const studentOptionIds = studentOptions?.map(({ partyId }) => partyId);
+    const { students = [] } = getValues();
+    const filteredStudents = students.filter(
+      (student) => studentOptionIds?.includes(student.partyId) ?? false
+    );
+
+    if (filteredStudents.length !== students.length) {
+      setValue('students', filteredStudents);
+    }
+  }, [studentOptions]);
+
   return (
     <Stack spacing={2} pt={2}>
       <form onSubmit={onView}>
@@ -202,12 +234,6 @@ export function PrintAssessmentForm({
                   multiple
                   controlProps={{ name: 'yearGroups', control }}
                   options={yearGroupOptions ?? []}
-                  onChange={(_, __, reason) => {
-                    if (reason === 'removeOption') {
-                      updateClassGroupValue();
-                      updateStudentValue();
-                    }
-                  }}
                 />
                 <RHFAutocomplete
                   fullWidth
@@ -217,11 +243,6 @@ export function PrintAssessmentForm({
                   multiple
                   controlProps={{ name: 'classGroups', control }}
                   options={classGroupOptions ?? []}
-                  onChange={(_, __, reason) => {
-                    if (reason === 'removeOption') {
-                      updateStudentValue();
-                    }
-                  }}
                 />
                 <RHFAutocomplete
                   fullWidth
