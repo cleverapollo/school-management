@@ -123,6 +123,11 @@ const getStaffColumns = (
     hide: true,
   },
   {
+    field: 'displayCode',
+    headerName: t('people:displayCode'),
+    hide: true,
+  },
+  {
     field: 'carRegistrationNumber',
     headerName: t('people:carRegistration'),
     hide: true,
