@@ -145,7 +145,7 @@ export function OverdueAttendanceWidget() {
                     to={`/groups/subject/${
                       subjectGroupId?.textValue ?? ''
                     }/attendance?eventStartTime=${
-                      eventStartDatetime?.textValue ?? ''
+                      eventStartDatetime?.typedValue ?? ''
                     }`}
                     sx={{
                       color: 'inherit',
