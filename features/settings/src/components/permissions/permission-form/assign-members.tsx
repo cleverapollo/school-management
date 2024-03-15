@@ -60,6 +60,14 @@ export const AssignMembers = ({
           label={t(`common:searchByMemberType.${memberType}`)}
           options={options}
           renderAvatarTags={() => null}
+          disableClearable
+          inputProps={{
+            onKeyDown: (event) => {
+              if (event.key === 'Backspace' || event.key === 'Delete') {
+                event.stopPropagation();
+              }
+            },
+          }}
           controlProps={{
             control,
             name: 'members',
