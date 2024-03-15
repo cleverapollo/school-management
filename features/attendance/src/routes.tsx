@@ -47,10 +47,10 @@ export const getRoutes: NavObjectFunction = (t) => [
             path: 'absent-requests',
             info: <PendingAbsentRequestCountLabel />,
             title: t('navigation:general.attendance.absentRequests'),
-            hasAccess: ({ isStaffUserWithPermission, isContact }) =>
-              isStaffUserWithPermission(
+            hasAccess: ({ hasPermission }) =>
+              hasPermission(
                 'ps:1:attendance:read_parental_attendance_requests'
-              ) || isContact,
+              ),
             element: <AbsentRequests />,
           },
           {
