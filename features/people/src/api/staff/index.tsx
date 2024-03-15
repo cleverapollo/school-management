@@ -44,6 +44,7 @@ const staff = graphql(/* GraphQL */ `
       carRegistrationNumber
       parking
       position
+      displayCode
     }
   }
 `);
