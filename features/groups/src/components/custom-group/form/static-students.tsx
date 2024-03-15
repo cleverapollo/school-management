@@ -52,6 +52,14 @@ export const StaticStudents = ({
       <Grid item xs={12}>
         <RHFAutocomplete<CustomGroupFormState, StudentsSearchParty, true>
           {...studentsGroups}
+          disableClearable
+          inputProps={{
+            onKeyDown: (event) => {
+              if (event.key === 'Backspace' || event.key === 'Delete') {
+                event.stopPropagation();
+              }
+            },
+          }}
           controlProps={{
             name: 'staticStudents',
             control,

@@ -121,6 +121,14 @@ export const AddStudents = ({
         <Grid item xs={12}>
           <RHFAutocomplete<FeeFormState, StudentsSearchParty, true>
             {...studentsGroups}
+            disableClearable
+            inputProps={{
+              onKeyDown: (event) => {
+                if (event.key === 'Backspace' || event.key === 'Delete') {
+                  event.stopPropagation();
+                }
+              },
+            }}
             controlProps={{
               name: 'students',
               control,

@@ -46,6 +46,14 @@ export const StaticStaff = ({
           filterSelectedOptions
           label={t('common:searchByMemberType.STAFF')}
           renderAvatarTags={() => null}
+          disableClearable
+          inputProps={{
+            onKeyDown: (event) => {
+              if (event.key === 'Backspace' || event.key === 'Delete') {
+                event.stopPropagation();
+              }
+            },
+          }}
           controlProps={{
             control,
             name: 'staticStaff',

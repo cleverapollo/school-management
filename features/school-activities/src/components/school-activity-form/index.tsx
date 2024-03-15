@@ -393,6 +393,14 @@ export function SchoolActivityForm({
                       <Grid item xs={12}>
                         <RHFAutocomplete<FormValues, StudentsSearchParty, true>
                           {...studentsGroups}
+                          disableClearable
+                          inputProps={{
+                            onKeyDown: (event) => {
+                              if (event.key === 'Backspace' || event.key === 'Delete') {
+                                event.stopPropagation();
+                              }
+                            },
+                          }}
                           controlProps={{
                             control,
                             name: 'staticStudents',
