@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 import {
   AvatarProps as CoreAvatarProps,
   RouterLink,
+  RouterLinkProps,
   usePreferredNameLayout,
 } from '@tyro/core';
 import { Person } from '@tyro/api';
@@ -18,6 +19,8 @@ type TableAvatarProps = {
   avatarBackgroundColor?: string;
   size?: number;
   onBeforeNavigate?: () => void;
+  hideAvatar?: boolean;
+  target?: RouterLinkProps['target'];
 };
 
 export function StudentTableAvatar({
@@ -29,31 +32,40 @@ export function StudentTableAvatar({
   avatarBackgroundColor,
   size,
   onBeforeNavigate,
+  hideAvatar,
+  target,
 }: TableAvatarProps) {
   const { displayName } = usePreferredNameLayout();
   const name = displayName(person);
 
   return (
     <Box display="flex" alignItems="center">
-      <StudentAvatar
-        src={person?.avatarUrl}
-        partyId={person?.partyId ?? 0}
-        name={name}
-        isPriorityStudent={isPriorityStudent}
-        hasSupportPlan={hasSupportPlan}
-        avatarBackgroundColor={avatarBackgroundColor}
-        size={size}
-        person={person}
-        ContainingButtonProps={{
-          sx: {
-            my: 1,
-            mr: 1.5,
-          },
-        }}
-        AvatarProps={{ ...AvatarProps, person }}
-      />
+      {hideAvatar ? null : (
+        <StudentAvatar
+          src={person?.avatarUrl}
+          partyId={person?.partyId ?? 0}
+          name={name}
+          isPriorityStudent={isPriorityStudent}
+          hasSupportPlan={hasSupportPlan}
+          avatarBackgroundColor={avatarBackgroundColor}
+          size={size}
+          person={person}
+          ContainingButtonProps={{
+            sx: {
+              my: 1,
+              mr: 1.5,
+            },
+          }}
+          AvatarProps={{ ...AvatarProps, person }}
+        />
+      )}
       {to ? (
-        <RouterLink sx={{ fontWeight: 600 }} onClick={onBeforeNavigate} to={to}>
+        <RouterLink
+          sx={{ fontWeight: 600 }}
+          to={to}
+          target={target}
+          onClick={onBeforeNavigate}
+        >
           {name}
         </RouterLink>
       ) : (

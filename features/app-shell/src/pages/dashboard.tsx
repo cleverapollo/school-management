@@ -1,7 +1,11 @@
-import { Box, Container, Stack, Typography } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import { MasonryGrid, Page } from '@tyro/core';
 import { useTranslation } from '@tyro/i18n';
-import { AWOLWidget, BehaviourWidget } from '@tyro/reporting';
+import {
+  AWOLWidget,
+  BehaviourWidget,
+  OverdueAttendanceWidget,
+} from '@tyro/reporting';
 import { TimetableWidget } from '@tyro/calendar';
 import { usePermissions, useUser } from '@tyro/api';
 
@@ -26,6 +30,12 @@ export default function Dashboard() {
               showTeacher={false}
               partyId={activeProfile?.partyId ?? 0}
             />,
+            isStaffUserWithPermission(
+              'ps:1:general_admin:overdue_feature_flag'
+            ) &&
+              isStaffUserWithPermission('ps:1:attendance:read_attendance') && (
+                <OverdueAttendanceWidget />
+              ),
           ]}
         />
       </Container>

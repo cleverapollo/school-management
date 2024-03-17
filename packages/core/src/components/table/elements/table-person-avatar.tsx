@@ -1,9 +1,8 @@
 import { Person } from '@tyro/api';
 import { usePreferredNameLayout } from '../../../hooks';
-import { TableAvatar } from './table-avatar';
+import { TableAvatar, TableAvatarProps } from './table-avatar';
 
-type TablePersonAvatarProps = {
-  to?: string | null;
+type TablePersonAvatarProps = Omit<TableAvatarProps, 'name'> & {
   person: Partial<Person> | undefined;
   onBeforeNavigate?: () => void;
 };
@@ -11,6 +10,9 @@ type TablePersonAvatarProps = {
 export function TablePersonAvatar({
   to,
   person,
+  AvatarProps,
+  hideAvatar,
+  target,
   onBeforeNavigate,
 }: TablePersonAvatarProps) {
   const { displayName } = usePreferredNameLayout();
@@ -22,7 +24,9 @@ export function TablePersonAvatar({
       name={name}
       avatarUrl={person?.avatarUrl}
       onBeforeNavigate={onBeforeNavigate}
-      AvatarProps={{ person }}
+      AvatarProps={{ ...AvatarProps, person }}
+      hideAvatar={hideAvatar}
+      target={target}
     />
   );
 }

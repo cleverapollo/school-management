@@ -58,6 +58,17 @@ const reportsRun = graphql(/* GraphQL */ `
         maxWidth
         minWidth
         pinned
+        cellType
+        type
+        meta {
+          chipSize
+          chipVariant
+          currency
+          dateFormat
+          showAvatar
+          avatarSize
+          enableLink
+        }
       }
       metrics {
         defaultValue
@@ -120,6 +131,7 @@ export function getRunReports(filter: InnerReportFilter) {
 export function useRunReports(filter: InnerReportFilter) {
   const reportData = useQuery({
     ...runReportsQuery(filter),
+    keepPreviousData: true,
     select: ({ reporting_runReport }) => reporting_runReport,
   });
 

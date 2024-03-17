@@ -40,9 +40,9 @@ const defaultTabs = {
   [Report.OCTOBER_RETURNS]: tabs[Report.OCTOBER_RETURNS]['cover-stats'],
 } as const;
 
-type Tabs = typeof tabs;
+export type ReportTabs = typeof tabs;
 
-type Options =
+export type ReportLinkOptions =
   | {
       report: Report.AWOL;
     }
@@ -51,7 +51,7 @@ type Options =
     }
   | {
       report: Report.OCTOBER_RETURNS;
-      tab?: Tabs[Report.OCTOBER_RETURNS][keyof Tabs[Report.OCTOBER_RETURNS]];
+      tab?: keyof ReportTabs[Report.OCTOBER_RETURNS];
     }
   | {
       report: Report.OVERDUE_LESSON_ATTENDANCE;
@@ -90,7 +90,7 @@ type Options =
       report: Report.TUSLA;
     };
 
-export function getReportUrl({ report, ...options }: Options) {
+export function getReportUrl({ report, ...options }: ReportLinkOptions) {
   const reportId = reportUrls[report];
   let tab = report === Report.AWOL ? '' : reportUrls[report];
   let filters = '';

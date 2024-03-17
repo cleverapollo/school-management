@@ -76,10 +76,11 @@ const getValueFormat = (
         ? dayjs(formValue as dayjs.Dayjs).format('YYYY-MM-DD')
         : null;
     case Reporting_TableFilterType.InputNumber:
-      return Number(formValue);
+      return Number(formValue ?? 0);
     case Reporting_TableFilterType.Input:
-    default:
-      return String(formValue);
+    default: {
+      return String(formValue ?? '');
+    }
   }
 };
 
@@ -145,13 +146,26 @@ export const DynamicForm = ({
 
   const onSubmit = handleSubmit(
     ({ groupBy, timeGroupBy, metric, ...formData }) => {
-      console.log('--------');
-      console.log(metric);
       onValueChange({
-        filters: filters.map<Reporting_TableFilterInput>((filter) => ({
-          filterId: filter.id,
-          filterValue: getValueFormat(formData[filter.id], filter.inputType),
-        })),
+        filters: filters
+          .filter((filter) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const fieldValue = formData[filter.id];
+
+            if (Array.isArray(fieldValue)) {
+              return fieldValue.length > 0;
+            }
+
+            if (typeof fieldValue === 'string') {
+              return fieldValue !== '';
+            }
+
+            return fieldValue !== undefined && fieldValue !== null;
+          })
+          .map<Reporting_TableFilterInput>((filter) => ({
+            filterId: filter.id,
+            filterValue: getValueFormat(formData[filter.id], filter.inputType),
+          })),
         metric: metric as string | undefined,
         groupings: groupBy ? [groupBy] : undefined,
         timeGrouping: timeGroupBy as string | undefined,
