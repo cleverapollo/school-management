@@ -71,6 +71,7 @@ const getStudentContactColumns = (
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: true,
     lockVisible: true,
+    sortIndex: 1,
     sort: 'asc',
   },
   {
@@ -104,6 +105,8 @@ const getStudentContactColumns = (
     headerName: translate('people:priority'),
     editable: true,
     cellEditorSelector: PriorityTypeCellEditor(),
+    sortIndex: 0,
+    sort: 'asc',
   },
   {
     field: 'legalGuardian',
