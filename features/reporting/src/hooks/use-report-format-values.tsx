@@ -302,6 +302,8 @@ export const useReportFormatValues = () => {
       }
       case Reporting_ReportCellType.Raw:
       default: {
+        if (typeof value.value === 'boolean') return getBooleanValue(value);
+
         return getRawValue(value);
       }
     }
@@ -337,6 +339,8 @@ export const useReportFormatValues = () => {
       }
       case Reporting_ReportCellType.Raw:
       default: {
+        if (typeof value.value === 'boolean') return renderBooleanValue(value);
+
         return renderRawValue(value, column);
       }
     }
