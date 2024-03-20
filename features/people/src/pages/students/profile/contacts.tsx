@@ -106,7 +106,7 @@ const getStudentContactColumns = (
     editable: true,
     cellEditorSelector: PriorityTypeCellEditor(),
     sortIndex: 0,
-    sort: 'desc',
+    sort: 'asc',
   },
   {
     field: 'legalGuardian',
