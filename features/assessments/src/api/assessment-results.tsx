@@ -174,5 +174,8 @@ export function useUpdateAssessmentResult(
         })
       );
     },
+    onError: () => {
+      toast(t('common:snackbarMessages.errorFailed'), { variant: 'error' });
+    },
   });
 }
