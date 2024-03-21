@@ -49,6 +49,7 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
     resolver: resolver({
       paymentMethod: [rules.required()],
       onBehalfOf: rules.required(),
+      details: rules.required(),
       fees: {
         amountToPay: [
           rules.required(),
@@ -121,6 +122,7 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
         amountToPay: Number(fee.amountToPay),
       })),
       onBehalfOf: values?.onBehalfOf,
+      details: values.details,
     });
     nextStep();
   });
@@ -165,6 +167,14 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
               contactsFilter={{
                 studentPartyIds: studentIds,
               }}
+            />
+            <RHFTextField
+              controlProps={{
+                name: 'details',
+                control,
+              }}
+              label={t('common:details')}
+              textFieldProps={{ sx: { maxWidth: 300 } }}
             />
           </>
         )}
