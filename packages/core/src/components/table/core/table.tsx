@@ -110,6 +110,12 @@ const defaultColDef: ColDef = {
       return 'ag-editable-cell';
     }
   },
+  cellRendererSelector: ({ node }) => {
+    if (node.group) {
+      return { component: 'agGroupCellRenderer' };
+    }
+    return undefined;
+  },
 };
 
 const quickFilterMatcher = (

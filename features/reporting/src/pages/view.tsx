@@ -71,12 +71,12 @@ export default function ReportPage() {
 
         return getValue(column, data[column.id]);
       },
-      // eslint-disable-next-line react/no-unstable-nested-components
       cellRenderer: ({ data }: ICellRendererParams<ExtendedReportData>) => {
         if (!data) return null;
 
         return renderValue(column, data[column.id]) || '-';
       },
+      filterValueGetter: ({ data }) => getValue(column, data?.[column.id]),
       sortable: column.sortable,
       initialHide: !column.visibleByDefault,
       pinned: column.pinned ?? null,
