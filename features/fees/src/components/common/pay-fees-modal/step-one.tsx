@@ -49,7 +49,7 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
     resolver: resolver({
       paymentMethod: [rules.required()],
       onBehalfOf: rules.required(),
-      details: rules.required(),
+      details: [rules.required(), rules.maxLength(200)],
       fees: {
         amountToPay: [
           rules.required(),
@@ -174,7 +174,13 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
                 control,
               }}
               label={t('common:details')}
-              textFieldProps={{ sx: { maxWidth: 300 } }}
+              textFieldProps={{
+                multiline: true,
+                rows: 4,
+                inputProps: {
+                  maxLength: 200,
+                },
+              }}
             />
           </>
         )}

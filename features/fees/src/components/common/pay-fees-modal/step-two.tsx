@@ -231,6 +231,7 @@ export function PayFeesStepTwo() {
           feeId: id.feeId,
           amount: amountToPay,
           studentPartyId: person.partyId,
+          note: paymentsToPayAndMethod.details,
         })) ?? [],
       paymentMethod:
         paymentsToPayAndMethod?.paymentMethod ?? PaymentMethod.Card,

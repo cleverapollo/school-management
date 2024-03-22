@@ -3022,6 +3022,7 @@ export type MakePaymentInput = {
   paymentIntentId?: InputMaybe<Scalars['String']>;
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
+  note?: string;
 };
 
 export enum MemberType {
