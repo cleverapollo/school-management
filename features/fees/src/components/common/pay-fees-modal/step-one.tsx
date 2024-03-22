@@ -49,7 +49,7 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
     resolver: resolver({
       paymentMethod: [rules.required()],
       onBehalfOf: rules.required(),
-      details: [rules.required(), rules.maxLength(200)],
+      details: rules.maxLength(200),
       fees: {
         amountToPay: [
           rules.required(),

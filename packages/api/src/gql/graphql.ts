@@ -3014,6 +3014,7 @@ export type MakePaymentAmountInput = {
   feeId: Scalars['Int'];
   serviceCharges?: InputMaybe<Scalars['Float']>;
   studentPartyId: Scalars['Long'];
+  note?: string;
 };
 
 export type MakePaymentInput = {
@@ -3022,7 +3023,6 @@ export type MakePaymentInput = {
   paymentIntentId?: InputMaybe<Scalars['String']>;
   paymentMethod: PaymentMethod;
   paymentStatus: PaymentStatus;
-  note?: string;
 };
 
 export enum MemberType {
