@@ -4,6 +4,7 @@ import { Stack, Card, Typography } from '@mui/material';
 import {
   LoadingPlaceholderContainer,
   RHFCheckboxGroup,
+  RHFDatePicker,
   RHFRadioGroup,
   RHFSelect,
 } from '@tyro/core';
@@ -19,6 +20,7 @@ import { useFormContext } from 'react-hook-form';
 import { LoadingButton } from '@mui/lab';
 import { getStaffForSelect } from '@tyro/people';
 import { getCoreRooms } from '@tyro/settings';
+import dayjs from 'dayjs';
 import {
   getPrintTimetable,
   usePrintTimetable,
@@ -47,6 +49,7 @@ export interface PrintStaffTimetableFormState<T> {
   fontSize: FontSize;
   colorSetting: 'COLOR' | 'BLACK_AND_WHITE';
   checkBoxes: (typeof checkboxOptions)[number][];
+  weekOf: dayjs.Dayjs;
 }
 
 export interface TimetablePrintFormProps<T> {
@@ -81,6 +84,7 @@ export function getDefaultValues<T>() {
     fontSize: FontSize.MEDIUM,
     checkBoxes: ['showRooms', 'showGroupNames'],
     colorSetting: 'COLOR',
+    weekOf: dayjs(),
   } as PrintStaffTimetableFormState<T>;
 }
 
@@ -122,6 +126,7 @@ export function TimetablePrintForm<T>({
     fontSize,
     colorSetting,
     checkBoxes,
+    weekOf,
   }: PrintStaffTimetableFormState<T>): Promise<Print_TimetableOptions> => {
     let mappedPartyIds = !isRoom ? translateIds(parties) : [];
     let mappedRoomIds = isRoom ? translateIds(rooms) : [];
@@ -150,6 +155,7 @@ export function TimetablePrintForm<T>({
       individualStudents: individualStudents ?? false,
       fontSize: mapFontSize(fontSize),
       printWithColour: colorSetting === 'COLOR',
+      printWeekOf: weekOf.format('YYYY-MM-DD'),
     };
   };
 
@@ -242,6 +248,17 @@ export function TimetablePrintForm<T>({
                     control,
                   }}
                 />
+                <RHFDatePicker
+                  label={t('printing:timetable.weekOf')}
+                  controlProps={{
+                    control,
+                    name: 'weekOf',
+                  }}
+                  inputProps={{
+                    fullWidth: true,
+                  }}
+                />
+
                 <RHFSelect<
                   PrintStaffTimetableFormState<T>,
                   Print_TimetableSubjectFormat
