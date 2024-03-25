@@ -163,7 +163,6 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
                 control,
               }}
               label={t('fees:onBehalfOf')}
-              sx={{ maxWidth: 300 }}
               contactsFilter={{
                 studentPartyIds: studentIds,
               }}
@@ -176,7 +175,6 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
               label={t('common:details')}
               textFieldProps={{
                 multiline: true,
-                rows: 4,
                 inputProps: {
                   maxLength: 200,
                 },
