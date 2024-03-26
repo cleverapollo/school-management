@@ -162,7 +162,6 @@ export function PayFeesStepOne({ feesToPay }: PayFeesStepOneProps) {
                 name: 'onBehalfOf',
                 control,
               }}
-              sx={{ maxWidth: 300 }}
               label={t('fees:onBehalfOf')}
               contactsFilter={{
                 studentPartyIds: studentIds,
