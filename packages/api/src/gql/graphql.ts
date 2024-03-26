@@ -3014,6 +3014,7 @@ export type MakePaymentAmountInput = {
   feeId: Scalars['Int'];
   serviceCharges?: InputMaybe<Scalars['Float']>;
   studentPartyId: Scalars['Long'];
+  note?: string;
 };
 
 export type MakePaymentInput = {

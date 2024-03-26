@@ -93,6 +93,7 @@ export const PaymentMethodSelect = <TField extends FieldValues>({
                   height: 0,
                   visibility: 'hidden',
                   padding: index === 0 ? 0 : undefined,
+                  position: index === 0 ? 'absolute' : undefined,
                 },
               }}
             />

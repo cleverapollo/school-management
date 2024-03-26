@@ -17,6 +17,7 @@ export type PaymentsToPayAndMethod = {
   fees: (ReturnTypeFromUseStudentFees & { amountToPay: number })[];
   total: number;
   onBehalfOf?: ReturnTypeFromUseContactsForSelect;
+  details?: string;
 };
 
 export type PayFeesSettingsContextValue = {
